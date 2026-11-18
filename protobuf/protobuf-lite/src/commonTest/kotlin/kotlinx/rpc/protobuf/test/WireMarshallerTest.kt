@@ -413,7 +413,7 @@ class WireMarshallerTest {
         var escaped: WireDecoder? = null
         decodeWire(buffer) { decoder -> escaped = decoder }
 
-        assertFailsWith<IllegalStateException> { escaped!!.readTag() }
+        assertFailsWith<ProtobufDecodingException> { escaped!!.readTag() }
     }
 
     @Test

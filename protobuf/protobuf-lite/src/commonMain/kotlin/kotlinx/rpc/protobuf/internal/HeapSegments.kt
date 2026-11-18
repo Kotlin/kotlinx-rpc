@@ -13,6 +13,7 @@ import kotlinx.io.unsafe.UnsafeBufferOperations
 import kotlinx.io.unsafe.withData
 import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlinx.rpc.grpc.marshaller.GrpcMessageWriter
+import kotlinx.rpc.protobuf.ProtobufDecodingException
 import kotlinx.rpc.protobuf.ProtobufEncodingException
 
 private const val CHUNK_SIZE: Int = 8192
@@ -76,7 +77,7 @@ internal class BufferInputSegments(
  * The input over a [GrpcMessageReader] that gives no direct memory access, through one scratch array.
  *
  * The reader can come from outside the gRPC runtime, so each call checks `remaining`. If the reader breaks its
- * contract, the call throws [IllegalStateException].
+ * contract, the call throws [ProtobufDecodingException].
  */
 internal class ReaderInputSegments(private val reader: GrpcMessageReader) : InputSegments {
     private val scratch = ByteArray(minOf(checkedRemaining(), CHUNK_SIZE))
@@ -89,9 +90,11 @@ internal class ReaderInputSegments(private val reader: GrpcMessageReader) : Inpu
         }
         reader.readTo(scratch, 0, count)
         val after = reader.remaining
-        check(after == remaining - count) {
-            "${reader.typeName} reports $after remaining bytes after readTo read $count of $remaining bytes. " +
-                "Make readTo reduce remaining by the number of bytes that it reads."
+        if (after != remaining - count) {
+            throw ProtobufDecodingException(
+                "${reader.typeName} reports $after remaining bytes after readTo read $count of $remaining bytes. " +
+                    "Make readTo reduce remaining by the number of bytes that it reads."
+            )
         }
         window.attach(scratch, 0)
         return count
@@ -99,8 +102,10 @@ internal class ReaderInputSegments(private val reader: GrpcMessageReader) : Inpu
 
     private fun checkedRemaining(): Int {
         val remaining = reader.remaining
-        check(remaining >= 0) {
-            "${reader.typeName} reports $remaining remaining bytes. Make remaining return 0 or more."
+        if (remaining < 0) {
+            throw ProtobufDecodingException(
+                "${reader.typeName} reports $remaining remaining bytes. Make remaining return 0 or more."
+            )
         }
         return remaining
     }
@@ -168,7 +173,7 @@ internal class BufferOutputSegments(
  * The output over a [GrpcMessageWriter] that takes no direct memory access, through one scratch array.
  *
  * The writer can come from outside the gRPC runtime, so each call checks `remaining`. If the writer breaks its
- * contract, the call throws [IllegalStateException].
+ * contract, the call throws [ProtobufEncodingException].
  */
 internal class WriterOutputSegments(private val writer: GrpcMessageWriter) : OutputSegments {
     private val scratch = ByteArray(minOf(checkedRemaining(), CHUNK_SIZE))
@@ -187,17 +192,21 @@ internal class WriterOutputSegments(private val writer: GrpcMessageWriter) : Out
             val remaining = checkedRemaining()
             writer.write(scratch, 0, count)
             val after = writer.remaining
-            check(after == remaining - count) {
-                "${writer.typeName} reports $after remaining bytes after write took $count of $remaining bytes. " +
-                    "Make write reduce remaining by the number of bytes that it writes."
+            if (after != remaining - count) {
+                throw ProtobufEncodingException(
+                    "${writer.typeName} reports $after remaining bytes after write took $count of $remaining bytes. " +
+                        "Make write reduce remaining by the number of bytes that it writes."
+                )
             }
         }
     }
 
     private fun checkedRemaining(): Int {
         val remaining = writer.remaining
-        check(remaining >= 0) {
-            "${writer.typeName} reports $remaining remaining bytes. Make remaining return 0 or more."
+        if (remaining < 0) {
+            throw ProtobufEncodingException(
+                "${writer.typeName} reports $remaining remaining bytes. Make remaining return 0 or more."
+            )
         }
         return remaining
     }

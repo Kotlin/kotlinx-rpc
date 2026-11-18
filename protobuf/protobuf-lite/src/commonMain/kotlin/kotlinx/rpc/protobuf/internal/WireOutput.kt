@@ -9,6 +9,7 @@ package kotlinx.rpc.protobuf.internal
 import kotlinx.io.Buffer
 import kotlinx.io.unsafe.UnsafeBufferOperations
 import kotlinx.io.unsafe.withData
+import kotlinx.rpc.protobuf.ProtobufEncodingException
 
 /** Writes protobuf wire primitives to [segments]. */
 internal class WireOutput(private val segments: OutputSegments) : AutoCloseable {
@@ -201,6 +202,8 @@ internal class WireOutput(private val segments: OutputSegments) : AutoCloseable 
     }
 
     private fun checkOpen() {
-        check(!closed) { "The WireEncoder is used after its encoding scope ended." }
+        if (closed) {
+            throw ProtobufEncodingException("The WireEncoder is used after its encoding scope ended.")
+        }
     }
 }

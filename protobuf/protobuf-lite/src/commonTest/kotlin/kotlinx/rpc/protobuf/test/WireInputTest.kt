@@ -180,7 +180,7 @@ class WireInputTest {
         val input = WireInput(SplitInputSegments(bytes(1), 1), 1)
         input.close()
         input.close()
-        assertFailsWith<IllegalStateException> { input.readByte() }
+        assertFailsWith<ProtobufDecodingException> { input.readByte() }
     }
 
     @Test

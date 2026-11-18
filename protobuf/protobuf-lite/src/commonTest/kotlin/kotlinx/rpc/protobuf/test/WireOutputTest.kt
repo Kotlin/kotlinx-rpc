@@ -125,9 +125,9 @@ class WireOutputTest {
         output.writeByte(1)
         output.close()
         output.close()
-        assertFailsWith<IllegalStateException> { output.writeByte(0) }
-        assertFailsWith<IllegalStateException> { output.writeBytes(bytes(0), 0, 0) }
-        assertFailsWith<IllegalStateException> { output.flush() }
+        assertFailsWith<ProtobufEncodingException> { output.writeByte(0) }
+        assertFailsWith<ProtobufEncodingException> { output.writeBytes(bytes(0), 0, 0) }
+        assertFailsWith<ProtobufEncodingException> { output.flush() }
     }
 
     @Test

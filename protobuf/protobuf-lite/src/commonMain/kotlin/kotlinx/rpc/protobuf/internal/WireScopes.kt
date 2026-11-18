@@ -17,6 +17,8 @@ import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageReader
 import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageWriter
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoConfig
+import kotlinx.rpc.protobuf.ProtobufDecodingException
+import kotlinx.rpc.protobuf.ProtobufEncodingException
 
 /**
  * Runs [block] with a decoder over all bytes of [buffer], and then removes these bytes from [buffer].
@@ -29,8 +31,10 @@ public fun <R> decodeWire(
     recursionLimit: Int = ProtoConfig.DEFAULT_RECURSION_LIMIT,
     block: (WireDecoder) -> R,
 ): R {
-    require(buffer.size <= Int.MAX_VALUE) {
-        "A protobuf message can have at most ${Int.MAX_VALUE} bytes, but the buffer has ${buffer.size}."
+    if (buffer.size > Int.MAX_VALUE) {
+        throw ProtobufDecodingException(
+            "A protobuf message can have at most ${Int.MAX_VALUE} bytes, but the buffer has ${buffer.size}."
+        )
     }
     val size = buffer.size.toInt()
     try {
@@ -63,8 +67,10 @@ internal fun encodeSegments(segments: OutputSegments, size: Int, block: (WireEnc
     try {
         block(WireEncoder(output))
         output.flush()
-        check(output.written == size) {
-            "The protobuf message encoded ${output.written} bytes, but its size is $size."
+        if (output.written != size) {
+            throw ProtobufEncodingException(
+                "The protobuf message encoded ${output.written} bytes, but its size is $size."
+            )
         }
     } finally {
         output.close()

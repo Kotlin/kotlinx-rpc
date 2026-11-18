@@ -10,6 +10,8 @@ import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlinx.rpc.grpc.marshaller.GrpcMessageWriter
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.protobuf.ProtobufDecodingException
+import kotlinx.rpc.protobuf.ProtobufEncodingException
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertFailsWith
@@ -30,22 +32,26 @@ class MisbehavingIoTest {
 
     @Test
     fun readerWithNegativeRemaining() {
-        assertContractFailure { decode(FakeReader(smallBytes, report = { -1 })) }
+        assertContractFailure<ProtobufDecodingException> { decode(FakeReader(smallBytes, report = { -1 })) }
     }
 
     @Test
     fun readerThatDoesNotReduceRemaining() {
-        assertContractFailure { decode(FakeReader(smallBytes, consume = false)) }
+        assertContractFailure<ProtobufDecodingException> { decode(FakeReader(smallBytes, consume = false)) }
     }
 
     @Test
     fun readerThatReducesRemainingByTooMuch() {
-        assertContractFailure { decode(FakeReader(largeBytes, report = { afterFirstRead(it, 0) })) }
+        assertContractFailure<ProtobufDecodingException> {
+            decode(FakeReader(largeBytes, report = { afterFirstRead(it, 0) }))
+        }
     }
 
     @Test
     fun readerWhoseRemainingTurnsNegative() {
-        assertContractFailure { decode(FakeReader(largeBytes, report = { afterFirstRead(it, -3) })) }
+        assertContractFailure<ProtobufDecodingException> {
+            decode(FakeReader(largeBytes, report = { afterFirstRead(it, -3) }))
+        }
     }
 
     @Test
@@ -71,13 +77,13 @@ class MisbehavingIoTest {
     @Test
     fun writerWithOtherRemainingThanTheMessageSize() {
         val size = smallBytes.size
-        assertFailsWith<IllegalArgumentException> { encode(small, FakeWriter(size, report = { size - it - 1 })) }
-        assertFailsWith<IllegalArgumentException> { encode(small, FakeWriter(size, report = { -1 })) }
+        assertFailsWith<ProtobufEncodingException> { encode(small, FakeWriter(size, report = { size - it - 1 })) }
+        assertFailsWith<ProtobufEncodingException> { encode(small, FakeWriter(size, report = { -1 })) }
     }
 
     @Test
     fun writerThatDoesNotReduceRemaining() {
-        assertContractFailure { encode(small, FakeWriter(smallBytes.size, advance = false)) }
+        assertContractFailure<ProtobufEncodingException> { encode(small, FakeWriter(smallBytes.size, advance = false)) }
     }
 
     @Test
@@ -85,7 +91,7 @@ class MisbehavingIoTest {
         val size = largeBytes.size
         for (after in listOf(-7, 0, Int.MAX_VALUE)) {
             val writer = FakeWriter(size, report = { written -> afterFirstWrite(written, size, after) })
-            assertContractFailure { encode(large, writer) }
+            assertContractFailure<ProtobufEncodingException> { encode(large, writer) }
         }
     }
 
@@ -94,6 +100,27 @@ class MisbehavingIoTest {
         val failure = ImplementationFailure()
         val writer = FakeWriter(largeBytes.size, failure = failure)
         assertSame(failure, assertFailsWith<ImplementationFailure> { encode(large, writer) })
+    }
+
+    @Test
+    fun readerCancellationGoesToTheCaller() {
+        val cancellation = CancellationException("read cancelled")
+        val reader = FakeReader(largeBytes, failure = cancellation)
+        assertSame(cancellation, assertFailsWith<CancellationException> { decode(reader) })
+    }
+
+    @Test
+    fun writerCancellationGoesToTheCaller() {
+        val cancellation = CancellationException("write cancelled")
+        val writer = FakeWriter(largeBytes.size, failure = cancellation)
+        assertSame(cancellation, assertFailsWith<CancellationException> { encode(large, writer) })
+    }
+
+    @Test
+    fun encodedMessageCannotBeReused() {
+        val encoded = marshaller.prepare(small)
+        encoded.writeTo(FakeWriter(smallBytes.size))
+        assertFailsWith<ProtobufEncodingException> { encoded.writeTo(FakeWriter(smallBytes.size)) }
     }
 
     private fun decode(reader: GrpcMessageReader): AllPrimitives = marshaller.decode(reader)
@@ -116,8 +143,8 @@ class MisbehavingIoTest {
         size - written
     }
 
-    private fun assertContractFailure(block: () -> Unit) {
-        val failure = assertFailsWith<IllegalStateException>(block = block)
+    private inline fun <reified T : Throwable> assertContractFailure(noinline block: () -> Unit) {
+        val failure = assertFailsWith<T>(block = block)
         assertContains(failure.message.orEmpty(), "remaining bytes")
     }
 }

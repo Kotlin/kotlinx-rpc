@@ -11,6 +11,7 @@ import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlinx.rpc.grpc.marshaller.GrpcMessageWriter
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoConfig
+import kotlinx.rpc.protobuf.ProtobufEncodingException
 
 /** Size-first gRPC marshaller shared by generated protobuf message marshallers. */
 @InternalRpcApi
@@ -54,14 +55,18 @@ private class ProtoEncodedMessage(
     private var used: Boolean = false
 
     override fun writeTo(writer: GrpcMessageWriter) {
-        check(!used) {
-            "GrpcEncodedMessage.writeTo was called more than once on the same protobuf message. " +
-                "GrpcMarshaller.prepare must return a fresh GrpcEncodedMessage for each call; " +
-                "do not cache or reuse encoded messages."
+        if (used) {
+            throw ProtobufEncodingException(
+                "GrpcEncodedMessage.writeTo was called more than once on the same protobuf message. " +
+                    "GrpcMarshaller.prepare must return a fresh GrpcEncodedMessage for each call. " +
+                    "Do not cache or reuse encoded messages."
+            )
         }
         used = true
-        require(writer.remaining == size) {
-            "The writer has ${writer.remaining} bytes remaining, but the protobuf message size is $size"
+        if (writer.remaining != size) {
+            throw ProtobufEncodingException(
+                "The writer has ${writer.remaining} bytes remaining, but the protobuf message size is $size."
+            )
         }
         encode(writer)
     }

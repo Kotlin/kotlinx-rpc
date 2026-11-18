@@ -61,7 +61,8 @@ The protobuf runtime is pure Kotlin on all platforms:
 * On the JVM, `protobuf-lite` doesn't depend on `protobuf-javalite`. On native, it doesn't depend on the protobuf native shim.
 * The encoder writes a lone surrogate in a string as `?` on all platforms.
 * The decoder reads the whole input of a message on all platforms.
-* If a custom `GrpcMessageReader` or `GrpcMessageWriter` reports a wrong `remaining` value, the decode or encode fails with `IllegalStateException`.
+* If a custom `GrpcMessageReader` reports a wrong `remaining` value, decoding fails with `ProtobufDecodingException`.
+* If a custom `GrpcMessageWriter` reports a wrong `remaining` value, encoding fails with `ProtobufEncodingException`.
 
 # 0.11.0-grpc-190
 > Published 17 Sep 2026

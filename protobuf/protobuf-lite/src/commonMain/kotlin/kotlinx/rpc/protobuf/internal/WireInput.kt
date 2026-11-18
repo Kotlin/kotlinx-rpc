@@ -182,7 +182,9 @@ internal class WireInput(private val segments: InputSegments, val size: Int) : A
     }
 
     private fun refill() {
-        check(!closed) { "The WireDecoder is used after its decoding scope ended." }
+        if (closed) {
+            throw ProtobufDecodingException("The WireDecoder is used after its decoding scope ended.")
+        }
         if (position >= limit) throw ProtobufDecodingException.truncatedMessage()
         // Here pos == segmentLength, because position < limit.
         window.detach()

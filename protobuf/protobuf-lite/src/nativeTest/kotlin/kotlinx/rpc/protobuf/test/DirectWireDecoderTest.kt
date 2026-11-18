@@ -12,6 +12,7 @@ import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.encodeToBuffer
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.grpc.marshaller.internal.BufferMessageReader
+import kotlinx.rpc.protobuf.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.decodeFrom
@@ -212,7 +213,7 @@ class DirectWireDecoderTest {
                 escaped = it
                 assertNotNull(it.readTag())
             }
-            assertFailsWith<IllegalStateException> { escaped!!.readTag() }
+            assertFailsWith<ProtobufDecodingException> { escaped!!.readTag() }
         }
         withReader(byteArrayOf()) { reader ->
             reader.close()

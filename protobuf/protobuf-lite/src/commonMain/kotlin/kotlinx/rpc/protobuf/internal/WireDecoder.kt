@@ -26,7 +26,9 @@ public class WireDecoder internal constructor(
 
     /** Returns the next tag, or `null` at the end of the message. */
     public fun readTag(): KTag? {
-        check(!input.isClosed) { "The WireDecoder is used after its decoding scope ended." }
+        if (input.isClosed) {
+            throw ProtobufDecodingException("The WireDecoder is used after its decoding scope ended.")
+        }
         if (input.isAtLimit) {
             return null
         }

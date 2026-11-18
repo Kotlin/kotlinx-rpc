@@ -14,6 +14,7 @@ import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.grpc.marshaller.internal.BufferMessageWriter
+import kotlinx.rpc.protobuf.ProtobufEncodingException
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.encodeTo
 import test.groups.WithGroups
@@ -155,7 +156,7 @@ class DirectWireEncoderTest {
     fun rejectsTooLargeStorage() {
         val writer = HeapMessageWriter(8)
         try {
-            assertFailsWith<IllegalStateException> { encodeTo(writer) { it.writeBool(1, true) } }
+            assertFailsWith<ProtobufEncodingException> { encodeTo(writer) { it.writeBool(1, true) } }
             assertFailsWith<IllegalStateException> { writer.writeByte(0) }
         } finally {
             writer.release()
@@ -166,7 +167,7 @@ class DirectWireEncoderTest {
     fun underfilledEncodingCannotBeCompletedAfterFailure() {
         val writer = HeapMessageWriter(8)
         try {
-            assertFailsWith<IllegalStateException> { encodeTo(writer) { it.writeBool(1, true) } }
+            assertFailsWith<ProtobufEncodingException> { encodeTo(writer) { it.writeBool(1, true) } }
             assertFailsWith<IllegalStateException> { writer.write(ByteArray(6)) }
         } finally {
             writer.release()
@@ -195,9 +196,9 @@ class DirectWireEncoderTest {
                 encoder.writeBool(1, true)
             }
             assertEquals(0, writer.remaining)
-            assertFailsWith<IllegalStateException> { escaped!!.writeBool(2, true) }
-            assertFailsWith<IllegalStateException> { escaped!!.flush() }
-            assertFailsWith<IllegalStateException> { escaped!!.writeRawBytes(Buffer()) }
+            assertFailsWith<ProtobufEncodingException> { escaped!!.writeBool(2, true) }
+            assertFailsWith<ProtobufEncodingException> { escaped!!.flush() }
+            assertFailsWith<ProtobufEncodingException> { escaped!!.writeRawBytes(Buffer()) }
         } finally {
             writer.release()
         }
@@ -216,7 +217,7 @@ class DirectWireEncoderTest {
                 }
             }
             assertEquals(failure, caught)
-            assertFailsWith<IllegalStateException> { escaped!!.writeBool(1, true) }
+            assertFailsWith<ProtobufEncodingException> { escaped!!.writeBool(1, true) }
             assertFailsWith<IllegalStateException> { writer.writeByte(0) }
         } finally {
             writer.release()
