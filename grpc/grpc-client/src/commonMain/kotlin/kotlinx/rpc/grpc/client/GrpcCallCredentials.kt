@@ -15,7 +15,7 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHash
  * Provides per-call authentication credentials for gRPC calls.
  *
  * Call credentials are used to attach authentication information (such as tokens, API keys, or signatures)
- * to individual gRPC calls through metadata headers. Unlike client credentials, which establish
+ * to individual gRPC calls through metadata headers. Unlike transport credentials, which establish
  * the transport security layer (e.g., TLS), call credentials operate at the application layer
  * and can be dynamically generated for each request.
  *

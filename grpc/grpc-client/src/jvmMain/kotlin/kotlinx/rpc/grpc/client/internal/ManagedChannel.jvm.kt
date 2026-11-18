@@ -10,7 +10,6 @@ import io.grpc.ClientCall
 import io.grpc.Grpc
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.GrpcClientBaseConfiguration
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
@@ -88,10 +87,7 @@ internal actual fun ManagedChannelBuilder<*>.buildChannel(config: GrpcClientConf
 }
 
 /**
- * Applies [config] to the builder.
- * When the builder rejects a setting that [config] sets explicitly,
- * the function throws [GrpcUnsupportedSettingException].
- * When the builder rejects a default, the builder has its own value for that setting.
+ * Applies each setting of [config] to the builder with [applySetting].
  *
  * @param explicitOnly When `true`, a size limit or the idle timeout that [config] doesn't set
  * explicitly stays as the builder has it.

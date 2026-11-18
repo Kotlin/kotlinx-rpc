@@ -7,7 +7,6 @@ package kotlinx.rpc.grpc.server.internal
 import io.grpc.Grpc
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
 import kotlinx.rpc.grpc.internal.applySetting
 import kotlinx.rpc.grpc.server.GrpcServerBaseConfiguration
 import kotlinx.rpc.grpc.server.GrpcServerConfiguration
@@ -40,10 +39,7 @@ internal actual fun ServerBuilder<*>.applyConfig(config: GrpcServerConfiguration
 }
 
 /**
- * Applies [config] to the builder.
- * When the builder rejects a setting that [config] sets explicitly,
- * the function throws [GrpcUnsupportedSettingException].
- * When the builder rejects a default, the builder has its own value for that setting.
+ * Applies each setting of [config] to the builder with [applySetting].
  *
  * @param explicitOnly When `true`, a size limit or a connection limit that [config] doesn't set
  * explicitly stays as the builder has it.

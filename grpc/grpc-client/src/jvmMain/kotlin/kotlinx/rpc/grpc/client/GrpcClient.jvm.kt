@@ -35,7 +35,7 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHash
  * - A builder can ignore a setting that it doesn't support. The function doesn't report such a setting.
  *
  * [GrpcClient.shutdown] shuts down the channel.
- * An executor or an event loop group that the caller gave to [builder] stays open.
+ * The client doesn't shut down an executor or an event loop group that the caller gave to [builder].
  */
 public fun GrpcClient(
     builder: io.grpc.ManagedChannelBuilder<*>,
@@ -57,7 +57,7 @@ public fun GrpcClient(
  *
  * The builder already has the transport credentials, so this configuration has only [callCredentials].
  *
- * A setting that the block doesn't set has the value of the builder,
+ * A setting that the configuration block doesn't set has the value of the builder,
  * not the default that the property docs of [GrpcClientBaseConfiguration] give.
  */
 @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
@@ -73,8 +73,11 @@ public class GrpcClientChannelBuilderConfiguration internal constructor() : Grpc
      * Call credentials with [GrpcCallCredentials.requiresTransportSecurity] `true`, which is the default,
      * need a channel that reports the security level `PRIVACY_AND_INTEGRITY`.
      * On another channel, each call fails with `UNAUTHENTICATED`.
-     * A plaintext channel doesn't report this level, and a custom transport reports it only
-     * when its code sets it.
+     * Whether a channel reports this level depends on its transport:
+     *
+     * - TLS or in-process: yes.
+     * - Plaintext: no.
+     * - Custom: only when the code of the transport sets it.
      *
      * ```kotlin
      * val credentials = GrpcTlsClientCredentials { ... } + BearerTokenCredentials(token)
