@@ -1,36 +1,33 @@
-# Updating Golden Test Data
+# Update the golden test data
 
-The test data is in `compiler-plugin/src/commonTest/data`. A change of the plugin can
-change the FIR or IR output, and then the tests fail on the `.fir.txt` and `.ir.txt`
-files. Update them with:
+The test data is in `compiler-plugin/src/commonTest/data`. When a change of the plugin
+changes the FIR or IR output, the tests fail on the `.fir.txt` and `.ir.txt` files.
+Update the files with the script:
 
-```bash
-./scripts/update_test_data.sh <TestRunner> [testMethod]
-```
+| Command | Updates |
+|---|---|
+| `./scripts/update_test_data.sh BoxTest` | All box tests |
+| `./scripts/update_test_data.sh DiagnosticTest` | All diagnostic tests |
+| `./scripts/update_test_data.sh BoxTest mySpecificTest` | One test |
 
-Examples:
-- `./scripts/update_test_data.sh BoxTest` -- update all box test golden files
-- `./scripts/update_test_data.sh DiagnosticTest` -- update all diagnostic test golden files
-- `./scripts/update_test_data.sh BoxTest mySpecificTest` -- update a single test's golden file
+The script runs the tests of all Kotlin versions with the `-PupdateTestData` Gradle
+argument. Don't use `additionalSystemProps` of the Gradle MCP for this. It sets
+properties on the Gradle daemon, not on the test JVM.
 
-The script runs the tests of all Kotlin versions with `-PupdateTestData`. The DevKit sets
-the `kotlin.test.update.test.data` system property of the test JVM from this Gradle
-property.
+After the update, check with `git diff` that the changes are the ones that you expect.
 
-**Important**: The Gradle MCP's `additionalSystemProps` sets properties on the Gradle
-daemon, NOT on the forked test JVM. Pass `-PupdateTestData` as a Gradle argument.
+## Redundant files
 
-## Files for different Kotlin versions
+[Expected outputs for different Kotlin versions](../../../../compiler-plugin/README.md#expected-outputs-for-different-kotlin-versions)
+describes the files with a version in the name, for example `simple.240_dev_2631.ir.txt`.
 
-- `simple.ir.txt` is the output of the highest supported Kotlin version.
-- `simple.240_dev_2631.ir.txt` is the output of the compiler 2.4.0-dev-2631, and of the lower
-  versions down to the next file with a version. `grpc.2321.fir.txt` is the same for Kotlin 2.3.21.
-- A test fails with `No need for a separate dump file` when a file with a version is the
-  same as the file of the next higher version. Delete the file.
+A test fails with `No need for a separate dump file` when such a file is the same as the
+file of the next higher version. The test deletes the file before it fails. On TeamCity,
+the test doesn't delete the file.
 
-The test tasks of the versions run in parallel, so one update run can write a file with a
-version that a higher version makes redundant. Run the tests again without
-`-PupdateTestData` and delete the files that the tests report.
+The test tasks of the Kotlin versions run in parallel, so an update can write such a
+file. After each update:
 
-After the update, review the diffs with `git diff` to confirm that the changes match your
-expectations.
+1. Run the tests without `-PupdateTestData`. Each test that fails with this message
+   deletes its file.
+2. Run the tests again.

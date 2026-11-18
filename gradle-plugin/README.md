@@ -8,11 +8,11 @@ This is the `gradle-plugin` subproject of kotlinx-rpc — an included Gradle bui
 Only run all tests when explicitly asked.
 
 Run the tests from the root build: `:gradle-plugin:test` and `:gradle-plugin:allVersionedFunctionalTests`.
-A build of this directory alone (`-p gradle-plugin`) runs `test` too, but not the functional tests:
-they need the libraries of the root build.
+A standalone build (`-p gradle-plugin`) can run `test`, but not the functional tests,
+because they need the libraries of the root build.
 
-This build includes the `compiler-plugin` build only when it is standalone. In the root build, the root includes it.
-A build that includes this build must include `compiler-plugin` too.
+The standalone build includes the `compiler-plugin` build.
+Another build that includes `gradle-plugin` must include `compiler-plugin` too.
 
 ## What the plugin does
 
@@ -46,12 +46,11 @@ The plugin uses `buf` CLI tool (not `protoc` directly) for code generation:
 
 ### Compiler plugin artifact
 
-The [Kotlin Compiler Plugin DevKit](https://github.com/Kotlin/compiler-plugin-dev-kit) generates the `PluginInfo` object
-with the compiler plugin ID and the artifact coordinates (`pluginDevKit {}` in `build.gradle.kts`).
-`RpcCompilerSupportPlugin` gives them to the Kotlin Gradle plugin.
-
 The compiler plugin is one artifact for all Kotlin versions: `org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin:<library version>`.
-In the root build of this repository, Gradle replaces the artifact with the `compiler-plugin` included build.
+In the root build, Gradle replaces the artifact with the `compiler-plugin` included build.
+
+`pluginDevKit {}` in `build.gradle.kts` generates the `PluginInfo` object with the compiler plugin ID and the artifact coordinates.
+`RpcCompilerSupportPlugin` passes them to the Kotlin Gradle plugin.
 
 ### Generated sources at build time — Do not edit manually
 
@@ -65,14 +64,14 @@ Tests run against multiple Gradle/KGP/AGP version combinations (defined in `Base
 
 ### Functional tests
 
-The tests in `src/functionalTest` check the compiler plugin from the Gradle plugin with each supported Kotlin version.
-Each test project depends on the `kotlinx-rpc-core` library of this repository, and one test runs the generated code.
+The tests in `src/functionalTest` apply the Gradle plugin to a project with each supported Kotlin version.
+The project depends on the `kotlinx-rpc-core` library of this repository. One test runs the generated code.
 
 - `:gradle-plugin:k<version>FunctionalTest` runs one Kotlin version, for example `k2420FunctionalTest` for 2.4.20.
-- The [functional-test-repository](../tests/functional-test-repository/build.gradle.kts) project lists the libraries
+- [functional-test-repository](../tests/functional-test-repository/build.gradle.kts) lists the libraries
 that the root build publishes for the tests.
-- The test that runs the generated code doesn't run on a Kotlin version that can't read the Kotlin standard library
-of the libraries. The compiler reads a standard library that is at most one minor version newer.
+- A compiler can't read a Kotlin standard library that is more than one minor version newer.
+On such a Kotlin version, the test that runs the generated code doesn't run.
 
 ### Test project templates
 

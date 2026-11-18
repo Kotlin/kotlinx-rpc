@@ -123,14 +123,13 @@ Each supported Kotlin and IDE compiler version runs all tests.
 ./scripts/update_test_data.sh BoxTest testName  # update a single test's golden file
 ```
 
-The script passes `-PupdateTestData` to Gradle. The test framework then overwrites
-golden files (`.fir.txt`, `.ir.txt`) with actual output instead of asserting.
+The script passes `-PupdateTestData` to Gradle. The test framework then overwrites the
+golden files (`.fir.txt`, `.ir.txt`) with the actual output and doesn't compare them.
 `compiler-plugin/README.md` describes the golden files for different Kotlin versions.
 
-**Do NOT use the Gradle MCP's `additionalSystemProps`** to pass this property -- that
-sets properties on the Gradle daemon process, not on the forked test JVM, so it has no
-effect. Pass `-PupdateTestData` as a Gradle argument (either via the shell script or
-when using the `running_gradle_tests` skill).
+**Don't use `additionalSystemProps` of the Gradle MCP.** It sets properties on the
+Gradle daemon, not on the test JVM. Pass `-PupdateTestData` as a Gradle argument, with
+the script or with the `running_gradle_tests` skill.
 
 After updating, review diffs with `git diff` to confirm changes match expectations.
 

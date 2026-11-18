@@ -75,22 +75,21 @@
             id(&quot;org.jetbrains.kotlinx.rpc.plugin&quot;) version &quot;%kotlinx-rpc-version%&quot;
         }
         </code-block>
-        Our Gradle plugin will add this dependency to all applicable configurations:
+        Our Gradle plugin adds this dependency to all applicable configurations:
         <code-block>
             org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin:%kotlinx-rpc-version%
         </code-block>
-        This dependency is managed automatically, and should not be used explicitly.
+        The Gradle plugin manages this dependency. Don't declare it in the build script.
         <note>
             <p>
-                Only Gradle resolves the compiler plugin by this name.
-                The JAR is in the artifact with a Kotlin version suffix, for example
+                With Maven, Bazel, or the <code>-Xplugin</code> compiler argument, use the artifact that has the JAR.
+                Its name has a suffix, for example
                 <code>org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-k2420:%kotlinx-rpc-version%</code>.
-                The suffix is the Kotlin version that the release was built with, so it can change with each release.
-                <a href="https://github.com/Kotlin/compiler-plugin-dev-kit/issues/100">This issue</a>
-                of the Kotlin Compiler Plugin DevKit tracks the removal of the suffix.
             </p>
             <p>
-                With Maven, Bazel, or the <code>-Xplugin</code> compiler argument, use the artifact with the suffix.
+                The suffix is the Kotlin version of the release build, so it can change with each release.
+                <a href="https://github.com/Kotlin/compiler-plugin-dev-kit/issues/100">Kotlin/compiler-plugin-dev-kit#100</a>
+                tracks the removal of the suffix.
             </p>
         </note>
     </chapter>

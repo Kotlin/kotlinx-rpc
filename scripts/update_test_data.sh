@@ -21,7 +21,7 @@
 #
 # The test tasks of the Kotlin versions run in parallel, so one run can write a file for a
 # version that a higher version makes redundant. After the update, run
-# ./gradlew :compiler-plugin:allTests and delete the files that the tests report.
+# ./gradlew :compiler-plugin:allTests two times. The first run deletes these files and fails.
 
 set -euo pipefail
 

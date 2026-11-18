@@ -10,7 +10,7 @@ plugins {
     id("conventions-common")
 }
 
-// The DevKit plugin is not in the `plugins` block, because Gradle then generates an accessor for each extension
+// The DevKit plugin isn't in the `plugins` block, because Gradle then generates an accessor for each extension
 // that exists after the plugin is applied. The DevKit plugin applies the `D8Plugin` of the Kotlin Gradle plugin,
 // and `D8Plugin` registers an extension of the type `D8RootExtension`. The Kotlin Gradle plugin 2.5 deprecates
 // this class with the error level, so the accessor doesn't compile.

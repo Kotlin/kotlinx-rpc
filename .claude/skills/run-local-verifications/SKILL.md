@@ -46,7 +46,7 @@ The "Gradle task" column shows the task name to pass to the appropriate Gradle s
 | `gradle.properties` in any module                                                      | Properties sync         | `updateProperties` then check git status                                                  | Keeps all module gradle.properties in sync with root                               |
 | `compiler-plugin/` sources                                                             | Compiler plugin tests   | `:compiler-plugin:allTests` (use `running_gradle_tests`)                                  | Validates codegen and diagnostics on all supported Kotlin versions                 |
 | `compiler-plugin/` sources                                                             | Compiler version compat | Use the `verify-compiler-plugin-compatibility` skill                                      | Ensures all supported Kotlin versions still compile                                |
-| `gradle-plugin/` compiler plugin wiring, `compiler-plugin/` sources                    | Functional tests        | `:gradle-plugin:allVersionedFunctionalTests` from the root build (use `running_gradle_tests`) | Runs generated code with the `core` library on each Kotlin version             |
+| `gradle-plugin/` compiler plugin setup, `compiler-plugin/` sources                     | Functional tests        | `:gradle-plugin:allVersionedFunctionalTests` from the root build (use `running_gradle_tests`) | Runs generated code with the `core` library on each Kotlin version             |
 | `protoc-gen/` sources (any change)                                                     | Protobuf conformance    | `tests:protobuf-conformance:bufGenerateCommonMain` then check git status                  | Codegen changes may affect conformance test output                                 |
 | `protoc-gen/` sources (any change)                                                     | Protobuf unit tests     | `:tests:protobuf-unittest:test` (use `running_gradle_tests`)                           | Validates protobuf codegen correctness                                             |
 | `protoc-gen/` sources (any change)                                                     | Well-Known Types        | `:protobuf:protobuf-wkt:bufGenerateCommonMain` then check git status                      | Codegen changes may affect WKT generated code                                      |
@@ -81,8 +81,8 @@ Examples:
 4. Run `:core:jvmTest` via `running_gradle_tests`
 
 ### "I modified the compiler plugin"
-1. Run `:compiler-plugin:allTests` via `running_gradle_tests`
-2. Run `:gradle-plugin:allVersionedFunctionalTests` via `running_gradle_tests`
+1. Run `:compiler-plugin:allTests` with `running_gradle_tests`
+2. Run `:gradle-plugin:allVersionedFunctionalTests` with `running_gradle_tests`
 3. Use `verify-compiler-plugin-compatibility` skill when a version fails, and for Kotlin Master
 
 ### "I added a new published module"

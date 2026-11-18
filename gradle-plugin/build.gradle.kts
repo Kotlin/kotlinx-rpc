@@ -55,7 +55,7 @@ pluginDevKit {
     // In the root build, Gradle replaces the artifact with the compiler plugin build.
     compilerPlugin("org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin:$version")
 
-    // The DevKit runtime library is not on Maven Central, so the published plugin must not depend on it.
+    // The DevKit runtime library isn't on Maven Central, so the published plugin must not depend on it.
     addRuntimeDependency = false
 
     // The functional tests use the libraries of the root build. See `functionalTestRepository`.
