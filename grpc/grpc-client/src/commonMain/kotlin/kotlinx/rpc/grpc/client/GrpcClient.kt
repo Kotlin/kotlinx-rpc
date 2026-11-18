@@ -160,7 +160,7 @@ public fun GrpcClient(
     configure: GrpcClientConfiguration.() -> Unit = {},
 ): GrpcClient {
     val config = GrpcClientConfiguration().apply(configure)
-    return GrpcClient(ManagedChannelBuilder(hostname, port, config.credentials), config)
+    return GrpcClient(ManagedChannelBuilder(hostname, port, config.credentials?.transportCredentials), config)
 }
 
 private fun GrpcClient(
@@ -168,7 +168,7 @@ private fun GrpcClient(
     config: GrpcClientConfiguration,
 ): GrpcClient {
     val channel = builder.buildChannel(config)
-    val callCredentials = config.credentials?.realCallCredentials ?: GrpcEmptyCallCredentials
+    val callCredentials = config.credentials?.callCredentials ?: GrpcEmptyCallCredentials
     return GrpcClient(
         channel = channel,
         messageMarshallerResolver = config.messageMarshallerResolver,
@@ -179,16 +179,18 @@ private fun GrpcClient(
 }
 
 /**
- * Configuration class for a gRPC client, providing customization options
- * for client behavior, including interceptors, credentials, marshaller resolution,
- * and authority overrides.
+ * The gRPC client settings that every `GrpcClient` factory accepts.
  *
- * @see credentials
- * @see overrideAuthority
- * @see intercept
+ * The credentials aren't among them. Each subclass adds the credentials that its factory accepts.
+ *
+ * The property docs give the defaults of the factory that takes a hostname and a port.
+ * On the JVM, the factory that takes a grpc-java `ManagedChannelBuilder` has other defaults:
+ * a setting that the configuration block doesn't set has the value of the builder.
+ *
+ * @see GrpcClientConfiguration
  */
 @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
-public class GrpcClientConfiguration internal constructor() {
+public open class GrpcClientBaseConfiguration internal constructor() {
     internal val interceptors: MutableList<GrpcClientInterceptor> = mutableListOf()
     internal var keepAlive: KeepAlive? = null
     internal var isMaxInboundMessageSizeExplicitlySet = false
@@ -209,28 +211,6 @@ public class GrpcClientConfiguration internal constructor() {
     public var messageMarshallerResolver: GrpcMarshallerResolver = GrpcEmptyMarshallerResolver
 
     public var marshallerConfig: GrpcMarshallerConfig? = null
-
-    /**
-     * Configures the client credentials used for secure gRPC requests made by the client.
-     *
-     * By default, the client uses default TLS credentials.
-     * To use custom TLS credentials, use the [tls] constructor function which returns a
-     * [GrpcTlsClientCredentials] instance.
-     *
-     * To use plaintext communication, use the [plaintext] constructor function.
-     * Should only be used for testing or for APIs where the use of such API or
-     * the data exchanged is not sensitive.
-     *
-     * ```
-     * GrpcClient("localhost", 50051) {
-     *     credentials = plaintext() // for testing purposes only!
-     * }
-     * ```
-     *
-     * @see tls
-     * @see plaintext
-     */
-    public var credentials: GrpcClientCredentials? = null
 
     /**
      * Overrides the authority used with TLS and HTTP virtual hosting.
@@ -267,8 +247,10 @@ public class GrpcClientConfiguration internal constructor() {
      * The default limit is 4 MiB (4,194,304 bytes).
      * Values can't be negative. A larger message fails the call with `RESOURCE_EXHAUSTED`.
      *
-     * Apple platforms currently don't support this setting, because of a
+     * Apple platforms don't support this setting, because of a
      * [bug in the grpc-swift transport](https://github.com/grpc/grpc-swift-nio-transport/issues/207).
+     * When the configuration block sets it there, the factory throws
+     * [kotlinx.rpc.grpc.GrpcUnsupportedSettingException].
      */
     public var maxInboundMessageSize: Int = 4 * 1024 * 1024
         set(value) {
@@ -350,36 +332,6 @@ public class GrpcClientConfiguration internal constructor() {
     }
 
     /**
-     * Provides insecure client credentials for the gRPC client configuration.
-     *
-     * Typically, this would be used for local development, testing, or other
-     * environments where security is not a concern.
-     *
-     * @return An insecure [GrpcClientCredentials] instance that must be passed to [credentials].
-     */
-    public fun plaintext(): GrpcClientCredentials = GrpcInsecureClientCredentials()
-
-    /**
-     * Configures and creates secure client credentials for the gRPC client.
-     *
-     * This method takes a configuration block in which TLS-related parameters,
-     * such as trust managers and key managers, can be defined. The resulting
-     * credentials are used to establish secure communication between the gRPC client
-     * and server, ensuring encrypted transmission of data and mutual authentication
-     * if configured.
-     *
-     * Alternatively, you can use the [GrpcTlsClientCredentials] constructor.
-     *
-     * @param configure A configuration block that allows setting up the TLS parameters
-     * using the [GrpcTlsClientCredentialsBuilder].
-     * @return A secure [GrpcClientCredentials] instance that must be passed to [credentials].
-     *
-     * @see credentials
-     */
-    public fun tls(configure: GrpcTlsClientCredentialsBuilder.() -> Unit): GrpcClientCredentials =
-        GrpcTlsClientCredentials(configure)
-
-    /**
      * Configures keep-alive settings for the gRPC client.
      *
      * Keep-alive allows you to fine-tune the behavior of the client to ensure the connection
@@ -454,4 +406,82 @@ public class GrpcClientConfiguration internal constructor() {
             }
         public var withoutCalls: Boolean = false
     }
+}
+
+/**
+ * Configuration class for a gRPC client, providing customization options
+ * for client behavior, including interceptors, credentials, marshaller resolution,
+ * and authority overrides.
+ *
+ * @see credentials
+ * @see overrideAuthority
+ * @see intercept
+ */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
+public class GrpcClientConfiguration internal constructor() : GrpcClientBaseConfiguration() {
+    /**
+     * Configures the client credentials used for secure gRPC requests made by the client.
+     *
+     * By default, the client uses default TLS credentials.
+     * To use custom TLS credentials, use the [tls] constructor function which returns a
+     * [GrpcTlsClientCredentials] instance.
+     *
+     * To use plaintext communication, use the [plaintext] constructor function.
+     * Should only be used for testing or for APIs where the use of such API or
+     * the data exchanged is not sensitive.
+     *
+     * ```
+     * GrpcClient("localhost", 50051) {
+     *     credentials = plaintext() // for testing purposes only!
+     * }
+     * ```
+     *
+     * To send call credentials with every call, add them with `+`, or set them alone.
+     * With call credentials alone, the client uses the default TLS credentials for the connection.
+     *
+     * ```
+     * GrpcClient("example.com", 443) {
+     *     credentials = tls { trustManager(rootCertsPem) } + BearerTokenCredentials(token)
+     * }
+     *
+     * GrpcClient("example.com", 443) {
+     *     credentials = BearerTokenCredentials(token)
+     * }
+     * ```
+     *
+     * @see tls
+     * @see plaintext
+     * @see GrpcCallCredentials
+     */
+    public var credentials: GrpcClientCredentials? = null
+
+    /**
+     * Provides insecure client credentials for the gRPC client configuration.
+     *
+     * Typically, this would be used for local development, testing, or other
+     * environments where security is not a concern.
+     *
+     * @return An insecure [GrpcTransportCredentials] instance that must be passed to [credentials].
+     */
+    public fun plaintext(): GrpcTransportCredentials = GrpcInsecureClientCredentials()
+
+    /**
+     * Configures and creates secure client credentials for the gRPC client.
+     *
+     * This method takes a configuration block in which TLS-related parameters,
+     * such as trust managers and key managers, can be defined. The resulting
+     * credentials are used to establish secure communication between the gRPC client
+     * and server, ensuring encrypted transmission of data and mutual authentication
+     * if configured.
+     *
+     * Alternatively, you can use the [GrpcTlsClientCredentials] constructor.
+     *
+     * @param configure A configuration block that allows setting up the TLS parameters
+     * using the [GrpcTlsClientCredentialsBuilder].
+     * @return A secure [GrpcTransportCredentials] instance that must be passed to [credentials].
+     *
+     * @see credentials
+     */
+    public fun tls(configure: GrpcTlsClientCredentialsBuilder.() -> Unit): GrpcTransportCredentials =
+        GrpcTlsClientCredentials(configure)
 }

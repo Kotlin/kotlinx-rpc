@@ -22,9 +22,8 @@ import java.util.concurrent.Executor
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
 
-internal fun GrpcClientCredentials.toJvm(): ChannelCredentials {
+internal fun GrpcTransportCredentials.toJvm(): ChannelCredentials {
     return when (this) {
-        is GrpcCombinedClientCredentials -> clientCredentials.toJvm()
         is GrpcInsecureClientCredentials -> InsecureChannelCredentials.create()
         is GrpcTlsClientCredentials -> JvmTlsCLientCredentialBuilder().apply(configure).build()
         else -> internalError("Unknown client credentials type: $this")

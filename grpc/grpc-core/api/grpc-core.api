@@ -94,6 +94,11 @@ public final class kotlinx/rpc/grpc/GrpcStatus_jvmKt {
 	public static final fun getStatusCode (Lio/grpc/Status;)Lkotlinx/rpc/grpc/GrpcStatusCode;
 }
 
+public final class kotlinx/rpc/grpc/GrpcUnsupportedSettingException : java/lang/UnsupportedOperationException {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
 public abstract interface annotation class kotlinx/rpc/grpc/annotations/Grpc : java/lang/annotation/Annotation {
 	public abstract fun protoPackage ()Ljava/lang/String;
 	public abstract fun protoServiceName ()Ljava/lang/String;

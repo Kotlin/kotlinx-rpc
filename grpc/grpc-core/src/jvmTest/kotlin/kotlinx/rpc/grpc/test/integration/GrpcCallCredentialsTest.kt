@@ -65,6 +65,18 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
     }
 
     @Test
+    fun `test call credentials alone on a plaintext server - should fail because the client uses TLS`() {
+        assertGrpcFailure(GrpcStatusCode.UNAVAILABLE) {
+            runGrpcTest(
+                clientConfiguration = {
+                    credentials = NoTLSBearerTokenCredentials()
+                },
+                test = ::unaryCall
+            )
+        }
+    }
+
+    @Test
     fun `test combine multiple call credentials - should succeed`() {
         var grpcMetadata: GrpcMetadata? = null
         val callCreds = (NoTLSBearerTokenCredentials("token-1") + NoTLSBearerTokenCredentials("token-2"))

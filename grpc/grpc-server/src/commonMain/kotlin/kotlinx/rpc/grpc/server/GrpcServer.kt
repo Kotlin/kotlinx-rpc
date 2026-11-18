@@ -134,10 +134,20 @@ public fun GrpcServer(
     configure: GrpcServerConfiguration.() -> Unit = {},
 ): GrpcServer {
     val config = GrpcServerConfiguration().apply(configure)
-    val serverBuilder = ServerBuilder(port, config.credentials).apply {
-        config.fallbackHandlerRegistry?.let { fallbackHandlerRegistry(it) }
-        applyConfig(config)
-    }
+    val serverBuilder = ServerBuilder(port, config.credentials).applyConfig(config)
+
+    return buildGrpcServer(serverBuilder, config, parentContext)
+}
+
+/**
+ * Builds the server from [serverBuilder], which already has the transport settings of [config].
+ */
+internal fun buildGrpcServer(
+    serverBuilder: ServerBuilder<*>,
+    config: GrpcServerBaseConfiguration,
+    parentContext: CoroutineContext,
+): GrpcServer {
+    config.fallbackHandlerRegistry?.let { serverBuilder.fallbackHandlerRegistry(it) }
 
     return GrpcServerImpl(
         serverBuilder = serverBuilder,
@@ -151,28 +161,30 @@ public fun GrpcServer(
 }
 
 /**
- * A configuration class for setting up a gRPC server.
+ * The gRPC server settings that every `GrpcServer` factory accepts.
  *
- * This class provides an API to configure various server parameters, such as message marshallers,
- * security credentials, server-side interceptors, and service registration.
+ * The credentials aren't among them. [GrpcServerConfiguration] adds them.
+ *
+ * The property docs give the defaults of the factory that takes a port.
+ * On the JVM, the factory that takes a grpc-java `ServerBuilder` has other defaults:
+ * a setting that the configuration block doesn't set has the value of the builder.
+ *
+ * On the JVM, a custom `io.grpc.ServerProvider` can give the factory that takes a port
+ * a builder without support for a setting.
+ * A setting that the configuration block doesn't set then has the value of that builder, not the default.
+ *
+ * @see GrpcServerConfiguration
  */
 @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
-public class GrpcServerConfiguration internal constructor() {
+public open class GrpcServerBaseConfiguration internal constructor() {
     internal val interceptors: MutableList<GrpcServerInterceptor> = mutableListOf()
     internal var serviceBuilder: RpcServer.() -> Unit = { }
     internal var keepAlive: KeepAlive? = null
-
-    /**
-     * Sets the credentials to be used by the gRPC server for secure communication.
-     *
-     * By default, the server does not have any credentials configured and the communication is plaintext.
-     * To set up transport-layer security provide a [GrpcTlsServerCredentials] by constructing it with the
-     * [tls] function.
-     *
-     * @see GrpcTlsServerCredentials
-     * @see tls
-     */
-    public var credentials: GrpcServerCredentials? = null
+    internal var isMaxInboundMessageSizeExplicitlySet = false
+    internal var isMaxInboundMetadataSizeExplicitlySet = false
+    internal var isMaxConnectionIdleExplicitlySet = false
+    internal var isMaxConnectionAgeExplicitlySet = false
+    internal var isMaxConnectionAgeGraceExplicitlySet = false
 
     /**
      * Sets a custom [GrpcMarshallerResolver] to be used by the gRPC server for resolving the appropriate
@@ -195,8 +207,17 @@ public class GrpcServerConfiguration internal constructor() {
     public var maxInboundMessageSize: Int = 4 * 1024 * 1024
         set(value) {
             require(value >= 0) { "maxInboundMessageSize must be >= 0" }
+            isMaxInboundMessageSizeExplicitlySet = true
             field = value
         }
+
+    /**
+     * Restores the default value of [maxInboundMessageSize].
+     */
+    public fun clearMaxInboundMessageSize() {
+        maxInboundMessageSize = 4 * 1024 * 1024
+        isMaxInboundMessageSizeExplicitlySet = false
+    }
 
     /**
      * The maximum size, in bytes, of inbound metadata.
@@ -207,8 +228,17 @@ public class GrpcServerConfiguration internal constructor() {
     public var maxInboundMetadataSize: Int = 8 * 1024
         set(value) {
             require(value > 0) { "maxInboundMetadataSize must be > 0" }
+            isMaxInboundMetadataSizeExplicitlySet = true
             field = value
         }
+
+    /**
+     * Restores the default value of [maxInboundMetadataSize].
+     */
+    public fun clearMaxInboundMetadataSize() {
+        maxInboundMetadataSize = 8 * 1024
+        isMaxInboundMetadataSizeExplicitlySet = false
+    }
 
     /**
      * *Sets the maximum connection idle time.
@@ -223,8 +253,17 @@ public class GrpcServerConfiguration internal constructor() {
     public var maxConnectionIdle: Duration = Duration.INFINITE
         set(value) {
             value.validateConnectionDuration("maxConnectionIdle", 1.seconds)
+            isMaxConnectionIdleExplicitlySet = true
             field = value
         }
+
+    /**
+     * Restores the default value of [maxConnectionIdle].
+     */
+    public fun clearMaxConnectionIdle() {
+        maxConnectionIdle = Duration.INFINITE
+        isMaxConnectionIdleExplicitlySet = false
+    }
 
     /**
      * Sets the maximum connection age. When a connection reaches this age, the server begins to close it gracefully.
@@ -238,8 +277,17 @@ public class GrpcServerConfiguration internal constructor() {
     public var maxConnectionAge: Duration = Duration.INFINITE
         set(value) {
             value.validateConnectionDuration("maxConnectionAge", 1.seconds)
+            isMaxConnectionAgeExplicitlySet = true
             field = value
         }
+
+    /**
+     * Restores the default value of [maxConnectionAge].
+     */
+    public fun clearMaxConnectionAge() {
+        maxConnectionAge = Duration.INFINITE
+        isMaxConnectionAgeExplicitlySet = false
+    }
 
     /**
      * Sets the grace time for the graceful connection termination.
@@ -255,8 +303,17 @@ public class GrpcServerConfiguration internal constructor() {
     public var maxConnectionAgeGrace: Duration = Duration.INFINITE
         set(value) {
             value.validateConnectionDuration("maxConnectionAgeGrace", Duration.ZERO)
+            isMaxConnectionAgeGraceExplicitlySet = true
             field = value
         }
+
+    /**
+     * Restores the default value of [maxConnectionAgeGrace].
+     */
+    public fun clearMaxConnectionAgeGrace() {
+        maxConnectionAgeGrace = Duration.INFINITE
+        isMaxConnectionAgeGraceExplicitlySet = false
+    }
 
     /**
      * Sets a custom [GrpcHandlerRegistry] to be used by the gRPC server for resolving service implementations
@@ -308,6 +365,26 @@ public class GrpcServerConfiguration internal constructor() {
     }
 
     /**
+     * Configures the gRPC server to register services.
+     *
+     * This method allows defining a block of logic to configure an [RpcServer] instance,
+     * where multiple services can be registered:
+     * ```kt
+     * GrpcServer(port) {
+     *     services {
+     *         registerService<MyService> { MyServiceImpl() }
+     *         registerService<MyOtherService> { MyOtherServiceImpl() }
+     *     }
+     * }
+     * ```
+     *
+     * @param block A lambda with [RpcServer] as its receiver, allowing service registration.
+     */
+    public fun services(block: RpcServer.() -> Unit) {
+        serviceBuilder = block
+    }
+
+    /**
      * Server-side keepalive settings.
      *
      * @property time The time without read activity after which the server sends a keepalive ping.
@@ -330,26 +407,27 @@ public class GrpcServerConfiguration internal constructor() {
                 field = value
             }
     }
+}
 
+/**
+ * A configuration class for setting up a gRPC server.
+ *
+ * This class provides an API to configure various server parameters, such as message marshallers,
+ * security credentials, server-side interceptors, and service registration.
+ */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
+public class GrpcServerConfiguration internal constructor() : GrpcServerBaseConfiguration() {
     /**
-     * Configures the gRPC server to register services.
+     * Sets the credentials to be used by the gRPC server for secure communication.
      *
-     * This method allows defining a block of logic to configure an [RpcServer] instance,
-     * where multiple services can be registered:
-     * ```kt
-     * GrpcServer(port) {
-     *     services {
-     *         registerService<MyService> { MyServiceImpl() }
-     *         registerService<MyOtherService> { MyOtherServiceImpl() }
-     *     }
-     * }
-     * ```
+     * By default, the server does not have any credentials configured and the communication is plaintext.
+     * To set up transport-layer security provide a [GrpcTlsServerCredentials] by constructing it with the
+     * [tls] function.
      *
-     * @param block A lambda with [RpcServer] as its receiver, allowing service registration.
+     * @see GrpcTlsServerCredentials
+     * @see tls
      */
-    public fun services(block: RpcServer.() -> Unit) {
-        serviceBuilder = block
-    }
+    public var credentials: GrpcServerCredentials? = null
 
     /**
      * Configures and creates TLS (Transport Layer Security) credentials for the gRPC server.

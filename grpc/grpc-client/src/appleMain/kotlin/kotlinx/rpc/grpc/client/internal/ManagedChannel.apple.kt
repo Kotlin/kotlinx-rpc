@@ -20,13 +20,13 @@ import kotlinx.cinterop.value
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.rpc.grpc.GrpcMetadata
+import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
-import kotlinx.rpc.grpc.client.GrpcClientCredentials
+import kotlinx.rpc.grpc.client.GrpcTransportCredentials
 import kotlinx.rpc.grpc.client.GrpcInsecureClientCredentials
 import kotlinx.rpc.grpc.client.GrpcTlsClientCredentials
 import kotlinx.rpc.grpc.client.GrpcTlsClientCredentialsBuilder
-import kotlinx.rpc.grpc.client.realClientCredentials
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.internal.KOTLINX_RPC_VERSION
@@ -133,17 +133,18 @@ public actual abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>>
 private class SwiftManagedChannelBuilder(
     private val hostname: String,
     private val port: Int,
-    private val credentials: GrpcClientCredentials?,
+    private val credentials: GrpcTransportCredentials?,
 ) : ManagedChannelBuilder<SwiftManagedChannelBuilder>() {
     @OptIn(UnsafeNumber::class)
     fun buildChannel(config: GrpcClientConfiguration): SwiftManagedChannel {
         if (config.isMaxInboundMessageSizeExplicitlySet) {
-            error(
-                "maxInboundMessageSize is not supported by the grpc-swift transport. " +
+            throw GrpcUnsupportedSettingException(
+                "The grpc-swift transport doesn't support `maxInboundMessageSize`. " +
+                    "Remove `maxInboundMessageSize` from the configuration block. " +
                     "See https://github.com/grpc/grpc-swift-nio-transport/issues/207"
             )
         }
-        val clientCredentials = (credentials ?: GrpcTlsClientCredentials()).realClientCredentials
+        val clientCredentials = credentials ?: GrpcTlsClientCredentials()
         val plaintext = when (clientCredentials) {
             is GrpcInsecureClientCredentials -> true
             is GrpcTlsClientCredentials -> {
@@ -239,7 +240,7 @@ private object UnsupportedSwiftTlsClientCredentialsBuilder : GrpcTlsClientCreden
 public actual fun ManagedChannelBuilder(
     hostname: String,
     port: Int,
-    credentials: GrpcClientCredentials?,
+    credentials: GrpcTransportCredentials?,
 ): ManagedChannelBuilder<*> {
     require(hostname.isNotBlank()) { "gRPC hostname must not be blank" }
     require(port in 1..65535) { "gRPC target port must be in 1..65535, but was '$port'" }
