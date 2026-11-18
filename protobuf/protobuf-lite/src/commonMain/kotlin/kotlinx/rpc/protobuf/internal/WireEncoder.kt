@@ -114,8 +114,8 @@ public class WireEncoder internal constructor(private val output: WireOutput) {
         output.writeStringLengthDelimited(value)
     }
 
-    public fun writePackedBool(fieldNr: Int, value: List<Boolean>, fieldSize: Int) {
-        writePackedHeader(fieldNr, fieldSize)
+    public fun writePackedBool(fieldNr: Int, value: List<Boolean>) {
+        writePackedHeader(fieldNr, value.size)
         value.forEach { output.writeByte(it.asWireByte) }
     }
 

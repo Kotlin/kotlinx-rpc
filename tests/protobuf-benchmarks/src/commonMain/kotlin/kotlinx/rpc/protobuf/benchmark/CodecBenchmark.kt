@@ -21,7 +21,7 @@ import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 // JMH subclasses each state class, so the classes are open.
 @State(Scope.Benchmark)
 open class CodecBenchmark {
-    @Param(SCALARS, UNKNOWN_FIELDS, STRINGS, BLOB, PACKED, TREE, LARGE)
+    @Param(SCALARS, UNKNOWN_FIELDS, STRINGS, BLOB, PACKED, PACKED_BOOLS, TREE, LARGE)
     var case: String = ""
 
     private lateinit var benchmarkCase: BenchmarkCase<*>

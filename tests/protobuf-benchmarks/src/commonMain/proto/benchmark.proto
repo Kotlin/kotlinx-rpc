@@ -40,6 +40,11 @@ message Packed {
   repeated double doubles = 4;
 }
 
+message PackedBools {
+  repeated bool flags = 1;
+  repeated bool moreFlags = 2;
+}
+
 message Tree {
   string name = 1;
   int32 depth = 2;

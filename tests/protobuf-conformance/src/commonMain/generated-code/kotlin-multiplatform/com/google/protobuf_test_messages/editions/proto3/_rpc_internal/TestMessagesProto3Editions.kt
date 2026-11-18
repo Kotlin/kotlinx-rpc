@@ -189,16 +189,22 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
 
     internal val __repeatedInt32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
     override var repeatedInt32: List<Int> by __repeatedInt32Delegate
+    internal var __repeatedInt32PackedSize: Int = -1
     internal val __repeatedInt64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
     override var repeatedInt64: List<Long> by __repeatedInt64Delegate
+    internal var __repeatedInt64PackedSize: Int = -1
     internal val __repeatedUint32Delegate: MsgFieldDelegate<List<UInt>> = MsgFieldDelegate { emptyList() }
     override var repeatedUint32: List<UInt> by __repeatedUint32Delegate
+    internal var __repeatedUint32PackedSize: Int = -1
     internal val __repeatedUint64Delegate: MsgFieldDelegate<List<ULong>> = MsgFieldDelegate { emptyList() }
     override var repeatedUint64: List<ULong> by __repeatedUint64Delegate
+    internal var __repeatedUint64PackedSize: Int = -1
     internal val __repeatedSint32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
     override var repeatedSint32: List<Int> by __repeatedSint32Delegate
+    internal var __repeatedSint32PackedSize: Int = -1
     internal val __repeatedSint64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
     override var repeatedSint64: List<Long> by __repeatedSint64Delegate
+    internal var __repeatedSint64PackedSize: Int = -1
     internal val __repeatedFixed32Delegate: MsgFieldDelegate<List<UInt>> = MsgFieldDelegate { emptyList() }
     override var repeatedFixed32: List<UInt> by __repeatedFixed32Delegate
     internal val __repeatedFixed64Delegate: MsgFieldDelegate<List<ULong>> = MsgFieldDelegate { emptyList() }
@@ -223,24 +229,32 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     override var repeatedForeignMessage: List<ForeignMessage> by __repeatedForeignMessageDelegate
     internal val __repeatedNestedEnumDelegate: MsgFieldDelegate<List<TestAllTypesProto3.NestedEnum>> = MsgFieldDelegate { emptyList() }
     override var repeatedNestedEnum: List<TestAllTypesProto3.NestedEnum> by __repeatedNestedEnumDelegate
+    internal var __repeatedNestedEnumPackedSize: Int = -1
     internal val __repeatedForeignEnumDelegate: MsgFieldDelegate<List<ForeignEnum>> = MsgFieldDelegate { emptyList() }
     override var repeatedForeignEnum: List<ForeignEnum> by __repeatedForeignEnumDelegate
+    internal var __repeatedForeignEnumPackedSize: Int = -1
     internal val __repeatedStringPieceDelegate: MsgFieldDelegate<List<String>> = MsgFieldDelegate { emptyList() }
     override var repeatedStringPiece: List<String> by __repeatedStringPieceDelegate
     internal val __repeatedCordDelegate: MsgFieldDelegate<List<String>> = MsgFieldDelegate { emptyList() }
     override var repeatedCord: List<String> by __repeatedCordDelegate
     internal val __packedInt32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
     override var packedInt32: List<Int> by __packedInt32Delegate
+    internal var __packedInt32PackedSize: Int = -1
     internal val __packedInt64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
     override var packedInt64: List<Long> by __packedInt64Delegate
+    internal var __packedInt64PackedSize: Int = -1
     internal val __packedUint32Delegate: MsgFieldDelegate<List<UInt>> = MsgFieldDelegate { emptyList() }
     override var packedUint32: List<UInt> by __packedUint32Delegate
+    internal var __packedUint32PackedSize: Int = -1
     internal val __packedUint64Delegate: MsgFieldDelegate<List<ULong>> = MsgFieldDelegate { emptyList() }
     override var packedUint64: List<ULong> by __packedUint64Delegate
+    internal var __packedUint64PackedSize: Int = -1
     internal val __packedSint32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
     override var packedSint32: List<Int> by __packedSint32Delegate
+    internal var __packedSint32PackedSize: Int = -1
     internal val __packedSint64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
     override var packedSint64: List<Long> by __packedSint64Delegate
+    internal var __packedSint64PackedSize: Int = -1
     internal val __packedFixed32Delegate: MsgFieldDelegate<List<UInt>> = MsgFieldDelegate { emptyList() }
     override var packedFixed32: List<UInt> by __packedFixed32Delegate
     internal val __packedFixed64Delegate: MsgFieldDelegate<List<ULong>> = MsgFieldDelegate { emptyList() }
@@ -257,6 +271,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     override var packedBool: List<Boolean> by __packedBoolDelegate
     internal val __packedNestedEnumDelegate: MsgFieldDelegate<List<TestAllTypesProto3.NestedEnum>> = MsgFieldDelegate { emptyList() }
     override var packedNestedEnum: List<TestAllTypesProto3.NestedEnum> by __packedNestedEnumDelegate
+    internal var __packedNestedEnumPackedSize: Int = -1
     internal val __unpackedInt32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
     override var unpackedInt32: List<Int> by __unpackedInt32Delegate
     internal val __unpackedInt64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
@@ -3287,27 +3302,33 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
     }
 
     if (this.repeatedInt32.isNotEmpty()) {
-        encoder.writePackedInt32(fieldNr = 31, value = this.repeatedInt32, fieldSize = WireSize.packedInt32(this.repeatedInt32))
+        if (__repeatedInt32PackedSize < 0) { __repeatedInt32PackedSize = WireSize.packedInt32(this.repeatedInt32) }
+        encoder.writePackedInt32(fieldNr = 31, value = this.repeatedInt32, fieldSize = __repeatedInt32PackedSize)
     }
 
     if (this.repeatedInt64.isNotEmpty()) {
-        encoder.writePackedInt64(fieldNr = 32, value = this.repeatedInt64, fieldSize = WireSize.packedInt64(this.repeatedInt64))
+        if (__repeatedInt64PackedSize < 0) { __repeatedInt64PackedSize = WireSize.packedInt64(this.repeatedInt64) }
+        encoder.writePackedInt64(fieldNr = 32, value = this.repeatedInt64, fieldSize = __repeatedInt64PackedSize)
     }
 
     if (this.repeatedUint32.isNotEmpty()) {
-        encoder.writePackedUInt32(fieldNr = 33, value = this.repeatedUint32, fieldSize = WireSize.packedUInt32(this.repeatedUint32))
+        if (__repeatedUint32PackedSize < 0) { __repeatedUint32PackedSize = WireSize.packedUInt32(this.repeatedUint32) }
+        encoder.writePackedUInt32(fieldNr = 33, value = this.repeatedUint32, fieldSize = __repeatedUint32PackedSize)
     }
 
     if (this.repeatedUint64.isNotEmpty()) {
-        encoder.writePackedUInt64(fieldNr = 34, value = this.repeatedUint64, fieldSize = WireSize.packedUInt64(this.repeatedUint64))
+        if (__repeatedUint64PackedSize < 0) { __repeatedUint64PackedSize = WireSize.packedUInt64(this.repeatedUint64) }
+        encoder.writePackedUInt64(fieldNr = 34, value = this.repeatedUint64, fieldSize = __repeatedUint64PackedSize)
     }
 
     if (this.repeatedSint32.isNotEmpty()) {
-        encoder.writePackedSInt32(fieldNr = 35, value = this.repeatedSint32, fieldSize = WireSize.packedSInt32(this.repeatedSint32))
+        if (__repeatedSint32PackedSize < 0) { __repeatedSint32PackedSize = WireSize.packedSInt32(this.repeatedSint32) }
+        encoder.writePackedSInt32(fieldNr = 35, value = this.repeatedSint32, fieldSize = __repeatedSint32PackedSize)
     }
 
     if (this.repeatedSint64.isNotEmpty()) {
-        encoder.writePackedSInt64(fieldNr = 36, value = this.repeatedSint64, fieldSize = WireSize.packedSInt64(this.repeatedSint64))
+        if (__repeatedSint64PackedSize < 0) { __repeatedSint64PackedSize = WireSize.packedSInt64(this.repeatedSint64) }
+        encoder.writePackedSInt64(fieldNr = 36, value = this.repeatedSint64, fieldSize = __repeatedSint64PackedSize)
     }
 
     if (this.repeatedFixed32.isNotEmpty()) {
@@ -3335,7 +3356,7 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
     }
 
     if (this.repeatedBool.isNotEmpty()) {
-        encoder.writePackedBool(fieldNr = 43, value = this.repeatedBool, fieldSize = WireSize.packedBool(this.repeatedBool))
+        encoder.writePackedBool(fieldNr = 43, value = this.repeatedBool)
     }
 
     if (this.repeatedString.isNotEmpty()) {
@@ -3363,11 +3384,13 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
     }
 
     if (this.repeatedNestedEnum.isNotEmpty()) {
-        encoder.writePackedEnum(fieldNr = 51, value = this.repeatedNestedEnum.map { it.number }, fieldSize = WireSize.packedEnum(this.repeatedNestedEnum.map { it.number }))
+        if (__repeatedNestedEnumPackedSize < 0) { __repeatedNestedEnumPackedSize = WireSize.packedEnum(this.repeatedNestedEnum.map { it.number }) }
+        encoder.writePackedEnum(fieldNr = 51, value = this.repeatedNestedEnum.map { it.number }, fieldSize = __repeatedNestedEnumPackedSize)
     }
 
     if (this.repeatedForeignEnum.isNotEmpty()) {
-        encoder.writePackedEnum(fieldNr = 52, value = this.repeatedForeignEnum.map { it.number }, fieldSize = WireSize.packedEnum(this.repeatedForeignEnum.map { it.number }))
+        if (__repeatedForeignEnumPackedSize < 0) { __repeatedForeignEnumPackedSize = WireSize.packedEnum(this.repeatedForeignEnum.map { it.number }) }
+        encoder.writePackedEnum(fieldNr = 52, value = this.repeatedForeignEnum.map { it.number }, fieldSize = __repeatedForeignEnumPackedSize)
     }
 
     if (this.repeatedStringPiece.isNotEmpty()) {
@@ -3383,27 +3406,33 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
     }
 
     if (this.packedInt32.isNotEmpty()) {
-        encoder.writePackedInt32(fieldNr = 75, value = this.packedInt32, fieldSize = WireSize.packedInt32(this.packedInt32))
+        if (__packedInt32PackedSize < 0) { __packedInt32PackedSize = WireSize.packedInt32(this.packedInt32) }
+        encoder.writePackedInt32(fieldNr = 75, value = this.packedInt32, fieldSize = __packedInt32PackedSize)
     }
 
     if (this.packedInt64.isNotEmpty()) {
-        encoder.writePackedInt64(fieldNr = 76, value = this.packedInt64, fieldSize = WireSize.packedInt64(this.packedInt64))
+        if (__packedInt64PackedSize < 0) { __packedInt64PackedSize = WireSize.packedInt64(this.packedInt64) }
+        encoder.writePackedInt64(fieldNr = 76, value = this.packedInt64, fieldSize = __packedInt64PackedSize)
     }
 
     if (this.packedUint32.isNotEmpty()) {
-        encoder.writePackedUInt32(fieldNr = 77, value = this.packedUint32, fieldSize = WireSize.packedUInt32(this.packedUint32))
+        if (__packedUint32PackedSize < 0) { __packedUint32PackedSize = WireSize.packedUInt32(this.packedUint32) }
+        encoder.writePackedUInt32(fieldNr = 77, value = this.packedUint32, fieldSize = __packedUint32PackedSize)
     }
 
     if (this.packedUint64.isNotEmpty()) {
-        encoder.writePackedUInt64(fieldNr = 78, value = this.packedUint64, fieldSize = WireSize.packedUInt64(this.packedUint64))
+        if (__packedUint64PackedSize < 0) { __packedUint64PackedSize = WireSize.packedUInt64(this.packedUint64) }
+        encoder.writePackedUInt64(fieldNr = 78, value = this.packedUint64, fieldSize = __packedUint64PackedSize)
     }
 
     if (this.packedSint32.isNotEmpty()) {
-        encoder.writePackedSInt32(fieldNr = 79, value = this.packedSint32, fieldSize = WireSize.packedSInt32(this.packedSint32))
+        if (__packedSint32PackedSize < 0) { __packedSint32PackedSize = WireSize.packedSInt32(this.packedSint32) }
+        encoder.writePackedSInt32(fieldNr = 79, value = this.packedSint32, fieldSize = __packedSint32PackedSize)
     }
 
     if (this.packedSint64.isNotEmpty()) {
-        encoder.writePackedSInt64(fieldNr = 80, value = this.packedSint64, fieldSize = WireSize.packedSInt64(this.packedSint64))
+        if (__packedSint64PackedSize < 0) { __packedSint64PackedSize = WireSize.packedSInt64(this.packedSint64) }
+        encoder.writePackedSInt64(fieldNr = 80, value = this.packedSint64, fieldSize = __packedSint64PackedSize)
     }
 
     if (this.packedFixed32.isNotEmpty()) {
@@ -3431,11 +3460,12 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
     }
 
     if (this.packedBool.isNotEmpty()) {
-        encoder.writePackedBool(fieldNr = 87, value = this.packedBool, fieldSize = WireSize.packedBool(this.packedBool))
+        encoder.writePackedBool(fieldNr = 87, value = this.packedBool)
     }
 
     if (this.packedNestedEnum.isNotEmpty()) {
-        encoder.writePackedEnum(fieldNr = 88, value = this.packedNestedEnum.map { it.number }, fieldSize = WireSize.packedEnum(this.packedNestedEnum.map { it.number }))
+        if (__packedNestedEnumPackedSize < 0) { __packedNestedEnumPackedSize = WireSize.packedEnum(this.packedNestedEnum.map { it.number }) }
+        encoder.writePackedEnum(fieldNr = 88, value = this.packedNestedEnum.map { it.number }, fieldSize = __packedNestedEnumPackedSize)
     }
 
     if (this.unpackedInt32.isNotEmpty()) {
@@ -4128,7 +4158,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.REPEATED_INT32_PACKED -> {
                 val target = msg.__repeatedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedInt32())
+                decoder.readPackedInt32(target)
             }
             TestAllTypesProto3InternalTags.REPEATED_INT32 -> {
                 val target = msg.__repeatedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4137,7 +4167,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.REPEATED_INT64_PACKED -> {
                 val target = msg.__repeatedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedInt64())
+                decoder.readPackedInt64(target)
             }
             TestAllTypesProto3InternalTags.REPEATED_INT64 -> {
                 val target = msg.__repeatedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4146,7 +4176,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.REPEATED_UINT32_PACKED -> {
                 val target = msg.__repeatedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedUInt32())
+                decoder.readPackedUInt32(target)
             }
             TestAllTypesProto3InternalTags.REPEATED_UINT32 -> {
                 val target = msg.__repeatedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4155,7 +4185,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.REPEATED_UINT64_PACKED -> {
                 val target = msg.__repeatedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedUInt64())
+                decoder.readPackedUInt64(target)
             }
             TestAllTypesProto3InternalTags.REPEATED_UINT64 -> {
                 val target = msg.__repeatedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4164,7 +4194,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.REPEATED_SINT32_PACKED -> {
                 val target = msg.__repeatedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSInt32())
+                decoder.readPackedSInt32(target)
             }
             TestAllTypesProto3InternalTags.REPEATED_SINT32 -> {
                 val target = msg.__repeatedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4173,7 +4203,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.REPEATED_SINT64_PACKED -> {
                 val target = msg.__repeatedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSInt64())
+                decoder.readPackedSInt64(target)
             }
             TestAllTypesProto3InternalTags.REPEATED_SINT64 -> {
                 val target = msg.__repeatedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4182,7 +4212,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.REPEATED_FIXED32_PACKED -> {
                 val target = msg.__repeatedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedFixed32())
+                decoder.readPackedFixed32(target)
             }
             TestAllTypesProto3InternalTags.REPEATED_FIXED32 -> {
                 val target = msg.__repeatedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4191,7 +4221,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.REPEATED_FIXED64_PACKED -> {
                 val target = msg.__repeatedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedFixed64())
+                decoder.readPackedFixed64(target)
             }
             TestAllTypesProto3InternalTags.REPEATED_FIXED64 -> {
                 val target = msg.__repeatedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4200,7 +4230,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.REPEATED_SFIXED32_PACKED -> {
                 val target = msg.__repeatedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSFixed32())
+                decoder.readPackedSFixed32(target)
             }
             TestAllTypesProto3InternalTags.REPEATED_SFIXED32 -> {
                 val target = msg.__repeatedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4209,7 +4239,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.REPEATED_SFIXED64_PACKED -> {
                 val target = msg.__repeatedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSFixed64())
+                decoder.readPackedSFixed64(target)
             }
             TestAllTypesProto3InternalTags.REPEATED_SFIXED64 -> {
                 val target = msg.__repeatedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4218,7 +4248,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.REPEATED_FLOAT_PACKED -> {
                 val target = msg.__repeatedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedFloat())
+                decoder.readPackedFloat(target)
             }
             TestAllTypesProto3InternalTags.REPEATED_FLOAT -> {
                 val target = msg.__repeatedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4227,7 +4257,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.REPEATED_DOUBLE_PACKED -> {
                 val target = msg.__repeatedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedDouble())
+                decoder.readPackedDouble(target)
             }
             TestAllTypesProto3InternalTags.REPEATED_DOUBLE -> {
                 val target = msg.__repeatedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4236,7 +4266,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.REPEATED_BOOL_PACKED -> {
                 val target = msg.__repeatedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedBool())
+                decoder.readPackedBool(target)
             }
             TestAllTypesProto3InternalTags.REPEATED_BOOL -> {
                 val target = msg.__repeatedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4267,7 +4297,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.REPEATED_NESTED_ENUM_PACKED -> {
                 val target = msg.__repeatedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedEnum().map { TestAllTypesProto3.NestedEnum.fromNumber(it) })
+                decoder.readPackedEnum(target) { TestAllTypesProto3.NestedEnum.fromNumber(it) }
             }
             TestAllTypesProto3InternalTags.REPEATED_NESTED_ENUM -> {
                 val target = msg.__repeatedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4276,7 +4306,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.REPEATED_FOREIGN_ENUM_PACKED -> {
                 val target = msg.__repeatedForeignEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedEnum().map { ForeignEnum.fromNumber(it) })
+                decoder.readPackedEnum(target) { ForeignEnum.fromNumber(it) }
             }
             TestAllTypesProto3InternalTags.REPEATED_FOREIGN_ENUM -> {
                 val target = msg.__repeatedForeignEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4295,7 +4325,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.PACKED_INT32_PACKED -> {
                 val target = msg.__packedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedInt32())
+                decoder.readPackedInt32(target)
             }
             TestAllTypesProto3InternalTags.PACKED_INT32 -> {
                 val target = msg.__packedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4304,7 +4334,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.PACKED_INT64_PACKED -> {
                 val target = msg.__packedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedInt64())
+                decoder.readPackedInt64(target)
             }
             TestAllTypesProto3InternalTags.PACKED_INT64 -> {
                 val target = msg.__packedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4313,7 +4343,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.PACKED_UINT32_PACKED -> {
                 val target = msg.__packedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedUInt32())
+                decoder.readPackedUInt32(target)
             }
             TestAllTypesProto3InternalTags.PACKED_UINT32 -> {
                 val target = msg.__packedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4322,7 +4352,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.PACKED_UINT64_PACKED -> {
                 val target = msg.__packedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedUInt64())
+                decoder.readPackedUInt64(target)
             }
             TestAllTypesProto3InternalTags.PACKED_UINT64 -> {
                 val target = msg.__packedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4331,7 +4361,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.PACKED_SINT32_PACKED -> {
                 val target = msg.__packedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSInt32())
+                decoder.readPackedSInt32(target)
             }
             TestAllTypesProto3InternalTags.PACKED_SINT32 -> {
                 val target = msg.__packedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4340,7 +4370,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.PACKED_SINT64_PACKED -> {
                 val target = msg.__packedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSInt64())
+                decoder.readPackedSInt64(target)
             }
             TestAllTypesProto3InternalTags.PACKED_SINT64 -> {
                 val target = msg.__packedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4349,7 +4379,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.PACKED_FIXED32_PACKED -> {
                 val target = msg.__packedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedFixed32())
+                decoder.readPackedFixed32(target)
             }
             TestAllTypesProto3InternalTags.PACKED_FIXED32 -> {
                 val target = msg.__packedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4358,7 +4388,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.PACKED_FIXED64_PACKED -> {
                 val target = msg.__packedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedFixed64())
+                decoder.readPackedFixed64(target)
             }
             TestAllTypesProto3InternalTags.PACKED_FIXED64 -> {
                 val target = msg.__packedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4367,7 +4397,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.PACKED_SFIXED32_PACKED -> {
                 val target = msg.__packedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSFixed32())
+                decoder.readPackedSFixed32(target)
             }
             TestAllTypesProto3InternalTags.PACKED_SFIXED32 -> {
                 val target = msg.__packedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4376,7 +4406,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.PACKED_SFIXED64_PACKED -> {
                 val target = msg.__packedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSFixed64())
+                decoder.readPackedSFixed64(target)
             }
             TestAllTypesProto3InternalTags.PACKED_SFIXED64 -> {
                 val target = msg.__packedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4385,7 +4415,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.PACKED_FLOAT_PACKED -> {
                 val target = msg.__packedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedFloat())
+                decoder.readPackedFloat(target)
             }
             TestAllTypesProto3InternalTags.PACKED_FLOAT -> {
                 val target = msg.__packedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4394,7 +4424,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.PACKED_DOUBLE_PACKED -> {
                 val target = msg.__packedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedDouble())
+                decoder.readPackedDouble(target)
             }
             TestAllTypesProto3InternalTags.PACKED_DOUBLE -> {
                 val target = msg.__packedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4403,7 +4433,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.PACKED_BOOL_PACKED -> {
                 val target = msg.__packedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedBool())
+                decoder.readPackedBool(target)
             }
             TestAllTypesProto3InternalTags.PACKED_BOOL -> {
                 val target = msg.__packedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4412,7 +4442,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.PACKED_NESTED_ENUM_PACKED -> {
                 val target = msg.__packedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedEnum().map { TestAllTypesProto3.NestedEnum.fromNumber(it) })
+                decoder.readPackedEnum(target) { TestAllTypesProto3.NestedEnum.fromNumber(it) }
             }
             TestAllTypesProto3InternalTags.PACKED_NESTED_ENUM -> {
                 val target = msg.__packedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4421,7 +4451,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.UNPACKED_INT32_PACKED -> {
                 val target = msg.__unpackedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedInt32())
+                decoder.readPackedInt32(target)
             }
             TestAllTypesProto3InternalTags.UNPACKED_INT32 -> {
                 val target = msg.__unpackedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4430,7 +4460,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.UNPACKED_INT64_PACKED -> {
                 val target = msg.__unpackedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedInt64())
+                decoder.readPackedInt64(target)
             }
             TestAllTypesProto3InternalTags.UNPACKED_INT64 -> {
                 val target = msg.__unpackedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4439,7 +4469,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.UNPACKED_UINT32_PACKED -> {
                 val target = msg.__unpackedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedUInt32())
+                decoder.readPackedUInt32(target)
             }
             TestAllTypesProto3InternalTags.UNPACKED_UINT32 -> {
                 val target = msg.__unpackedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4448,7 +4478,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.UNPACKED_UINT64_PACKED -> {
                 val target = msg.__unpackedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedUInt64())
+                decoder.readPackedUInt64(target)
             }
             TestAllTypesProto3InternalTags.UNPACKED_UINT64 -> {
                 val target = msg.__unpackedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4457,7 +4487,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.UNPACKED_SINT32_PACKED -> {
                 val target = msg.__unpackedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSInt32())
+                decoder.readPackedSInt32(target)
             }
             TestAllTypesProto3InternalTags.UNPACKED_SINT32 -> {
                 val target = msg.__unpackedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4466,7 +4496,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.UNPACKED_SINT64_PACKED -> {
                 val target = msg.__unpackedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSInt64())
+                decoder.readPackedSInt64(target)
             }
             TestAllTypesProto3InternalTags.UNPACKED_SINT64 -> {
                 val target = msg.__unpackedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4475,7 +4505,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.UNPACKED_FIXED32_PACKED -> {
                 val target = msg.__unpackedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedFixed32())
+                decoder.readPackedFixed32(target)
             }
             TestAllTypesProto3InternalTags.UNPACKED_FIXED32 -> {
                 val target = msg.__unpackedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4484,7 +4514,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.UNPACKED_FIXED64_PACKED -> {
                 val target = msg.__unpackedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedFixed64())
+                decoder.readPackedFixed64(target)
             }
             TestAllTypesProto3InternalTags.UNPACKED_FIXED64 -> {
                 val target = msg.__unpackedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4493,7 +4523,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.UNPACKED_SFIXED32_PACKED -> {
                 val target = msg.__unpackedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSFixed32())
+                decoder.readPackedSFixed32(target)
             }
             TestAllTypesProto3InternalTags.UNPACKED_SFIXED32 -> {
                 val target = msg.__unpackedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4502,7 +4532,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.UNPACKED_SFIXED64_PACKED -> {
                 val target = msg.__unpackedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSFixed64())
+                decoder.readPackedSFixed64(target)
             }
             TestAllTypesProto3InternalTags.UNPACKED_SFIXED64 -> {
                 val target = msg.__unpackedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4511,7 +4541,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.UNPACKED_FLOAT_PACKED -> {
                 val target = msg.__unpackedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedFloat())
+                decoder.readPackedFloat(target)
             }
             TestAllTypesProto3InternalTags.UNPACKED_FLOAT -> {
                 val target = msg.__unpackedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4520,7 +4550,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.UNPACKED_DOUBLE_PACKED -> {
                 val target = msg.__unpackedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedDouble())
+                decoder.readPackedDouble(target)
             }
             TestAllTypesProto3InternalTags.UNPACKED_DOUBLE -> {
                 val target = msg.__unpackedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4529,7 +4559,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.UNPACKED_BOOL_PACKED -> {
                 val target = msg.__unpackedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedBool())
+                decoder.readPackedBool(target)
             }
             TestAllTypesProto3InternalTags.UNPACKED_BOOL -> {
                 val target = msg.__unpackedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4538,7 +4568,7 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(
             }
             TestAllTypesProto3InternalTags.UNPACKED_NESTED_ENUM_PACKED -> {
                 val target = msg.__unpackedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedEnum().map { TestAllTypesProto3.NestedEnum.fromNumber(it) })
+                decoder.readPackedEnum(target) { TestAllTypesProto3.NestedEnum.fromNumber(it) }
             }
             TestAllTypesProto3InternalTags.UNPACKED_NESTED_ENUM -> {
                 val target = msg.__unpackedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -5042,27 +5072,33 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
     }
 
     if (this.repeatedInt32.isNotEmpty()) {
-        __result += WireSize.packedInt32(this.repeatedInt32).let { WireSize.tag(31, WireType.VARINT) + WireSize.int32(it) + it }
+        __repeatedInt32PackedSize = WireSize.packedInt32(this.repeatedInt32)
+        __result += __repeatedInt32PackedSize.let { WireSize.tag(31, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.repeatedInt64.isNotEmpty()) {
-        __result += WireSize.packedInt64(this.repeatedInt64).let { WireSize.tag(32, WireType.VARINT) + WireSize.int32(it) + it }
+        __repeatedInt64PackedSize = WireSize.packedInt64(this.repeatedInt64)
+        __result += __repeatedInt64PackedSize.let { WireSize.tag(32, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.repeatedUint32.isNotEmpty()) {
-        __result += WireSize.packedUInt32(this.repeatedUint32).let { WireSize.tag(33, WireType.VARINT) + WireSize.int32(it) + it }
+        __repeatedUint32PackedSize = WireSize.packedUInt32(this.repeatedUint32)
+        __result += __repeatedUint32PackedSize.let { WireSize.tag(33, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.repeatedUint64.isNotEmpty()) {
-        __result += WireSize.packedUInt64(this.repeatedUint64).let { WireSize.tag(34, WireType.VARINT) + WireSize.int32(it) + it }
+        __repeatedUint64PackedSize = WireSize.packedUInt64(this.repeatedUint64)
+        __result += __repeatedUint64PackedSize.let { WireSize.tag(34, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.repeatedSint32.isNotEmpty()) {
-        __result += WireSize.packedSInt32(this.repeatedSint32).let { WireSize.tag(35, WireType.VARINT) + WireSize.int32(it) + it }
+        __repeatedSint32PackedSize = WireSize.packedSInt32(this.repeatedSint32)
+        __result += __repeatedSint32PackedSize.let { WireSize.tag(35, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.repeatedSint64.isNotEmpty()) {
-        __result += WireSize.packedSInt64(this.repeatedSint64).let { WireSize.tag(36, WireType.VARINT) + WireSize.int32(it) + it }
+        __repeatedSint64PackedSize = WireSize.packedSInt64(this.repeatedSint64)
+        __result += __repeatedSint64PackedSize.let { WireSize.tag(36, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.repeatedFixed32.isNotEmpty()) {
@@ -5110,11 +5146,13 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
     }
 
     if (this.repeatedNestedEnum.isNotEmpty()) {
-        __result += WireSize.packedEnum(this.repeatedNestedEnum.map { it.number }).let { WireSize.tag(51, WireType.VARINT) + WireSize.int32(it) + it }
+        __repeatedNestedEnumPackedSize = WireSize.packedEnum(this.repeatedNestedEnum.map { it.number })
+        __result += __repeatedNestedEnumPackedSize.let { WireSize.tag(51, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.repeatedForeignEnum.isNotEmpty()) {
-        __result += WireSize.packedEnum(this.repeatedForeignEnum.map { it.number }).let { WireSize.tag(52, WireType.VARINT) + WireSize.int32(it) + it }
+        __repeatedForeignEnumPackedSize = WireSize.packedEnum(this.repeatedForeignEnum.map { it.number })
+        __result += __repeatedForeignEnumPackedSize.let { WireSize.tag(52, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.repeatedStringPiece.isNotEmpty()) {
@@ -5126,27 +5164,33 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
     }
 
     if (this.packedInt32.isNotEmpty()) {
-        __result += WireSize.packedInt32(this.packedInt32).let { WireSize.tag(75, WireType.VARINT) + WireSize.int32(it) + it }
+        __packedInt32PackedSize = WireSize.packedInt32(this.packedInt32)
+        __result += __packedInt32PackedSize.let { WireSize.tag(75, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.packedInt64.isNotEmpty()) {
-        __result += WireSize.packedInt64(this.packedInt64).let { WireSize.tag(76, WireType.VARINT) + WireSize.int32(it) + it }
+        __packedInt64PackedSize = WireSize.packedInt64(this.packedInt64)
+        __result += __packedInt64PackedSize.let { WireSize.tag(76, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.packedUint32.isNotEmpty()) {
-        __result += WireSize.packedUInt32(this.packedUint32).let { WireSize.tag(77, WireType.VARINT) + WireSize.int32(it) + it }
+        __packedUint32PackedSize = WireSize.packedUInt32(this.packedUint32)
+        __result += __packedUint32PackedSize.let { WireSize.tag(77, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.packedUint64.isNotEmpty()) {
-        __result += WireSize.packedUInt64(this.packedUint64).let { WireSize.tag(78, WireType.VARINT) + WireSize.int32(it) + it }
+        __packedUint64PackedSize = WireSize.packedUInt64(this.packedUint64)
+        __result += __packedUint64PackedSize.let { WireSize.tag(78, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.packedSint32.isNotEmpty()) {
-        __result += WireSize.packedSInt32(this.packedSint32).let { WireSize.tag(79, WireType.VARINT) + WireSize.int32(it) + it }
+        __packedSint32PackedSize = WireSize.packedSInt32(this.packedSint32)
+        __result += __packedSint32PackedSize.let { WireSize.tag(79, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.packedSint64.isNotEmpty()) {
-        __result += WireSize.packedSInt64(this.packedSint64).let { WireSize.tag(80, WireType.VARINT) + WireSize.int32(it) + it }
+        __packedSint64PackedSize = WireSize.packedSInt64(this.packedSint64)
+        __result += __packedSint64PackedSize.let { WireSize.tag(80, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.packedFixed32.isNotEmpty()) {
@@ -5178,7 +5222,8 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
     }
 
     if (this.packedNestedEnum.isNotEmpty()) {
-        __result += WireSize.packedEnum(this.packedNestedEnum.map { it.number }).let { WireSize.tag(88, WireType.VARINT) + WireSize.int32(it) + it }
+        __packedNestedEnumPackedSize = WireSize.packedEnum(this.packedNestedEnum.map { it.number })
+        __result += __packedNestedEnumPackedSize.let { WireSize.tag(88, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.unpackedInt32.isNotEmpty()) {

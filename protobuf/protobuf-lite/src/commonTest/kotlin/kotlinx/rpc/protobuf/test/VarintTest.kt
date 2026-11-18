@@ -132,8 +132,48 @@ class VarintTest {
         assertEquals(Varint.MAX_SIZE_64, calls)
     }
 
+    @Test
+    fun decode32() {
+        assertEquals(0, decode32(0x00))
+        assertEquals(127, decode32(0x7F))
+        assertEquals(300, decode32(0xAC, 0x02))
+        assertEquals(-1, decode32(0xFF, 0xFF, 0xFF, 0xFF, 0x0F))
+        // A negative int32 has 10 bytes on the wire.
+        assertEquals(-1, decode32(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x01))
+        assertEquals(0, decode32(0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x01))
+    }
+
+    @Test
+    fun decode32KeepsTheLow32BitsOfDecode() {
+        for (value in listOf(0L, 1L, 127L, 300L, 0xFFFFFFFFL, -1L, Long.MIN_VALUE, Long.MAX_VALUE)) {
+            val encoded = varintBytes(UInt64(value))
+            var i = 0
+            val expected = Varint.decode { encoded[i++] }.toInt()
+            i = 0
+            assertEquals(expected, Varint.decode32 { encoded[i++] })
+            assertEquals(encoded.size, i)
+        }
+    }
+
+    @Test
+    fun decode32StopsAfterTenBytes() {
+        var calls = 0
+        assertFailsWith<ProtobufDecodingException> {
+            Varint.decode32 {
+                calls++
+                0x80.toByte()
+            }
+        }
+        assertEquals(Varint.MAX_SIZE_64, calls)
+    }
+
     private fun decode(vararg input: Int): Long {
         var i = 0
         return Varint.decode { input[i++].toByte() }
+    }
+
+    private fun decode32(vararg input: Int): Int {
+        var i = 0
+        return Varint.decode32 { input[i++].toByte() }
     }
 }

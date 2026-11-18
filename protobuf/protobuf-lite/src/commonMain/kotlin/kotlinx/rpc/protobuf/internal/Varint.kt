@@ -69,4 +69,29 @@ internal object Varint {
             }
         }
     }
+
+    /**
+     * Reads a varint from [get] and returns its low 32 bits.
+     *
+     * [get] gives each byte one time, from the first to the last. Bytes after the fifth carry no low bits, but the
+     * function still reads them, because a negative int32 has [MAX_SIZE_64] bytes on the wire. It calls [get] at
+     * most [MAX_SIZE_64] times, and throws [ProtobufDecodingException] if the varint is longer.
+     */
+    inline fun decode32(get: () -> Byte): Int {
+        var result = 0
+        var count = 0
+        while (true) {
+            val b = get()
+            if (count < MAX_SIZE_32) {
+                result = result or ((b.toInt() and 0x7F) shl (count * 7))
+            }
+            if (b >= 0) {
+                return result
+            }
+            count++
+            if (count == MAX_SIZE_64) {
+                throw ProtobufDecodingException.malformedVarint()
+            }
+        }
+    }
 }
