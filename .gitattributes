@@ -82,5 +82,5 @@ protoc-gen/common/src/main/resources/implicit-imports/*.txt linguist-generated
 # Class-dump golden files used by kRPC tests
 *.gold                  linguist-generated
 
-# Dependency lock files (yarn, Bazel)
+# Dependency lock files (yarn)
 *.lock                  linguist-generated
