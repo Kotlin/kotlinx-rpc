@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package kotlinx.rpc.protobuf.benchmark;
+
+message Scalars {
+  int32 smallInt = 1;
+  int32 negativeInt = 2;
+  int64 largeLong = 3;
+  uint32 unsignedInt = 4;
+  uint64 unsignedLong = 5;
+  sint32 zigzagInt = 6;
+  sint64 zigzagLong = 7;
+  fixed32 fixedInt = 8;
+  fixed64 fixedLong = 9;
+  sfixed32 signedFixedInt = 10;
+  sfixed64 signedFixedLong = 11;
+  float ratio = 12;
+  double amount = 13;
+  bool flag = 14;
+}
+
+// Has only the first field of Scalars. Decoding Scalars bytes with it gives 13 unknown fields.
+message ScalarsSubset {
+  int32 smallInt = 1;
+}
+
+message Strings {
+  repeated string ascii = 1;
+  repeated string unicode = 2;
+}
+
+message Blob {
+  bytes payload = 1;
+}
+
+message Packed {
+  repeated int32 varints = 1;
+  repeated sint64 zigzags = 2;
+  repeated fixed32 fixeds = 3;
+  repeated double doubles = 4;
+}
+
+message Tree {
+  string name = 1;
+  int32 depth = 2;
+  repeated Tree children = 3;
+}
+
+message Large {
+  repeated Scalars rows = 1;
+  repeated string names = 2;
+  bytes blob = 3;
+}

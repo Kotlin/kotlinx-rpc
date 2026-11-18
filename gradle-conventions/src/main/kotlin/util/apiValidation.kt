@@ -23,6 +23,7 @@ private val excludedProjects = setOf(
     "test-grpc-protos",
     "test-utils",
     "grpc-benchmarks",
+    "protobuf-benchmarks",
     "protos",
     "kotlinx-rpc-client",
 )
