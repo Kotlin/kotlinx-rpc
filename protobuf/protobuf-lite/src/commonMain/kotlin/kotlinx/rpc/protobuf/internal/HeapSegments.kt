@@ -18,14 +18,11 @@ import kotlinx.rpc.protobuf.ProtobufEncodingException
 
 private const val CHUNK_SIZE: Int = 8192
 
-/** The size that a caller of [BufferOutputSegments] passes when it doesn't know the message size in advance. */
 internal const val UNKNOWN_SIZE: Int = -1
 
-/** The exception for a write that goes past the end of a destination of [size] bytes. */
 internal fun destinationFull(size: Int): ProtobufEncodingException =
     ProtobufEncodingException("The encoded protobuf message is larger than its destination of $size bytes.")
 
-/** The input over the bytes of [array] from [start] to [end]. */
 internal class ArrayInputSegments(
     private val array: ByteArray,
     private val start: Int,
@@ -111,7 +108,6 @@ internal class ReaderInputSegments(private val reader: GrpcMessageReader) : Inpu
     }
 }
 
-/** The one fixed output segment of the bytes of [array] from [start] to [end]. */
 internal class ArrayOutputSegments(
     private val array: ByteArray,
     private val start: Int,
@@ -147,8 +143,6 @@ internal class BufferOutputSegments(
 
     override fun next(window: ByteWindow): Int {
         val arraySize = if (size == UNKNOWN_SIZE) {
-            // If the size is set unknown, the first segment starts with 256,
-            // and the next ones doubles until CHUNK_SIZE.
             minOf(maxOf(array.size * 2, 256), CHUNK_SIZE)
         } else {
             if (remaining == 0) {

@@ -41,7 +41,6 @@ class BenchmarkCase<T : Any>(
     fun decodeFromBuffer(): Any? = marshaller.decodeFromSource(buffer.copy())
 }
 
-/** The names of all cases, for the `@Param` of a benchmark. */
 const val SCALARS = "scalars"
 const val UNKNOWN_FIELDS = "unknownFields"
 const val STRINGS = "strings"

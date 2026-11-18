@@ -79,7 +79,6 @@ class CodecErrorTest {
     }
 }
 
-/** An input for the decode tests, and the marshaller that decodes it. */
 internal class DecodeErrorCase(
     val name: String,
     val bytes: ByteArray,
@@ -91,7 +90,6 @@ internal class DecodeErrorCase(
     fun decode(reader: GrpcMessageReader): Result<Any?> = runCatching { marshaller.decode(reader, config) }
 }
 
-/** Checks that two decodes completed with equal messages, or that both threw an exception of the same class. */
 internal fun assertSameOutcome(expected: Result<Any?>, actual: Result<Any?>, message: String) {
     val expectedFailure = expected.exceptionOrNull()
     val actualFailure = actual.exceptionOrNull()

@@ -21,9 +21,7 @@ internal expect class ByteWindow() {
 
     inline fun setByte(index: Int, value: Byte)
 
-    /** Copies [count] bytes from [index] to [destination] at [destinationOffset]. */
     inline fun copyTo(destination: ByteArray, destinationOffset: Int, index: Int, count: Int)
 
-    /** Copies [count] bytes from [source] at [sourceOffset] to [index]. */
     inline fun copyFrom(source: ByteArray, sourceOffset: Int, index: Int, count: Int)
 }

@@ -229,7 +229,6 @@ class WireOutputTest {
         assertEquals(10L, source.size)
     }
 
-    /** Builds the bytes that the writes in [writeFunctionsGiveTheSameBytes] must give, with the kernels. */
     private fun expectedBytes(): ByteArray {
         val fixed32 = ByteArray(4) { (0x01020304 ushr (8 * it)).toByte() }
         val fixed64 = ByteArray(8) { (0x0102030405060708L ushr (8 * it)).toByte() }

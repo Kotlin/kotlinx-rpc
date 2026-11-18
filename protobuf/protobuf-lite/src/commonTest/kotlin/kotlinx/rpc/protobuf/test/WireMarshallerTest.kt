@@ -410,7 +410,6 @@ class WireMarshallerTest {
     fun testMultipleFieldsEncodeDecode() {
         val buffer = Buffer()
         encodeWire(buffer) { encoder ->
-            // Write multiple fields of different types
             encoder.writeBool(1, true)
             encoder.writeInt32(2, 42)
             encoder.writeString(3, "Hello")
@@ -418,7 +417,6 @@ class WireMarshallerTest {
         }
 
         decodeWire(buffer) { decoder ->
-            // Read and verify each field
             val tag1 = decoder.readTag()
             assertTrue(!tag1.isEnd)
             assertEquals(1, tag1.fieldNr)
@@ -451,7 +449,6 @@ class WireMarshallerTest {
             assertNotNull(fixed64)
             assertEquals(123456789uL, fixed64)
 
-            // No more tags
             assertTrue(decoder.readTag().isEnd)
         }
         assertTrue(buffer.exhausted())
@@ -480,12 +477,10 @@ class WireMarshallerTest {
             encoder.writeBool(1, true)
             encoder.flush()
 
-            // Writing after flush should still work
             encoder.writeInt32(2, 42)
         }
 
         decodeWire(buffer) { decoder ->
-            // Verify both values were written
             val tag1 = decoder.readTag()
             assertTrue(!tag1.isEnd)
             assertEquals(1, tag1.fieldNr)

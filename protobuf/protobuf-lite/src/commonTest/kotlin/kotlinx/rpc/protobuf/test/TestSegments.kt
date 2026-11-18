@@ -13,7 +13,6 @@ import kotlinx.rpc.protobuf.internal.InputSegments
 import kotlinx.rpc.protobuf.internal.OutputSegments
 import kotlinx.rpc.protobuf.internal.destinationFull
 
-/** Gives [bytes] to the codec in segments of [chunkSize] bytes. */
 internal class SplitInputSegments(
     private val bytes: ByteArray,
     private val chunkSize: Int,
@@ -31,7 +30,6 @@ internal class SplitInputSegments(
     }
 }
 
-/** Takes the committed bytes in segments of [chunkSize] bytes, with [capacity] bytes in total. */
 internal class SplitOutputSegments(
     private val capacity: Int,
     private val chunkSize: Int,
@@ -51,7 +49,6 @@ internal class SplitOutputSegments(
         committed += count
     }
 
-    /** The committed bytes. */
     fun bytes(): ByteArray = storage.copyOf(committed)
 }
 

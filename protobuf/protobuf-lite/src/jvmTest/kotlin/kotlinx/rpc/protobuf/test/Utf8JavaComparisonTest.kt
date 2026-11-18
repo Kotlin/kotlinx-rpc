@@ -98,7 +98,6 @@ class Utf8JavaComparisonTest {
         }
     }
 
-    /** Decodes [bytes] as the value of a `string` field. */
     private fun javaDecode(bytes: ByteArray): String {
         val field = ByteArray(CodedOutputStream.computeByteArraySizeNoTag(bytes))
         val output = CodedOutputStream.newInstance(field)

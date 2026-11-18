@@ -159,7 +159,6 @@ internal class WireInput(private val segments: InputSegments, val size: Int) : A
         return CharArray(count).also { charsBuffer = it }
     }
 
-    /** Copies the next [count] bytes to the end of [buffer]. */
     @OptIn(UnsafeIoApi::class)
     fun readBytesInto(buffer: Buffer, count: Int) {
         checkCount(count)

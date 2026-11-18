@@ -170,7 +170,6 @@ class NativeSegmentsTest {
     }
 }
 
-/** Gives [size] bytes of native memory in segments of [chunkSize] bytes. */
 private class NativeChunkInputSegments(
     private val pointer: CPointer<ByteVar>,
     private val size: Int,
