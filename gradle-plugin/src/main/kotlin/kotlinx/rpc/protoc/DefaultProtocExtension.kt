@@ -364,7 +364,9 @@ internal open class DefaultProtocExtension @Inject constructor(
                 }
             )
 
-            protocInputFilesListDirectory.convention(project.layout.dir(project.provider { buildSourceSetsDir.resolve(PROTOC_INPUT_FILES_DIR) }))
+            protocInputFilesListDirectory.convention(
+                project.layout.dir(project.provider { buildSourceSetsDir.resolve(PROTOC_INPUT_FILES_DIR) })
+            )
 
             dependsOn(generateBufGenYamlTask)
             dependsOn(generateBufYamlTask)

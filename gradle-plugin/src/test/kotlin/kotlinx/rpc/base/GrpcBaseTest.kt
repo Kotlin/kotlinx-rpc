@@ -519,7 +519,8 @@ abstract class GrpcBaseTest : BaseTest() {
             assertTaskExecuted(
                 sourceSet = sourceSet,
                 protoFiles = generateFor.map { Path("${it.name}Dep.proto") },
-                importProtoFiles = fullImports.map { Path("${it.name}ImportDep.proto") } + importsSet.map { Path("${it.name}Dep.proto") },
+                importProtoFiles = fullImports.map { Path("${it.name}ImportDep.proto") } +
+                    importsSet.map { Path("${it.name}Dep.proto") },
                 generatedFiles = generateFor.flatMap {
                     val pascal = it.capital
                     listOf(
@@ -880,7 +881,11 @@ private val SSets.kebab get() = name.replace(Regex("([a-z0-9])([A-Z])"), "$1-$2"
 private fun SSets.compileTaskName(mode: PluginMode): String {
     return when (mode) {
         PluginMode.Jvm -> {
-            if (name == "main") "compileKotlin" else "compileTestKotlin"
+            if (name == "main") {
+                "compileKotlin"
+            } else {
+                "compileTestKotlin"
+            }
         }
         PluginMode.Kmp -> {
             val platform = capital.removeSuffix("Main").removeSuffix("Test")

@@ -113,9 +113,14 @@ public class MsgFieldDelegate<T>(
     }
 
     /** Returns the set value, or null if the field was never set, for generated code with a custom getter. */
+    @Suppress("detekt.UnusedParameter")
     public fun getOrNull(thisRef: InternalMessage): T? {
         @Suppress("UNCHECKED_CAST")
-        return if (valueSet) value as T else null
+        return if (valueSet) {
+            value as T
+        } else {
+            null
+        }
     }
 
     /**

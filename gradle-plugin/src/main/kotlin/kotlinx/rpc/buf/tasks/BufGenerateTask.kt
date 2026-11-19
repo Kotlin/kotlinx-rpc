@@ -188,7 +188,9 @@ internal fun Project.registerBufGenerateTask(
     properties: ProtoTask.Properties,
     configure: BufGenerateTask.() -> Unit = {},
 ): TaskProvider<BufGenerateTask> {
-    return registerBufExecTask<BufGenerateTask>("${BufGenerateTask.NAME_PREFIX}$name", provider { workingDir }, properties) {
+    return registerBufExecTask<BufGenerateTask>(
+        "${BufGenerateTask.NAME_PREFIX}$name", provider { workingDir }, properties
+    ) {
         group = PROTO_GROUP
         description = "Generates code from .proto files using 'buf generate'"
 

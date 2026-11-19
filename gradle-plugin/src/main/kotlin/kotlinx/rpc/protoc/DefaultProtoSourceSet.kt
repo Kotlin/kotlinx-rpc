@@ -396,11 +396,15 @@ internal object PlatformOption {
 }
 
 internal fun protoConfigurationName(sourceSetName: String): String {
-    if (sourceSetName == "main") return "proto"
+    if (sourceSetName == "main") {
+        return "proto"
+    }
     return "${sourceSetName}Proto"
 }
 
 internal fun protoImportConfigurationName(sourceSetName: String): String {
-    if (sourceSetName == "main") return "protoImport"
+    if (sourceSetName == "main") {
+        return "protoImport"
+    }
     return "${sourceSetName}ProtoImport"
 }
