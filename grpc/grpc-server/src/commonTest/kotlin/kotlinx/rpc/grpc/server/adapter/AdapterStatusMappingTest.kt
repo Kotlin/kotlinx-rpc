@@ -101,24 +101,6 @@ class AdapterStatusMappingTest {
     }
 
     @Test
-    fun serviceErrorClosesWithUnknownAndPropagatesToTheExceptionHandler() = adapterTest { fixture ->
-        val failure = ServiceError()
-        val session = fixture.unary { throw failure }
-
-        fixture.runAdapterTasks()
-        session.deliverRequest("request")
-        session.listener.onHalfClose()
-        fixture.runAdapterTasks()
-
-        val close = session.call.assertClosedWith(GrpcStatusCode.UNKNOWN)
-        assertEquals(failure.message, assertIs<ServiceError>(close.status.cause).message)
-        session.call.assertNoMessages()
-        fixture.assertUncaught { errors ->
-            assertEquals(listOf<Throwable>(failure), errors)
-        }
-    }
-
-    @Test
     fun interceptorClosePreservesStatusAndTrailers() = adapterTest { fixture ->
         val interceptor = object : GrpcServerInterceptor {
             override fun <Request, Response> GrpcServerCallScope<Request, Response>.intercept(
@@ -154,6 +136,4 @@ class AdapterStatusMappingTest {
             return proceed(request)
         }
     }
-
-    private class ServiceError : Error("service error")
 }

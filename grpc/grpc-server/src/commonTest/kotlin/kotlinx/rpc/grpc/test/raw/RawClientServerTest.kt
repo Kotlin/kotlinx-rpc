@@ -136,7 +136,7 @@ class RawClientServerTest {
         val server = PlatformServer(builder)
         server.start()
 
-        val client = GrpcClient("localhost", server.port) {
+        val client = GrpcClient("127.0.0.1", server.port) {
             credentials = plaintext()
         }
 

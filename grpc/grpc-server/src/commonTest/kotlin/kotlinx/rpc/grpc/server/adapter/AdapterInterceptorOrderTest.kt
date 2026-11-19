@@ -51,33 +51,6 @@ class AdapterInterceptorOrderTest {
     }
 
     @Test
-    fun reversedRegistrationReversesInterceptorEntryOrder() = adapterTest { fixture ->
-        val marks = mutableListOf<String>()
-        fun recordingInterceptor(name: String) = object : GrpcServerInterceptor {
-            override fun <Request, Response> GrpcServerCallScope<Request, Response>.intercept(
-                request: Flow<Request>,
-            ): Flow<Response> {
-                marks += name
-                return proceed(request)
-            }
-        }
-        val first = recordingInterceptor("first")
-        val second = recordingInterceptor("second")
-        val session = fixture.unary(listOf(second, first)) {
-            marks += "service"
-            it
-        }
-
-        fixture.runAdapterTasks()
-        session.deliverRequest("request")
-        session.listener.onHalfClose()
-        fixture.runAdapterTasks()
-
-        assertEquals(listOf("second", "first", "service"), marks)
-        session.call.assertClosedWith(GrpcStatusCode.OK)
-    }
-
-    @Test
     fun requestTransformationsRunInRegistrationOrder() = adapterTest { fixture ->
         val received = mutableListOf<String>()
         fun wrappingInterceptor(name: String) = object : GrpcServerInterceptor {

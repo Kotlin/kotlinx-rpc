@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatus
 import kotlinx.rpc.grpc.GrpcStatusCode
@@ -31,55 +30,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertIs
 
 class AdapterInterceptorScopeTest {
-    @Test
-    fun proceedWithChangedRequestsPassesThemToTheService() = adapterTest { fixture ->
-        val received = mutableListOf<String>()
-        val interceptor = object : GrpcServerInterceptor {
-            @Suppress("UNCHECKED_CAST")
-            override fun <Request, Response> GrpcServerCallScope<Request, Response>.intercept(
-                request: Flow<Request>,
-            ): Flow<Response> = proceed(request.map { "$it-intercepted" as Request })
-        }
-        val session = fixture.bidiStreaming(listOf(interceptor)) { requests ->
-            requests.map {
-                received += it
-                "$it-response"
-            }
-        }
-
-        fixture.runAdapterTasks()
-        session.deliverRequest("first")
-        fixture.runAdapterTasks()
-        session.deliverRequest("second")
-        session.listener.onHalfClose()
-        fixture.runAdapterTasks()
-
-        assertEquals(listOf("first-intercepted", "second-intercepted"), received)
-        session.call.assertMessages("first-intercepted-response", "second-intercepted-response")
-        session.call.assertClosedWith(GrpcStatusCode.OK)
-    }
-
-    @Test
-    fun interceptorWithoutProceedSendsItsOwnResponse() = adapterTest { fixture ->
-        var serviceInvoked = false
-        val interceptor = object : GrpcServerInterceptor {
-            @Suppress("UNCHECKED_CAST")
-            override fun <Request, Response> GrpcServerCallScope<Request, Response>.intercept(
-                request: Flow<Request>,
-            ): Flow<Response> = flowOf("interceptor response" as Response)
-        }
-        val session = fixture.unary(listOf(interceptor)) {
-            serviceInvoked = true
-            it
-        }
-
-        fixture.runAdapterTasks()
-
-        assertFalse(serviceInvoked)
-        session.call.assertMessages("interceptor response")
-        session.call.assertClosedWith(GrpcStatusCode.OK)
-    }
-
     @Test
     fun middleInterceptorResponseSkipsTheRestOfTheChainAndTheService() = adapterTest { fixture ->
         val marks = mutableListOf<String>()

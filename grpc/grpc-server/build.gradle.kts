@@ -25,6 +25,7 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.coroutines.test)
+                implementation(libs.ktor.network)
                 implementation(projects.grpc.grpcClient)
                 implementation(projects.tests.testUtils)
                 implementation(projects.tests.testGrpcProtos)

@@ -19,8 +19,8 @@ import kotlinx.rpc.grpc.server.GrpcTlsServerCredentials
 import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.EchoServiceImpl
-import kotlinx.rpc.grpc.test.SERVER_CERT_PEM
-import kotlinx.rpc.grpc.test.SERVER_KEY_PEM
+import kotlinx.rpc.test.tls.SERVER_CERT_PEM
+import kotlinx.rpc.test.tls.SERVER_KEY_PEM
 import kotlinx.rpc.grpc.test.assertGrpcFailure
 import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.registerService

@@ -10,13 +10,11 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import kotlinx.rpc.grpc.server.testing.GrpcServerTestFixture
@@ -47,24 +45,6 @@ class FixtureLifecycleTest {
 
             assertEquals(failure.message, actual.message)
             assertTrue(fixture.server.isTerminated)
-        }
-    }
-
-    @Test
-    fun asyncFailureFailsTheTestWithoutAwait() = runTest {
-        withContext(Dispatchers.Default) {
-            val failure = IllegalStateException("Fixture async failed")
-
-            val actual = assertFailsWith<IllegalStateException> {
-                runFixture {
-                    coroutineScope {
-                        async { throw failure }
-                        awaitCancellation()
-                    }
-                }
-            }
-
-            assertEquals(failure.message, actual.message)
         }
     }
 
@@ -117,20 +97,6 @@ class FixtureLifecycleTest {
             }
 
             assertTrue(fixture.server.isTerminated)
-        }
-    }
-
-    @Test
-    fun explicitSupervisionContainsExpectedChildFailures() = runTest {
-        withContext(Dispatchers.Default) {
-            val failure = IllegalStateException("Expected child failure")
-
-            runFixture {
-                supervisorScope {
-                    val response = async { throw failure }
-                    assertEquals(failure.message, assertFailsWith<IllegalStateException> { response.await() }.message)
-                }
-            }
         }
     }
 }

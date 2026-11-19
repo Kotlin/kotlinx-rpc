@@ -78,4 +78,39 @@ class AdapterReadinessTest {
         session.call.assertClosedWith(GrpcStatusCode.OK)
         session.call.assertMessages("first", "second")
     }
+
+    @Test
+    fun readinessIsCheckedAgainAfterEachResponse() = adapterTest { fixture ->
+        val session = fixture.serverStreaming { flowOf("first", "second", "third") }
+        session.call.onSendMessage = { session.call.ready = false }
+
+        fixture.runAdapterTasks()
+        session.deliverRequest("request")
+        session.listener.onHalfClose()
+        fixture.runAdapterTasks()
+
+        session.call.assertMessages("first")
+        session.call.assertNotClosed()
+
+        session.listener.onReady()
+        fixture.runAdapterTasks()
+        session.call.assertMessages("first")
+
+        session.call.ready = true
+        session.listener.onReady()
+        fixture.runAdapterTasks()
+        session.call.assertMessages("first", "second")
+        session.call.assertNotClosed()
+
+        session.listener.onReady()
+        fixture.runAdapterTasks()
+        session.call.assertMessages("first", "second")
+
+        session.call.ready = true
+        session.listener.onReady()
+        fixture.runAdapterTasks()
+
+        session.call.assertMessages("first", "second", "third")
+        session.call.assertClosedWith(GrpcStatusCode.OK)
+    }
 }

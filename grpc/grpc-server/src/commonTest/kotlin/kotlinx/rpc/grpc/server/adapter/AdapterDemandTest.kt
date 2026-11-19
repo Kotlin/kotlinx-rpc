@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.grpc.server.adapter
 
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.rpc.grpc.GrpcStatusCode
@@ -16,32 +16,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AdapterDemandTest {
-    @Test
-    fun unaryAcceptsARequestedMessageAndCompletes() = adapterTest { fixture ->
-        val session = fixture.unary { it }
-
-        fixture.runAdapterTasks()
-        session.deliverRequest("request")
-        session.listener.onHalfClose()
-        fixture.runAdapterTasks()
-
-        session.call.assertMessages("request")
-        session.call.assertClosedWith(GrpcStatusCode.OK)
-    }
-
-    @Test
-    fun serverStreamingAcceptsARequestedMessageAndCompletes() = adapterTest { fixture ->
-        val session = fixture.serverStreaming { flowOf("$it-response") }
-
-        fixture.runAdapterTasks()
-        session.deliverRequest("request")
-        session.listener.onHalfClose()
-        fixture.runAdapterTasks()
-
-        session.call.assertMessages("request-response")
-        session.call.assertClosedWith(GrpcStatusCode.OK)
-    }
-
     @Test
     fun bidiStreamingContinuesToAcceptRequestedMessages() = adapterTest { fixture ->
         val received = mutableListOf<String>()
@@ -72,6 +46,47 @@ class AdapterDemandTest {
         fixture.runAdapterTasks()
 
         assertEquals(0, session.call.requestedTotal())
+        session.call.assertMessages("response")
+        session.call.assertClosedWith(GrpcStatusCode.OK)
+    }
+
+    @Test
+    fun clientStreamingResumesAfterTheServiceCollectsRequests() = adapterTest { fixture ->
+        val resumeCollection = CompletableDeferred<Unit>()
+        val received = mutableListOf<String>()
+        val session = fixture.clientStreaming { requests ->
+            requests.collect {
+                received += it
+                if (received.size == 1) {
+                    resumeCollection.await()
+                }
+            }
+            "response"
+        }
+
+        fixture.runAdapterTasks()
+        assertEquals(1, session.call.requestedTotal())
+        assertEquals(1L, session.call.availableRequestCredits)
+
+        session.deliverRequest("first")
+        fixture.runAdapterTasks()
+
+        assertEquals(listOf("first"), received)
+        assertEquals(1, session.call.requestedTotal())
+        assertEquals(0L, session.call.availableRequestCredits)
+        session.call.assertNoMessages()
+
+        resumeCollection.complete(Unit)
+        fixture.runAdapterTasks()
+
+        assertEquals(2, session.call.requestedTotal())
+        assertEquals(1L, session.call.availableRequestCredits)
+
+        session.deliverRequest("second")
+        session.listener.onHalfClose()
+        fixture.runAdapterTasks()
+
+        assertEquals(listOf("first", "second"), received)
         session.call.assertMessages("response")
         session.call.assertClosedWith(GrpcStatusCode.OK)
     }

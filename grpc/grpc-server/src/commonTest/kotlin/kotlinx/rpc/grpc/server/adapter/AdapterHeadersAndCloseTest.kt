@@ -20,19 +20,6 @@ import kotlin.test.assertEquals
 
 class AdapterHeadersAndCloseTest {
     @Test
-    fun unarySuccessSendsHeadersMessageAndOkClose() = adapterTest { fixture ->
-        val session = fixture.unary { "$it-response" }
-
-        fixture.runAdapterTasks()
-        session.deliverRequest("request")
-        session.listener.onHalfClose()
-        fixture.runAdapterTasks()
-
-        assertEquals(listOf("sendHeaders", "sendMessage", "close(OK)"), session.call.outbound())
-        session.call.assertMessages("request-response")
-    }
-
-    @Test
     fun emptyResponseStreamSendsHeadersAndOkClose() = adapterTest { fixture ->
         val session = fixture.serverStreaming { emptyFlow() }
 
@@ -74,7 +61,7 @@ class AdapterHeadersAndCloseTest {
     }
 
     @Test
-    fun interceptorResponseHeadersReachTheCall() = adapterTest { fixture ->
+    fun unarySuccessSendsCustomHeadersMessageAndOkClose() = adapterTest { fixture ->
         val interceptor = object : GrpcServerInterceptor {
             override fun <Request, Response> GrpcServerCallScope<Request, Response>.intercept(
                 request: Flow<Request>,
@@ -83,7 +70,7 @@ class AdapterHeadersAndCloseTest {
                 return proceed(request)
             }
         }
-        val session = fixture.unary(listOf(interceptor)) { it }
+        val session = fixture.unary(listOf(interceptor)) { "$it-response" }
 
         fixture.runAdapterTasks()
         session.deliverRequest("request")
@@ -92,6 +79,7 @@ class AdapterHeadersAndCloseTest {
 
         val headers = session.call.events.filterIsInstance<ServerCallEvent.HeadersSent>().single().headers
         assertEquals("header value", headers["x-response"])
+        session.call.assertMessages("request-response")
         assertEquals(listOf("sendHeaders", "sendMessage", "close(OK)"), session.call.outbound())
     }
 
