@@ -47,13 +47,21 @@ public interface ProtoTask : Task {
         public val sourceSetNames: Set<String>,
     ) {
         override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
+            if (this === other) {
+                return true
+            }
+            if (javaClass != other?.javaClass) {
+                return false
+            }
 
             other as Properties
 
-            if (isTest != other.isTest) return false
-            if (sourceSetNames != other.sourceSetNames) return false
+            if (isTest != other.isTest) {
+                return false
+            }
+            if (sourceSetNames != other.sourceSetNames) {
+                return false
+            }
 
             return true
         }
@@ -121,17 +129,33 @@ public interface ProtoTask : Task {
         public val isUnitTest: Boolean,
     ) : Properties(isTest, sourceSetNames) {
         override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-            if (!super.equals(other)) return false
+            if (this === other) {
+                return true
+            }
+            if (javaClass != other?.javaClass) {
+                return false
+            }
+            if (!super.equals(other)) {
+                return false
+            }
 
             other as AndroidProperties
 
-            if (isInstrumentedTest != other.isInstrumentedTest) return false
-            if (isUnitTest != other.isUnitTest) return false
-            if (flavors != other.flavors) return false
-            if (buildType != other.buildType) return false
-            if (variant != other.variant) return false
+            if (isInstrumentedTest != other.isInstrumentedTest) {
+                return false
+            }
+            if (isUnitTest != other.isUnitTest) {
+                return false
+            }
+            if (flavors != other.flavors) {
+                return false
+            }
+            if (buildType != other.buildType) {
+                return false
+            }
+            if (variant != other.variant) {
+                return false
+            }
 
             return true
         }

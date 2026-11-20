@@ -21,7 +21,6 @@ import kotlin.reflect.KClass
 import kotlin.time.Duration
 import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
 import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyInconsistentParameterOrder
 import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
 import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 

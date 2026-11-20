@@ -4,10 +4,10 @@
 
 @file:OptIn(ExperimentalForeignApi::class)
 
-package kotlinx.rpc.grpc.client.testing
+package kotlinx.rpc.test
 
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.toKString
 import platform.posix.getenv
 
-internal actual fun environmentVariable(name: String): String? = getenv(name)?.toKString()
+public actual fun environmentVariable(name: String): String? = getenv(name)?.toKString()

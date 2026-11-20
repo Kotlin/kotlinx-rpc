@@ -2,9 +2,9 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.test
+package kotlinx.rpc.test.tls
 
-// Certs are taken from grpc-java/testing/src/main/resources/certs
+// Certificates from grpc-java/testing/src/main/resources/certs.
 
 val CA_PEM = """
     -----BEGIN CERTIFICATE-----

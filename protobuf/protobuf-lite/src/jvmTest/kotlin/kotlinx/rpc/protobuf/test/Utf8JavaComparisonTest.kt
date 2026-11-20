@@ -60,7 +60,11 @@ class Utf8JavaComparisonTest {
         repeat(200_000) {
             val value = buildString {
                 repeat(random.nextInt(0, 9)) {
-                    val code = if (random.nextBoolean()) edges[random.nextInt(edges.size)] else random.nextInt(0x10000)
+                    val code = if (random.nextBoolean()) {
+                        edges[random.nextInt(edges.size)]
+                    } else {
+                        random.nextInt(0x10000)
+                    }
                     append(code.toChar())
                 }
             }
@@ -86,7 +90,10 @@ class Utf8JavaComparisonTest {
             null
         }
         if (expected != actual) {
-            fail("Input ${hex(bytes)}: protobuf-java gives ${expected?.let(::codeUnits)}, Utf8 gives ${actual?.let(::codeUnits)}.")
+            fail(
+                "Input ${hex(bytes)}: protobuf-java gives ${expected?.let(::codeUnits)}, " +
+                    "Utf8 gives ${actual?.let(::codeUnits)}."
+            )
         }
     }
 

@@ -723,4 +723,5 @@ private fun <T : Any> Any.encodingCast(valueType: KClass<T>): T {
     )
 }
 
-private inline fun <V, reified L : List<V>> List<V>.asPrimitiveList(copyOf: (List<V>) -> L): L = this as? L ?: copyOf(this)
+private inline fun <V, reified L : List<V>> List<V>.asPrimitiveList(copyOf: (List<V>) -> L): L =
+    this as? L ?: copyOf(this)

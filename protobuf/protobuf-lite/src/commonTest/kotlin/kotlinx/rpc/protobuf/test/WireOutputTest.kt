@@ -31,7 +31,7 @@ private val CHUNK_SIZES = listOf(1, 2, 3, 7, 8192)
 
 private const val CAPACITY = 256
 
-private val STRING = "Grüße, 你好, 🙂"
+private const val STRING = "Grüße, 你好, 🙂"
 
 class WireOutputTest {
     @Test
