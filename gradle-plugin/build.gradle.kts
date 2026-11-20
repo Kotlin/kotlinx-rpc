@@ -5,6 +5,7 @@
 import org.gradle.plugin.compatibility.compatibility
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.tooling.core.KotlinToolingVersion
+import util.apiWatchdogSkip
 import util.other.generateSource
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
@@ -45,7 +46,7 @@ tasks.withType<KotlinCompile>().configureEach {
 }
 
 apiWatchdog {
-    enabled = true
+    enabled = !apiWatchdogSkip
 }
 
 // A standalone build of this directory doesn't have the libraries of the root build.

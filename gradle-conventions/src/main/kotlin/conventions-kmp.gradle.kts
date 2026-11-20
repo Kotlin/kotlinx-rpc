@@ -22,7 +22,7 @@ plugins {
 }
 
 apiWatchdog {
-    enabled = isPublicModule
+    enabled = !apiWatchdogSkip && isPublicModule
     suggestAbiValidation = enableAbiValidation
     javaInterop {
         enabled = false
