@@ -26,7 +26,6 @@ import org.jetbrains.kotlin.fir.expressions.builder.buildLiteralExpression
 import org.jetbrains.kotlin.fir.extensions.predicate.DeclarationPredicate
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.resolve.defaultType
-import org.jetbrains.kotlin.fir.resolve.fullyExpandedType
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
@@ -101,7 +100,7 @@ internal fun FirAnnotation.stringArrayArgument(name: Name): List<String> {
  */
 @OptIn(SymbolInternals::class)
 internal fun FirTypeRef.doesMatchesClassId(session: FirSession, classId: ClassId): Boolean {
-    return coneTypeSafe<ConeClassLikeType>()?.fullyExpandedType(session)?.lookupTag?.classId == classId
+    return coneTypeSafe<ConeClassLikeType>()?.fullyExpandedClassIdCompat(session) == classId
 }
 
 private val deprecatedAnnotationMessageName = Name.identifier("message")
