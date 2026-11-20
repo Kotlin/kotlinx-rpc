@@ -34,7 +34,6 @@ class TestGate(val name: String) {
         }
     }
 
-    /** Suspends until a coroutine calls [pass], or throws [AssertionError] after [timeout]. */
     suspend fun awaitReached(timeout: Duration) {
         withTimeoutOrNull(timeout) { reached.await() }
             ?: throw AssertionError("No coroutine reached the gate '$name' in $timeout")

@@ -42,9 +42,6 @@ public class TestCleanup(public val stepTimeout: Duration = 3.seconds) {
     public fun failure(): Throwable? = recordedFailure
 }
 
-/**
- * Returns [primaryFailure] with [secondaryFailure] suppressed, or [secondaryFailure] if the primary failure is `null`.
- */
 public fun combineFailures(primaryFailure: Throwable?, secondaryFailure: Throwable?): Throwable? {
     if (primaryFailure == null) {
         return secondaryFailure

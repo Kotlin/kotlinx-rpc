@@ -21,10 +21,6 @@ class EventLog<E> {
         state.update { it + event }
     }
 
-    /**
-     * Suspends until [count] events match [predicate], then returns the match at that one-based position.
-     * Uses the caller's dispatcher for [timeout] and throws [AssertionError] if it expires.
-     */
     suspend fun await(timeout: Duration, count: Int = 1, predicate: (E) -> Boolean): E {
         require(count > 0) { "Event count must be positive: $count" }
         val matches = withTimeoutOrNull(timeout) {

@@ -6,6 +6,6 @@ package kotlinx.rpc.test
 
 /**
  * Returns a test-process environment variable, or `null` if it isn't set.
- * Supports JVM, Native, and Node.js. Returns `null` in browsers and on Wasm/WASI.
+ * Returns `null` in browsers and on Wasm/WASI.
  */
 public expect fun environmentVariable(name: String): String?
