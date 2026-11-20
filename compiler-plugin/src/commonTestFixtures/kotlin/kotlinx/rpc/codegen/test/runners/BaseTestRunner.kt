@@ -6,7 +6,6 @@ package kotlinx.rpc.codegen.test.runners
 
 import kotlinx.rpc.codegen.test.services.ExtensionRegistrarConfigurator
 import org.jetbrains.kotlin.test.builders.TestConfigurationBuilder
-import org.jetbrains.kotlin.test.directives.CodegenTestDirectives
 import org.jetbrains.kotlin.test.directives.FirDiagnosticsDirectives
 import org.jetbrains.kotlin.test.directives.JvmEnvironmentConfigurationDirectives
 
@@ -16,7 +15,7 @@ fun TestConfigurationBuilder.commonFirWithPluginFrontendConfiguration() {
         +FirDiagnosticsDirectives.FIR_DUMP
 
         +JvmEnvironmentConfigurationDirectives.FULL_JDK
-        +CodegenTestDirectives.IGNORE_DEXING
+        +ignoreDexingDirective
     }
 
     useConfigurators(
