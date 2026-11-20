@@ -6,7 +6,4 @@ package kotlinx.rpc.codegen.test.runners
 
 import org.jetbrains.kotlin.test.directives.model.SimpleDirective
 
-/**
- * Disables the D8 dex check that the JVM codegen test infrastructure runs on the compiled test classes.
- */
 internal expect val ignoreDexingDirective: SimpleDirective
