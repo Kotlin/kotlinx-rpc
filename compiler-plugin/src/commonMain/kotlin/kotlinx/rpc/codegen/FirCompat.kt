@@ -30,8 +30,4 @@ internal expect fun FirAnnotation.getStringArgumentCompat(name: Name, session: F
 
 internal expect fun ConeTypeParameterType.typeParameterSymbolCompat(): FirTypeParameterSymbol?
 
-/**
- * Returns the class id of this type after the full type-alias expansion,
- * or `null` if the expanded type is not class-like.
- */
 internal expect fun ConeClassLikeType.fullyExpandedClassIdCompat(session: FirSession): ClassId?
