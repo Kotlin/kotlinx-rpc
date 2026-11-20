@@ -4,11 +4,14 @@
 
 package kotlinx.rpc.codegen
 
+import kotlinx.rpc.codegen.common.RpcClassId
 import kotlinx.rpc.codegen.common.RpcNames
+import org.jetbrains.kotlin.GeneratedDeclarationKey
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.fir.declarations.utils.isInterface
 import org.jetbrains.kotlin.fir.extensions.FirDeclarationGenerationExtension
 import org.jetbrains.kotlin.fir.extensions.FirDeclarationPredicateRegistrar
@@ -19,13 +22,16 @@ import org.jetbrains.kotlin.fir.plugin.createCompanionObject
 import org.jetbrains.kotlin.fir.plugin.createMemberProperty
 import org.jetbrains.kotlin.fir.plugin.createNestedClass
 import org.jetbrains.kotlin.fir.resolve.defaultType
+import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
-import org.jetbrains.kotlin.fir.types.classId
+import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.constructClassLikeType
 import org.jetbrains.kotlin.name.CallableId
+import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.SpecialNames
 
@@ -90,7 +96,7 @@ class FirRpcServiceGenerator(
             }
 
             name == RpcNames.SERVICE_STUB_NAME -> {
-                generateRpcServiceStubClass(owner)
+                generateRpcServiceStubClass(owner as FirRegularClassSymbol)
             }
 
             else -> {
@@ -104,7 +110,10 @@ class FirRpcServiceGenerator(
         context: MemberGenerationContext,
     ): Set<Name> {
         if (classSymbol.generatedRpcServiceStubKey == null && classSymbol.isRpcServiceInterface()) {
-            return setOf(RpcNames.SERVICE_DESCRIPTOR_PROPERTY_NAME)
+            return setOf(
+                RpcNames.SERVICE_DESCRIPTOR_PROPERTY_NAME,
+                RpcNames.SERVICE_FACTORY_PROPERTY_NAME,
+            )
         }
 
         return super.getCallableNamesForClass(classSymbol, context)
@@ -114,36 +123,46 @@ class FirRpcServiceGenerator(
         callableId: CallableId,
         context: MemberGenerationContext?,
     ): List<FirPropertySymbol> {
-        val owner = context?.owner
-        if (owner == null || callableId.callableName != RpcNames.SERVICE_DESCRIPTOR_PROPERTY_NAME
-            || owner.generatedRpcServiceStubKey != null || !owner.isRpcServiceInterface()
-        ) {
-            return super.generateProperties(callableId, context)
+        val owner = (context?.owner as FirRegularClassSymbol?)
+            ?.takeIf { it.generatedRpcServiceStubKey == null && it.isRpcServiceInterface() }
+            ?: return super.generateProperties(callableId, context)
+
+        val protocol = owner.rpcAnnotation(session, FirRpcPredicates.rpcMeta)?.protocolType(session)
+            ?: return super.generateProperties(callableId, context)
+
+        val (key, returnType) = when (callableId.callableName) {
+            RpcNames.SERVICE_FACTORY_PROPERTY_NAME -> {
+                FirRpcServiceFactoryPropertyKey to owner.getFactoryClass().constructClassLikeType(arrayOf(protocol, owner.defaultType()))
+            }
+            RpcNames.SERVICE_DESCRIPTOR_PROPERTY_NAME -> {
+                FirRpcServiceDescriptorPropertyKey to RpcClassId.rpcServiceDescriptor.constructClassLikeType(arrayOf(protocol, owner.defaultType()))
+            }
+            else -> return super.generateProperties(callableId, context)
         }
 
-        val descriptorClass = owner.rpcAnnotation(session, FirRpcPredicates.rpcMeta)
-            ?.classFromRpcMeta(session, RpcNames.RPC_META_DESCRIPTOR_CLASS)
-            ?: return super.generateProperties(callableId, context)
+        return listOf(createOverrideProperty(owner, key, callableId.callableName, returnType))
+    }
 
-        val descriptorType = descriptorClass.classId?.constructClassLikeType(arrayOf(owner.defaultType()))
-            ?: return super.generateProperties(callableId, context)
-
-        return listOf(
-            createMemberProperty(
-                owner = owner,
-                key = FirRpcServiceDescriptorPropertyKey,
-                name = callableId.callableName,
-                returnType = descriptorType,
-                isVal = true,
-                hasBackingField = false,
-            ) {
-                modality = Modality.OPEN
-                visibility = Visibilities.Public
-                status {
-                    isOverride = true
-                }
-            }.symbol
-        )
+    private fun createOverrideProperty(
+        owner: FirClassSymbol<*>,
+        key: GeneratedDeclarationKey,
+        name: Name,
+        returnType: ConeKotlinType,
+    ): FirPropertySymbol {
+        return createMemberProperty(
+            owner = owner,
+            key = key,
+            name = name,
+            returnType = returnType,
+            isVal = true,
+            hasBackingField = false,
+        ) {
+            modality = Modality.OPEN
+            visibility = Visibilities.Public
+            status {
+                isOverride = true
+            }
+        }.symbol
     }
 
     private fun FirClassSymbol<*>.isRpcServiceInterface(): Boolean {
@@ -160,12 +179,50 @@ class FirRpcServiceGenerator(
      * Generates [owner]'s service stub.
      * Scrapes the functions from the [owner] to generate method classes.
      */
-    private fun generateRpcServiceStubClass(owner: FirClassSymbol<*>): FirRegularClassSymbol {
+    private fun generateRpcServiceStubClass(owner: FirRegularClassSymbol): FirRegularClassSymbol? {
+        val protocol = owner.rpcAnnotation(session, FirRpcPredicates.rpcMeta)?.protocolType(session)
+            ?: return null
+
         return createNestedClass(owner, RpcNames.SERVICE_STUB_NAME, RpcGeneratedStubKey(owner.name)) {
             visibility = Visibilities.Public
             modality = Modality.FINAL
+
+            typeParameter(Name.identifier("T"), config = {
+                listOfNotNull(
+                    RpcClassId.rpcFlowResponseCaller.takeIf { owner.containsFunction(isSuspend = false) },
+                    RpcClassId.rpcUnaryResponseCaller.takeIf { owner.containsFunction(isSuspend = true) },
+                ).forEach { caller ->
+                    bound { caller.constructClassLikeType(arrayOf(protocol)) }
+                }
+            })
         }.apply {
             markAsDeprecatedHidden(session)
         }.symbol
+    }
+
+    // TODO
+    /**
+     * Reads only the source declarations of the class.
+     * `declarationsVS` also gets the generated declarations, so it calls this generator again for the same class,
+     * and the recursion causes a `StackOverflowError`.
+     */
+    @OptIn(SymbolInternals::class, DirectDeclarationsAccess::class)
+    private fun FirRegularClassSymbol.containsFunction(isSuspend: Boolean): Boolean {
+        return fir.declarations
+            .map { it.symbol }
+            .filterIsInstance<FirNamedFunctionSymbol>()
+            .any { it.rawStatus.isSuspend == isSuspend }
+    }
+
+    private fun FirRegularClassSymbol.getFactoryClass(): ClassId {
+        val containsFlowResponse = containsFunction(isSuspend = false)
+        val containsUnaryResponse = containsFunction(isSuspend = true)
+
+        return when {
+            containsFlowResponse && containsUnaryResponse -> RpcClassId.rpcServiceStubFactoryEitherResponse
+            containsFlowResponse -> RpcClassId.rpcServiceStubFactoryFlowResponse
+            containsUnaryResponse -> RpcClassId.rpcServiceStubFactoryUnaryResponse
+            else -> RpcClassId.rpcServiceStubFactory
+        }
     }
 }

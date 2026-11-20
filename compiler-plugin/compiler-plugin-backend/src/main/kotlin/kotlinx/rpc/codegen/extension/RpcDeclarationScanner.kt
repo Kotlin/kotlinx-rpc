@@ -47,7 +47,7 @@ internal object RpcDeclarationScanner {
                 }
 
                 is IrProperty -> {
-                    if (declaration.isFakeOverride || declaration.isGeneratedServiceDescriptor()) {
+                    if (declaration.isFakeOverride || declaration.isGeneratedServiceProperty()) {
                         return@memoryOptimizedMap null
                     }
 
@@ -93,7 +93,6 @@ private fun unsupportedDeclaration(service: IrClass, declaration: IrDeclaration,
     return null
 }
 
-// declared by FIR in the service interface, its getter is implemented in RpcIrServiceProcessor
-private fun IrProperty.isGeneratedServiceDescriptor(): Boolean {
-    return origin is IrDeclarationOrigin.GeneratedByPlugin && name == RpcNames.SERVICE_DESCRIPTOR_PROPERTY_NAME
+private fun IrProperty.isGeneratedServiceProperty(): Boolean {
+    return origin is IrDeclarationOrigin.GeneratedByPlugin && (name == RpcNames.SERVICE_DESCRIPTOR_PROPERTY_NAME || name == RpcNames.SERVICE_FACTORY_PROPERTY_NAME)
 }

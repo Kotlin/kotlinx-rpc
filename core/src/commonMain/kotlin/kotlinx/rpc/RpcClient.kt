@@ -5,46 +5,40 @@
 package kotlinx.rpc
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.rpc.descriptor.RpcServiceDescriptor
+import kotlinx.rpc.internal.rpcInternalKClass
 import kotlin.concurrent.atomics.AtomicLong
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.concurrent.atomics.incrementAndFetch
+import kotlin.reflect.KClass
+import kotlin.reflect.KType
 
-@RequiresOptIn
-public annotation class DelicateRpcApi
-
-@OptIn(ExperimentalAtomicApi::class)
-private val SERVICE_ID: AtomicLong = AtomicLong(0)
-
-@DelicateRpcApi
-public class RpcNonStreamingCall<Protocol : RpcProtocol, Service : RpcService<Protocol, Service>>(
-    public val descriptor: RpcServiceDescriptor<Protocol, Service>,
-    public val callableName: String,
-    public val arguments: Array<Any?>,
-    public val serviceId: Long,
-)
-
-public interface RpcStreamingClient<Protocol : RpcProtocol> : RpcClient<Protocol> {
-    @DelicateRpcApi
-    public fun <Service : RpcService<Protocol, Service>, T> callStreaming(call: RpcNonStreamingCall<Protocol, Service>): Flow<T>
-}
-
-@DelicateRpcApi
-public class RpcStreamingCall<Protocol : RpcProtocol, Service : RpcService<Protocol, Service>>(
-    public val descriptor: RpcServiceDescriptor<Protocol, Service>,
-    public val callableName: String,
-    public val arguments: Array<Any?>,
-    public val serviceId: Long,
-)
-
-public interface RpcSuspendingClient<Protocol : RpcProtocol> : RpcClient<Protocol> {
-    @DelicateRpcApi
-    public suspend fun <Service : RpcService<Protocol, Service>, T> callNonStreaming(call: RpcStreamingCall<Protocol, Service>): T
-}
-
-public interface RpcClient<Protocol : RpcProtocol> {
+public abstract class RpcClient<Protocol : RpcProtocol> {
     @OptIn(ExperimentalAtomicApi::class)
-    public fun getServiceId(): Long {
-        return SERVICE_ID.incrementAndFetch()
+    private val serviceIdCounter: AtomicLong = AtomicLong(0)
+
+    public inline fun <reified T : RpcService<Protocol, T>> service(): T {
+        return service(T::class)
     }
+
+    public fun <T : RpcService<Protocol, T>> service(serviceKType: KType): T {
+        return service(serviceKType.rpcInternalKClass())
+    }
+
+    @OptIn(ExperimentalAtomicApi::class)
+    public fun <T : RpcService<Protocol, T>> service(serviceKClass: KClass<T>): T {
+        return createStub(serviceKClass.factory, serviceIdCounter.incrementAndFetch())
+    }
+
+    protected abstract fun <T : RpcService<Protocol, T>> createStub(
+        factory: RpcServiceStubFactory<Protocol, T>,
+        serviceId: Long,
+    ): T
+}
+
+public interface RpcUnaryResponseCaller<Protocol : RpcProtocol> {
+    public suspend fun <Service : RpcService<Protocol, Service>, T> callWithUnaryResponse(call: RpcCall<Protocol, Service>): T
+}
+
+public interface RpcFlowResponseCaller<Protocol : RpcProtocol> {
+    public fun <Service : RpcService<Protocol, Service>, T> callWithFlowResponse(call: RpcCall<Protocol, Service>): Flow<T>
 }

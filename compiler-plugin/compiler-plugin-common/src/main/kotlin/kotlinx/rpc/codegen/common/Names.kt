@@ -15,7 +15,9 @@ object RpcClassId {
     val grpcAnnotation = ClassId(FqName("kotlinx.rpc.grpc.annotations"), Name.identifier("Grpc"))
     val grpcMethodAnnotation = ClassId(FqName("kotlinx.rpc.grpc.annotations"), Name.identifier("Grpc.Method"))
     val withGrpcMarshallerAnnotation = ClassId(FqName("kotlinx.rpc.grpc.marshaller"), Name.identifier("WithGrpcMarshaller"))
+    val grpcMarshaller = ClassId(FqName("kotlinx.rpc.grpc.marshaller"), Name.identifier("GrpcMarshaller"))
 
+    // TODO: Remove
     val checkedTypeAnnotation = ClassId(FqName("kotlinx.rpc.annotations"), Name.identifier("CheckedTypeAnnotation"))
 
     val serializableAnnotation = ClassId(FqName("kotlinx.serialization"), Name.identifier("Serializable"))
@@ -25,7 +27,16 @@ object RpcClassId {
     val sharedFlow = ClassId(FqName("kotlinx.coroutines.flow"), Name.identifier("SharedFlow"))
     val stateFlow = ClassId(FqName("kotlinx.coroutines.flow"), Name.identifier("StateFlow"))
 
-    val grpcMarshaller = ClassId(FqName("kotlinx.rpc.grpc.marshaller"), Name.identifier("GrpcMarshaller"))
+    val rpcService = ClassId(FqName("kotlinx.rpc"), Name.identifier("RpcService"))
+    val rpcServiceDescriptor = ClassId(FqName("kotlinx.rpc.descriptor"), Name.identifier("RpcServiceDescriptor"))
+
+    val rpcUnaryResponseCaller = ClassId(FqName("kotlinx.rpc"), Name.identifier("RpcUnaryResponseCaller"))
+    val rpcFlowResponseCaller = ClassId(FqName("kotlinx.rpc"), Name.identifier("RpcFlowResponseCaller"))
+
+    val rpcServiceStubFactory = ClassId(FqName("kotlinx.rpc"), Name.identifier("RpcServiceStubFactory"))
+    val rpcServiceStubFactoryUnaryResponse = rpcServiceStubFactory.createNestedClassId(Name.identifier("UnaryResponse"))
+    val rpcServiceStubFactoryFlowResponse = rpcServiceStubFactory.createNestedClassId(Name.identifier("FlowResponse"))
+    val rpcServiceStubFactoryEitherResponse = rpcServiceStubFactory.createNestedClassId(Name.identifier("EitherResponse"))
 }
 
 object RpcNames {
@@ -34,10 +45,9 @@ object RpcNames {
     val CHECK_FOR_ARGUMENT_NAME = Name.identifier("checkFor")
 
     val SERVICE_DESCRIPTOR_PROPERTY_NAME: Name = Name.identifier("descriptor")
+    val SERVICE_FACTORY_PROPERTY_NAME: Name = Name.identifier("factory")
 
-    val RPC_META_SERVICE_CLASS: Name = Name.identifier("serviceClass")
     val RPC_META_PROTOCOL_CLASS: Name = Name.identifier("protocolClass")
-    val RPC_META_DESCRIPTOR_CLASS: Name = Name.identifier("descriptorClass")
 }
 
 object ProtoClassId {

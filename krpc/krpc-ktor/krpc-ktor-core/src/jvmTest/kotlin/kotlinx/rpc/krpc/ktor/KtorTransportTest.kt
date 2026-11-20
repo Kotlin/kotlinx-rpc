@@ -239,7 +239,7 @@ class KtorTransportTest {
         newPool.close()
     }
 
-    @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
+    @OptIn(DelicateCoroutinesApi::class)
     @Test
     fun testServerTerminatesWhenClientWsDoes() = runTestWithCoroutinesProbes(timeout = 60.seconds) {
         val logger = setupLogger()

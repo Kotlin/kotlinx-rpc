@@ -8,7 +8,8 @@ import kotlinx.rpc.descriptor.RpcCallable
 import kotlinx.rpc.descriptor.RpcType
 import kotlinx.rpc.internal.rpcInternalKClass
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.krpc.descriptor.KrpcServiceDescriptor
+import kotlinx.rpc.krpc.KrpcProtocol
+import kotlinx.rpc.krpc.descriptor.KrpcSerializers
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.nullable
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -38,13 +39,11 @@ private fun SerializersModule.buildContextual(type: KType): KSerializer<Any?> {
 }
 
 @InternalRpcApi
-public fun SerializersModule.buildContextual(type: RpcType, descriptor: KrpcServiceDescriptor<*>): KSerializer<Any?> {
+public fun SerializersModule.buildContextual(type: RpcType, serializers: KrpcSerializers): KSerializer<Any?> {
     return type.annotations
         .filterIsInstance<Serializable>()
         .lastOrNull()
-        ?.let {
-            descriptor.serializers[it.with]
-        }
+        ?.let { serializers[it.with] }
         ?: buildContextual(type.kType)
 }
 
@@ -99,12 +98,12 @@ public fun <T> decodeMessageData(
 
 @InternalRpcApi
 public class CallableParametersSerializer(
-    private val callable: RpcCallable<*>,
-    serviceDescriptor: KrpcServiceDescriptor<*>,
+    private val callable: RpcCallable<KrpcProtocol, *>,
+    serializers: KrpcSerializers,
     module: SerializersModule,
 ) : KSerializer<Array<Any?>> {
     private val callableSerializers = Array(callable.parameters.size) { i ->
-        module.buildContextual(callable.parameters[i].type, serviceDescriptor)
+        module.buildContextual(callable.parameters[i].type, serializers)
     }
 
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("CallableParametersSerializer") {

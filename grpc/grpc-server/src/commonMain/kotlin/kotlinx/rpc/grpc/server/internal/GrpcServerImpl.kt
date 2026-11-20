@@ -16,6 +16,7 @@ import kotlinx.rpc.descriptor.RpcCallable
 import kotlinx.rpc.descriptor.flowInvokator
 import kotlinx.rpc.descriptor.unaryInvokator
 import kotlinx.rpc.grpc.GrpcProtocol
+import kotlinx.rpc.grpc.GrpcService
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.descriptor.grpcDescriptor
@@ -79,7 +80,7 @@ public class GrpcServerImpl internal constructor(
 
     private val localRegistry = RpcInternalConcurrentHashMap<KClass<*>, GrpcServerServiceDefinition>()
 
-    override fun <Service : RpcService<GrpcProtocol, Service>> registerService(
+    override fun <Service : GrpcService<Service>> registerService(
         serviceKClass: KClass<Service>,
         serviceFactory: () -> Service,
     ) {
@@ -94,13 +95,13 @@ public class GrpcServerImpl internal constructor(
         }
     }
 
-    override fun <Service : RpcService<GrpcProtocol, Service>> deregisterService(serviceKClass: KClass<Service>) {
+    override fun <Service : GrpcService<Service>> deregisterService(serviceKClass: KClass<Service>) {
         localRegistry.remove(serviceKClass)?.let {
             registry.removeService(it)
         }
     }
 
-    private fun <Service : RpcService<GrpcProtocol, Service>> getDefinition(
+    private fun <Service : GrpcService<Service>> getDefinition(
         service: Service,
         serviceKClass: KClass<Service>,
     ): GrpcServerServiceDefinition {
@@ -121,7 +122,7 @@ public class GrpcServerImpl internal constructor(
         return serverServiceDefinition(delegate.serviceDescriptor, methods)
     }
 
-    private fun <Service : RpcService<GrpcProtocol, Service>> RpcCallable<Service>.toDefinitionOn(
+    private fun <Service : GrpcService<Service>> RpcCallable<GrpcProtocol, Service>.toDefinitionOn(
         descriptor: GrpcMethodDescriptor<RequestType, ResponseType>,
         service: Service,
         interceptors: List<GrpcServerInterceptor>,

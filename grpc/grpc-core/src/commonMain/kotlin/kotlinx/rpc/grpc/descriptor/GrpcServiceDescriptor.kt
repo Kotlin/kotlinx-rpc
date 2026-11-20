@@ -8,6 +8,7 @@ import kotlinx.rpc.RpcService
 import kotlinx.rpc.descriptor.RpcServiceDescriptor
 import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.grpc.GrpcProtocol
+import kotlinx.rpc.grpc.GrpcService
 import kotlinx.rpc.grpc.internal.ServiceDescriptor
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
@@ -15,7 +16,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.reflect.KClass
 
 @InternalRpcApi
-public interface GrpcServiceDescriptor<T : RpcService<GrpcProtocol, T>> : RpcServiceDescriptor<GrpcProtocol, T> {
+public interface GrpcServiceDescriptor<T : GrpcService<T>> : RpcServiceDescriptor<GrpcProtocol, T> {
     public fun delegate(resolver: GrpcMarshallerResolver, marshallerConfig: GrpcMarshallerConfig?): GrpcServiceDelegate
 }
 
@@ -28,7 +29,7 @@ public class GrpcServiceDelegate(
 }
 
 @InternalRpcApi
-public val <Service : RpcService<GrpcProtocol, Service>> KClass<Service>.grpcDescriptor: GrpcServiceDescriptor<Service>
+public val <Service : GrpcService<Service>> KClass<Service>.grpcDescriptor: GrpcServiceDescriptor<Service>
     @Suppress("UNCHECKED_CAST")
     get() = serviceDescriptorOf(this) as? GrpcServiceDescriptor<Service>
         ?: error("Service $this is not a gRPC service")

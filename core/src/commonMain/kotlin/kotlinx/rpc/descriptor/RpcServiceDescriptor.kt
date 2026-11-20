@@ -4,11 +4,7 @@
 
 package kotlinx.rpc.descriptor
 
-import kotlinx.coroutines.InternalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.rpc.KrpcProtocol
-import kotlinx.rpc.KrpcService
-import kotlinx.rpc.RpcClient
 import kotlinx.rpc.RpcProtocol
 import kotlinx.rpc.RpcService
 import kotlinx.rpc.internal.internalRpcError
@@ -47,51 +43,42 @@ public fun <Service : RpcService<*, Service>> serviceDescriptorOf(kClass: KClass
     )
 }
 
-/**
- * For smart people only
- */
-@RequiresOptIn
-public annotation class DelicateRpcApi
-
 @ExperimentalRpcApi
-@SubclassOptInRequired(DelicateRpcApi::class)
 public interface RpcServiceDescriptor<Protocol : RpcProtocol, Service : RpcService<Protocol, Service>> {
     public val simpleName: String
 
     public val fqName: String
 
-    public fun getCallable(name: String): RpcCallable<Service>?
+    public fun getCallable(name: String): RpcCallable<Protocol, Service>?
 
-    public val callables: Map<String, RpcCallable<Service>>
-
-    public fun createInstance(serviceId: Long, client: RpcClient<Protocol>): Service
+    public val callables: Map<String, RpcCallable<Protocol, Service>>
 }
 
 @ExperimentalRpcApi
-public interface RpcCallable<Service : RpcService<*, Service>> {
+public interface RpcCallable<Protocol: RpcProtocol, Service : RpcService<Protocol, Service>> {
     public val name: String
     public val returnType: RpcType
-    public val invokator: RpcInvokator<Service>
+    public val invokator: RpcInvokator<Protocol, Service>
     public val parameters: Array<out RpcParameter>
 }
 
 @ExperimentalRpcApi
-public val <Service : RpcService<*, Service>> RpcCallable<Service>.unaryInvokator: RpcInvokator.UnaryResponse<Service>
-    get() = invokator as RpcInvokator.UnaryResponse<Service>
+public val <Protocol: RpcProtocol, Service : RpcService<Protocol, Service>> RpcCallable<Protocol, Service>.unaryInvokator: RpcInvokator.UnaryResponse<Protocol, Service>
+    get() = invokator as RpcInvokator.UnaryResponse<Protocol, Service>
 
 @ExperimentalRpcApi
-public val <Service : RpcService<*, Service>> RpcCallable<Service>.flowInvokator: RpcInvokator.FlowResponse<Service>
-    get() = invokator as RpcInvokator.FlowResponse<Service>
+public val <Protocol: RpcProtocol, Service : RpcService<Protocol, Service>> RpcCallable<Protocol, Service>.flowInvokator: RpcInvokator.FlowResponse<Protocol, Service>
+    get() = invokator as RpcInvokator.FlowResponse<Protocol, Service>
 
 @ExperimentalRpcApi
-public sealed interface RpcInvokator<Service : RpcService<*, Service>> {
+public sealed interface RpcInvokator<Protocol: RpcProtocol, Service : RpcService<Protocol, Service>> {
     @ExperimentalRpcApi
-    public fun interface UnaryResponse<Service : RpcService<*, Service>> : RpcInvokator<Service> {
+    public fun interface UnaryResponse<Protocol: RpcProtocol, Service : RpcService<Protocol, Service>> : RpcInvokator<Protocol, Service> {
         public suspend fun call(service: Service, arguments: Array<Any?>): Any?
     }
 
     @ExperimentalRpcApi
-    public fun interface FlowResponse<Service : RpcService<*, Service>> : RpcInvokator<Service> {
+    public fun interface FlowResponse<Protocol: RpcProtocol, Service : RpcService<Protocol, Service>> : RpcInvokator<Protocol, Service> {
         public fun call(service: Service, arguments: Array<Any?>): Flow<Any?>
     }
 }

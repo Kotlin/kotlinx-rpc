@@ -12,13 +12,13 @@ import kotlin.coroutines.resumeWithException
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.time.Duration.Companion.milliseconds
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class KrpcTestServiceBackend : KrpcTestService {
     override fun nonSuspendFlow(): Flow<Int> {
         return flow {
             repeat(10) {
-                delay(100)
+                delay(100.milliseconds)
                 emit(it)
             }
         }

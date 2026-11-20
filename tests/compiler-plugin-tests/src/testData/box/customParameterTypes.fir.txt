@@ -12,15 +12,18 @@ FILE: customParameterTypes.kt
         public final fun copy(value: R|kotlin/String| = this@R|/TestData|.R|/TestData.value|): R|TestData|
 
     }
-    @R|kotlinx/rpc/krpc/annotations/Krpc|() public abstract interface BoxService : R|kotlin/Any|, R|kotlinx/rpc/krpc/KrpcService<BoxService>| {
+    @R|kotlinx/rpc/krpc/annotations/Krpc|() public abstract interface BoxService : R|kotlin/Any|, R|kotlinx/rpc/RpcService<kotlinx/rpc/krpc/KrpcProtocol, BoxService>| {
         public abstract suspend fun test1(testData: R|TestData|): R|kotlin/String|
 
         public abstract suspend fun test2(testData: R|TestData|): R|kotlin/String|
 
-        public open override val descriptor: R|kotlinx/rpc/krpc/descriptor/KrpcServiceDescriptor<BoxService>|
-            public get(): R|kotlinx/rpc/krpc/descriptor/KrpcServiceDescriptor<BoxService>|
+        public open override val descriptor: R|kotlinx/rpc/descriptor/RpcServiceDescriptor<kotlinx/rpc/krpc/KrpcProtocol, BoxService>|
+            public get(): R|kotlinx/rpc/descriptor/RpcServiceDescriptor<kotlinx/rpc/krpc/KrpcProtocol, BoxService>|
 
-        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
+        public open override val factory: R|kotlinx/rpc/RpcServiceStubFactory.UnaryResponse<kotlinx/rpc/krpc/KrpcProtocol, BoxService>|
+            public get(): R|kotlinx/rpc/RpcServiceStubFactory.UnaryResponse<kotlinx/rpc/krpc/KrpcProtocol, BoxService>|
+
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub<T : R|kotlinx/rpc/RpcUnaryResponseCaller<kotlinx/rpc/krpc/KrpcProtocol>|> : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
 

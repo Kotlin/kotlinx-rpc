@@ -5,6 +5,7 @@
 package kotlinx.rpc.codegen
 
 import kotlinx.rpc.codegen.FirRpcPredicates.rpcMeta
+import kotlinx.rpc.codegen.common.RpcClassId
 import kotlinx.rpc.codegen.common.RpcNames
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.fir.FirSession
@@ -33,12 +34,11 @@ class FirRpcServiceSuperTypeExtension(session: FirSession) : FirSupertypeGenerat
         resolvedSupertypes: List<FirResolvedTypeRef>,
         typeResolver: TypeResolveService,
     ): List<ConeKotlinType> {
-        val serviceClass = classLikeDeclaration.symbol.rpcAnnotation(session, rpcMeta)
-            ?.classFromRpcMeta(session, RpcNames.RPC_META_SERVICE_CLASS) as? ConeClassLikeType
+        val protocolType = classLikeDeclaration.symbol.rpcAnnotation(session, rpcMeta)?.protocolType(session)
             ?: return emptyList()
         val selfType = classLikeDeclaration.symbol.constructType()
 
-        return listOf(serviceClass.lookupTag.classId.constructClassLikeType(arrayOf(selfType)))
+        return listOf(RpcClassId.rpcService.constructClassLikeType(arrayOf(protocolType, selfType)))
     }
 
     override fun FirDeclarationPredicateRegistrar.registerPredicates() {

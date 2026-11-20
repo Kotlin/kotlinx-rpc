@@ -36,7 +36,7 @@ import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
  * @see Grpc.Method
  * @see kotlinx.rpc.annotations.Rpc
  */
-@RpcMeta(GrpcService::class, GrpcProtocol::class, GrpcServiceDescriptor::class)
+@RpcMeta(GrpcProtocol::class)
 @Target(AnnotationTarget.CLASS)
 public annotation class Grpc(
     val protoPackage: String = "",

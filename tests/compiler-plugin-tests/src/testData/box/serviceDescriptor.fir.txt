@@ -1,11 +1,14 @@
 FILE: serviceDescriptor.kt
-    @R|kotlinx/rpc/krpc/annotations/Krpc|() public abstract interface BoxService : R|kotlin/Any|, R|kotlinx/rpc/krpc/KrpcService<BoxService>| {
+    @R|kotlinx/rpc/krpc/annotations/Krpc|() public abstract interface BoxService : R|kotlin/Any|, R|kotlinx/rpc/RpcService<kotlinx/rpc/krpc/KrpcProtocol, BoxService>| {
         public abstract suspend fun simple(): R|kotlin/String|
 
-        public open override val descriptor: R|kotlinx/rpc/krpc/descriptor/KrpcServiceDescriptor<BoxService>|
-            public get(): R|kotlinx/rpc/krpc/descriptor/KrpcServiceDescriptor<BoxService>|
+        public open override val descriptor: R|kotlinx/rpc/descriptor/RpcServiceDescriptor<kotlinx/rpc/krpc/KrpcProtocol, BoxService>|
+            public get(): R|kotlinx/rpc/descriptor/RpcServiceDescriptor<kotlinx/rpc/krpc/KrpcProtocol, BoxService>|
 
-        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
+        public open override val factory: R|kotlinx/rpc/RpcServiceStubFactory.UnaryResponse<kotlinx/rpc/krpc/KrpcProtocol, BoxService>|
+            public get(): R|kotlinx/rpc/RpcServiceStubFactory.UnaryResponse<kotlinx/rpc/krpc/KrpcProtocol, BoxService>|
+
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub<T : R|kotlinx/rpc/RpcUnaryResponseCaller<kotlinx/rpc/krpc/KrpcProtocol>|> : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
 
@@ -15,7 +18,7 @@ FILE: serviceDescriptor.kt
     @R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|)) [evaluated = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|))]) public final fun box(): R|kotlin/String| {
         ^box R|kotlinx/coroutines/runBlocking|<R|kotlin/String|>(<L> = runBlocking@fun R|kotlinx/coroutines/CoroutineScope|.<anonymous>(): R|kotlin/String| <inline=NoInline, kind=EXACTLY_ONCE>  {
             lval descriptor: R|kotlinx/rpc/descriptor/RpcServiceDescriptor<*, BoxService>| = R|kotlinx/rpc/descriptor/serviceDescriptorOf|<R|BoxService|>()
-            lval result: R|kotlin/String?| = R|<local>/descriptor|.R|SubstitutionOverride<kotlinx/rpc/descriptor/RpcServiceDescriptor.callables: R|kotlin/collections/Map<kotlin/String, kotlinx/rpc/descriptor/RpcCallable<BoxService>>|>|.R|SubstitutionOverride<kotlin/collections/Map.get: R|kotlinx/rpc/descriptor/RpcCallable<BoxService>?|>|(String(simple))?.{ $subj$.R|SubstitutionOverride<kotlinx/rpc/descriptor/RpcCallable.name: R|kotlin/String|>| }
+            lval result: R|kotlin/String?| = R|<local>/descriptor|.R|SubstitutionOverride<kotlinx/rpc/descriptor/RpcServiceDescriptor.callables: R|kotlin/collections/Map<kotlin/String, kotlinx/rpc/descriptor/RpcCallable<CapturedType(*), BoxService>>|>|.R|SubstitutionOverride<kotlin/collections/Map.get: R|kotlinx/rpc/descriptor/RpcCallable<CapturedType(*), BoxService>?|>|(String(simple))?.{ $subj$.R|SubstitutionOverride<kotlinx/rpc/descriptor/RpcCallable.name: R|kotlin/String|>| }
             ^ when () {
                 ==(R|<local>/result|, String(simple)) ->  {
                     String(OK)

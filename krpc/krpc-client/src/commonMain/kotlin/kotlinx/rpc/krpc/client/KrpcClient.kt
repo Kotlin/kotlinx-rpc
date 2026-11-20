@@ -26,6 +26,9 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.rpc.RpcCall
 import kotlinx.rpc.RpcClient
+import kotlinx.rpc.RpcServiceStubFactory
+import kotlinx.rpc.RpcFlowResponseCaller
+import kotlinx.rpc.RpcUnaryResponseCaller
 import kotlinx.rpc.descriptor.RpcCallable
 import kotlinx.rpc.descriptor.RpcInvokator
 import kotlinx.rpc.internal.utils.InternalRpcApi
@@ -33,11 +36,13 @@ import kotlinx.rpc.internal.utils.getOrNull
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlinx.rpc.krpc.KrpcConfig
 import kotlinx.rpc.krpc.KrpcProtocol
+import kotlinx.rpc.krpc.KrpcService
 import kotlinx.rpc.krpc.KrpcTransport
 import kotlinx.rpc.krpc.client.internal.ClientStreamContext
 import kotlinx.rpc.krpc.client.internal.ClientStreamSerializer
 import kotlinx.rpc.krpc.client.internal.KrpcClientConnector
 import kotlinx.rpc.krpc.client.internal.StreamCall
+import kotlinx.rpc.krpc.descriptor.KrpcSerializers
 import kotlinx.rpc.krpc.descriptor.KrpcServiceDescriptor
 import kotlinx.rpc.krpc.internal.*
 import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
@@ -76,7 +81,12 @@ public abstract class InitializedKrpcClient(
  * serializing data, tracking streams, processing exceptions, and other protocol responsibilities.
  * Leaves out the delivery of encoded messages to the specific implementations with [KrpcTransport].
  */
-public abstract class KrpcClient : RpcClient<KrpcProtocol>(), KrpcEndpoint {
+// TODO: Split up into KrpcClient and KrpcClientImpl
+public abstract class KrpcClient :
+    RpcClient<KrpcProtocol>(),
+    KrpcEndpoint,
+    RpcFlowResponseCaller<KrpcProtocol>,
+    RpcUnaryResponseCaller<KrpcProtocol> {
     /**
      * Called once to provide [KrpcTransport] for this client.
      *
@@ -263,11 +273,24 @@ public abstract class KrpcClient : RpcClient<KrpcProtocol>(), KrpcEndpoint {
         }
     }
 
-    final override suspend fun <T> call(call: RpcCall): T {
-        return callStreaming<T>(call).first()
+    final override fun <T : KrpcService<T>> createStub(
+        factory: RpcServiceStubFactory<KrpcProtocol, T>,
+        serviceId: Long,
+    ): T = when (factory) {
+        is RpcServiceStubFactory.UnaryResponse<KrpcProtocol, T> -> factory.create(serviceId, this)
+        is RpcServiceStubFactory.FlowResponse<KrpcProtocol, T> -> factory.create(serviceId, this)
+        is RpcServiceStubFactory.EitherResponse<KrpcProtocol, T> -> factory.create(serviceId, this)
     }
 
-    final override fun <T> callStreaming(call: RpcCall): Flow<T> {
+    final override suspend fun <Service : KrpcService<Service>, T> callWithUnaryResponse(
+        call: RpcCall<KrpcProtocol, Service>,
+    ): T {
+        return callWithFlowResponse<Service, T>(call).first()
+    }
+
+    final override fun <Service : KrpcService<Service>, T> callWithFlowResponse(
+        call: RpcCall<KrpcProtocol, Service>,
+    ): Flow<T> {
         return flow {
             if (clientCancelled) {
                 error("RpcClient was cancelled")
@@ -278,6 +301,8 @@ public abstract class KrpcClient : RpcClient<KrpcProtocol>(), KrpcEndpoint {
             val id = callCounter.incrementAndGet()
             val callable = call.descriptor.getCallable(call.callableName)
                 ?: error("Unexpected callable '${call.callableName}' for ${call.descriptor.fqName} service")
+
+            val serializers = (call.descriptor as KrpcServiceDescriptor<*>).serializers
 
             val callId = "$connectionId:${callable.name}:$id"
 
@@ -295,6 +320,7 @@ public abstract class KrpcClient : RpcClient<KrpcProtocol>(), KrpcEndpoint {
                     callId = callId,
                     call = call,
                     callable = callable,
+                    serializers = serializers,
                     serialFormat = serialFormat,
                     pluginParams = mapOf(KrpcPluginKey.NON_SUSPENDING_SERVER_FLOW_MARKER to ""),
                 )
@@ -304,7 +330,7 @@ public abstract class KrpcClient : RpcClient<KrpcProtocol>(), KrpcEndpoint {
                         return@subscribeToCallResponse
                     }
 
-                    handleStreamingMessage(message, channel, callable, call.descriptor as KrpcServiceDescriptor)
+                    handleStreamingMessage(message, channel, callable, serializers)
                 }
 
                 connector.sendMessage(request)
@@ -372,8 +398,8 @@ public abstract class KrpcClient : RpcClient<KrpcProtocol>(), KrpcEndpoint {
     private suspend fun <T> handleStreamingMessage(
         message: KrpcCallMessage,
         channel: Channel<Result<T>>,
-        callable: RpcCallable<*>,
-        descriptor: KrpcServiceDescriptor<*>,
+        callable: RpcCallable<KrpcProtocol, *>,
+        serializers: KrpcSerializers,
     ) {
         when (message) {
             is KrpcCallMessage.CallData -> {
@@ -388,7 +414,7 @@ public abstract class KrpcClient : RpcClient<KrpcProtocol>(), KrpcEndpoint {
 
             is KrpcCallMessage.CallSuccess, is KrpcCallMessage.StreamMessage -> {
                 val value = runCatching {
-                    val serializerResult = serialFormat.serializersModule.buildContextual(callable.returnType, descriptor)
+                    val serializerResult = serialFormat.serializersModule.buildContextual(callable.returnType, serializers)
 
                     decodeMessageData(serialFormat, serializerResult, message)
                 }
@@ -428,12 +454,13 @@ public abstract class KrpcClient : RpcClient<KrpcProtocol>(), KrpcEndpoint {
 
     private fun serializeRequest(
         callId: String,
-        call: RpcCall,
-        callable: RpcCallable<*>,
+        call: RpcCall<KrpcProtocol, *>,
+        callable: RpcCallable<KrpcProtocol, *>,
+        serializers: KrpcSerializers,
         serialFormat: SerialFormat,
         pluginParams: Map<KrpcPluginKey, String> = emptyMap(),
     ): KrpcCallMessage {
-        val parametersSerializer = CallableParametersSerializer(callable, call.descriptor as KrpcServiceDescriptor, serialFormat.serializersModule)
+        val parametersSerializer = CallableParametersSerializer(callable, serializers, serialFormat.serializersModule)
 
         return when (serialFormat) {
             is StringFormat -> {
@@ -585,10 +612,10 @@ public abstract class KrpcClient : RpcClient<KrpcProtocol>(), KrpcEndpoint {
     }
 
     @Suppress("SameReturnValue")
-    private fun RpcCallable<*>.toMessageCallType(): KrpcCallMessage.CallType {
+    private fun RpcCallable<KrpcProtocol, *>.toMessageCallType(): KrpcCallMessage.CallType {
         return when (invokator) {
             is RpcInvokator.FlowResponse -> KrpcCallMessage.CallType.Method
-            is RpcInvokator.UnaryResponse<*> -> KrpcCallMessage.CallType.Method
+            is RpcInvokator.UnaryResponse -> KrpcCallMessage.CallType.Method
         }
     }
 }

@@ -65,10 +65,6 @@ public final class kotlinx/rpc/krpc/KrpcConfigKt {
 public abstract interface class kotlinx/rpc/krpc/KrpcProtocol : kotlinx/rpc/RpcProtocol {
 }
 
-public abstract interface class kotlinx/rpc/krpc/KrpcService : kotlinx/rpc/RpcService {
-	public abstract fun getDescriptor ()Lkotlinx/rpc/krpc/descriptor/KrpcServiceDescriptor;
-}
-
 public abstract interface class kotlinx/rpc/krpc/KrpcTransport : kotlinx/coroutines/CoroutineScope {
 	public abstract fun receive (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun send (Lkotlinx/rpc/krpc/KrpcTransportMessage;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;

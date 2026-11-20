@@ -5,8 +5,5 @@
 package kotlinx.rpc.krpc
 
 import kotlinx.rpc.RpcService
-import kotlinx.rpc.krpc.descriptor.KrpcServiceDescriptor
 
-public interface KrpcService<T: KrpcService<T>>: RpcService<KrpcProtocol, T> {
-    public override val descriptor: KrpcServiceDescriptor<T>
-}
+public typealias KrpcService<T> = RpcService<KrpcProtocol, T>

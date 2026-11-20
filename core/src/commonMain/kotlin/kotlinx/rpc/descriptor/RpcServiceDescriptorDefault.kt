@@ -4,17 +4,18 @@
 
 package kotlinx.rpc.descriptor
 
+import kotlinx.rpc.RpcProtocol
 import kotlinx.rpc.RpcService
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.reflect.KType
 
 @InternalRpcApi
-public class RpcCallableDefault<Service : RpcService<*, Service>>(
+public class RpcCallableDefault<Protocol: RpcProtocol, Service : RpcService<Protocol, Service>>(
     override val name: String,
     override val returnType: RpcType,
-    override val invokator: RpcInvokator<Service>,
+    override val invokator: RpcInvokator<Protocol, Service>,
     override val parameters: Array<out RpcParameter>,
-) : RpcCallable<Service>
+) : RpcCallable<Protocol, Service>
 
 @InternalRpcApi
 public class RpcParameterDefault(

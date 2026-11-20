@@ -55,12 +55,37 @@ internal class RpcIrContext(
         referenceIrBuiltinClassSymbol("kotlin", "Pair")
     }
 
-    val rpcClient by lazy {
-        referenceRpcIrClassSymbol("RpcClient")
+    val rpcUnaryResponseCaller by lazy {
+        referenceRpcIrClassSymbol("RpcUnaryResponseCaller")
     }
+
+    val rpcFlowResponseCaller by lazy {
+        referenceRpcIrClassSymbol("RpcFlowResponseCaller")
+    }
+
 
     val rpcCall by lazy {
         referenceRpcIrClassSymbol("RpcCall")
+    }
+
+    val rpcService by lazy {
+        referenceRpcIrClassSymbol("RpcService")
+    }
+
+    val rpcServiceStubFactory by lazy {
+        referenceRpcIrClassSymbol("RpcServiceStubFactory")
+    }
+
+    val rpcServiceStubFactoryMixed by lazy {
+        rpcServiceStubFactory.subClass("EitherResponse")
+    }
+
+    val rpcServiceStubFactoryStreaming by lazy {
+        rpcServiceStubFactory.subClass("FlowResponse")
+    }
+
+    val rpcServiceStubFactorySuspending by lazy {
+        rpcServiceStubFactory.subClass("UnaryResponse")
     }
 
     val withProtoDescriptor by lazy {
@@ -206,12 +231,12 @@ internal class RpcIrContext(
     val functions = Functions()
 
     inner class Functions {
-        val rpcClientCall by lazy {
-            rpcClient.namedFunction("call")
+        val rpcUnaryResponseCallerCall by lazy {
+            rpcUnaryResponseCaller.namedFunction("callWithUnaryResponse")
         }
 
-        val rpcClientCallServerStreaming by lazy {
-            rpcClient.namedFunction("callStreaming")
+        val rpcFlowResponseCallerCall by lazy {
+            rpcFlowResponseCaller.namedFunction("callWithFlowResponse")
         }
 
         val typeOf by lazy {

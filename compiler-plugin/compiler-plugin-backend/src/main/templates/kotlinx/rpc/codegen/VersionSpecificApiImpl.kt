@@ -215,7 +215,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
     }
 
     override fun IrValueParameter.copyToVS(irFunction: IrFunction, origin: IrDeclarationOrigin): IrValueParameter {
-        return copyTo(irFunction, origin)
+        return copyTo(irFunction, origin, type = type)
     }
 
     //##csm MessageCollectorAccess

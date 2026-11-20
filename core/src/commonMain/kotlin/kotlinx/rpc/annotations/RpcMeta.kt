@@ -4,11 +4,10 @@
 
 package kotlinx.rpc.annotations
 
+import kotlinx.rpc.RpcProtocol
 import kotlin.reflect.KClass
 
 @Target(AnnotationTarget.ANNOTATION_CLASS)
 public annotation class RpcMeta(
-    val serviceClass: KClass<*>,
-    val protocolClass: KClass<*>,
-    val descriptorClass: KClass<*>
+    val protocolClass: KClass<out RpcProtocol>
 )

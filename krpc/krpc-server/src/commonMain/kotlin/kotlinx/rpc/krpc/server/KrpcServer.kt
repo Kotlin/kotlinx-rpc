@@ -6,12 +6,12 @@ package kotlinx.rpc.krpc.server
 
 import kotlinx.coroutines.*
 import kotlinx.rpc.RpcServer
-import kotlinx.rpc.RpcService
 import kotlinx.rpc.descriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlinx.rpc.krpc.KrpcConfig
 import kotlinx.rpc.krpc.KrpcProtocol
+import kotlinx.rpc.krpc.KrpcService
 import kotlinx.rpc.krpc.KrpcTransport
 import kotlinx.rpc.krpc.descriptor.KrpcServiceDescriptor
 import kotlinx.rpc.krpc.descriptor.krpcDescriptor
@@ -119,7 +119,7 @@ public abstract class KrpcServer(
         }
     }
 
-    final override fun <Service : RpcService<KrpcProtocol, Service>> registerService(
+    final override fun <Service : KrpcService<Service>> registerService(
         serviceKClass: KClass<Service>,
         serviceFactory: () -> Service,
     ) {
@@ -136,12 +136,14 @@ public abstract class KrpcServer(
         }
     }
 
-    final override fun <Service : RpcService<KrpcProtocol, Service>> deregisterService(serviceKClass: KClass<Service>) {
-        connector.unsubscribeFromServiceMessages(serviceKClass.descriptor.fqName)
-        rpcServices.remove(serviceKClass.descriptor.fqName)?.close()
+    final override fun <Service : KrpcService<Service>> deregisterService(serviceKClass: KClass<Service>) {
+        val descriptor = serviceKClass.descriptor
+
+        connector.unsubscribeFromServiceMessages(descriptor.fqName)
+        rpcServices.remove(descriptor.fqName)?.close()
     }
 
-    private fun <Service : RpcService<KrpcProtocol, Service>> createNewServiceInstance(
+    private fun <Service : KrpcService<Service>> createNewServiceInstance(
         descriptor: KrpcServiceDescriptor<Service>,
         serviceFactory: () -> Service,
     ): KrpcServerService<Service> {

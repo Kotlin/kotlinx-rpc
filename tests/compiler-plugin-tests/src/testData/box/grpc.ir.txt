@@ -71,36 +71,37 @@ FILE fqName:<root> fileName:/grpc.kt
       VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
       overridden:
         public open fun toString (): kotlin.String declared in kotlin.Any
-  CLASS INTERFACE name:BoxService modality:ABSTRACT visibility:public superTypes:[kotlin.Any; kotlinx.rpc.grpc.GrpcService<<root>.BoxService>]
+  CLASS INTERFACE name:BoxService modality:ABSTRACT visibility:public superTypes:[kotlin.Any; kotlinx.rpc.RpcService<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>]
     annotations:
       Grpc(protoPackage = <null>, protoServiceName = <null>)
       WithServiceDescriptor(stub = Companion::class)
     thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:<root>.BoxService
     CLASS GENERATED[kotlinx.rpc.codegen.RpcGeneratedStubKey] CLASS name:$rpcServiceStub modality:FINAL visibility:public superTypes:[<root>.BoxService]
-      thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:<root>.BoxService.$rpcServiceStub
+      thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub>
+      TYPE_PARAMETER GENERATED[kotlinx.rpc.codegen.RpcGeneratedStubKey] name:T index:0 variance: superTypes:[kotlinx.rpc.RpcFlowResponseCaller<kotlinx.rpc.grpc.GrpcProtocol>; kotlinx.rpc.RpcUnaryResponseCaller<kotlinx.rpc.grpc.GrpcProtocol>] reified:false
       PROPERTY name:__rpc_stub_id visibility:private modality:FINAL [val]
         FIELD PROPERTY_BACKING_FIELD name:__rpc_stub_id type:kotlin.Long visibility:private [final]
           EXPRESSION_BODY
             GET_VAR '__rpc_stub_id: kotlin.Long declared in <root>.BoxService.$rpcServiceStub.<init>' type=kotlin.Long origin=INITIALIZE_PROPERTY_FROM_PARAMETER
         FUN DEFAULT_PROPERTY_ACCESSOR name:<get-__rpc_stub_id> visibility:private modality:FINAL returnType:kotlin.Long
-          VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub
+          VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub>
           correspondingProperty: PROPERTY name:__rpc_stub_id visibility:private modality:FINAL [val]
           BLOCK_BODY
             RETURN type=kotlin.Nothing from='private final fun <get-__rpc_stub_id> (): kotlin.Long declared in <root>.BoxService.$rpcServiceStub'
               GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:__rpc_stub_id type:kotlin.Long visibility:private [final]' type=kotlin.Long origin=null
-                receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.<get-__rpc_stub_id>' type=<root>.BoxService.$rpcServiceStub origin=null
-      PROPERTY name:__rpc_client visibility:private modality:FINAL [val]
-        FIELD PROPERTY_BACKING_FIELD name:__rpc_client type:kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> visibility:private [final]
+                receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> declared in <root>.BoxService.$rpcServiceStub.<get-__rpc_stub_id>' type=<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> origin=null
+      PROPERTY name:__rpc_caller visibility:private modality:FINAL [val]
+        FIELD PROPERTY_BACKING_FIELD name:__rpc_caller type:T of <root>.BoxService.$rpcServiceStub visibility:private [final]
           EXPRESSION_BODY
-            GET_VAR '__rpc_client: kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> declared in <root>.BoxService.$rpcServiceStub.<init>' type=kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> origin=INITIALIZE_PROPERTY_FROM_PARAMETER
-        FUN DEFAULT_PROPERTY_ACCESSOR name:<get-__rpc_client> visibility:private modality:FINAL returnType:kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol>
-          VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub
-          correspondingProperty: PROPERTY name:__rpc_client visibility:private modality:FINAL [val]
+            GET_VAR '__rpc_caller: T of <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.<init>' type=T of <root>.BoxService.$rpcServiceStub origin=INITIALIZE_PROPERTY_FROM_PARAMETER
+        FUN DEFAULT_PROPERTY_ACCESSOR name:<get-__rpc_caller> visibility:private modality:FINAL returnType:T of <root>.BoxService.$rpcServiceStub
+          VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub>
+          correspondingProperty: PROPERTY name:__rpc_caller visibility:private modality:FINAL [val]
           BLOCK_BODY
-            RETURN type=kotlin.Nothing from='private final fun <get-__rpc_client> (): kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> declared in <root>.BoxService.$rpcServiceStub'
-              GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:__rpc_client type:kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> visibility:private [final]' type=kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> origin=null
-                receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.<get-__rpc_client>' type=<root>.BoxService.$rpcServiceStub origin=null
-      CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService>]
+            RETURN type=kotlin.Nothing from='private final fun <get-__rpc_caller> (): T of <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub'
+              GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:__rpc_caller type:T of <root>.BoxService.$rpcServiceStub visibility:private [final]' type=T of <root>.BoxService.$rpcServiceStub origin=null
+                receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> declared in <root>.BoxService.$rpcServiceStub.<get-__rpc_caller>' type=<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> origin=null
+      CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService>; kotlinx.rpc.RpcServiceStubFactory.EitherResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>]
         thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:<root>.BoxService.$rpcServiceStub.Companion
         PROPERTY name:simpleName visibility:public modality:FINAL [val]
           overridden:
@@ -133,9 +134,9 @@ FILE fqName:<root> fileName:/grpc.kt
                 GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:fqName type:kotlin.String visibility:private [final]' type=kotlin.String origin=null
                   receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.<get-fqName>' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
         PROPERTY name:simpleInvokator visibility:private modality:FINAL [val]
-          FIELD PROPERTY_BACKING_FIELD name:simpleInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> visibility:private [final]
+          FIELD PROPERTY_BACKING_FIELD name:simpleInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> visibility:private [final]
             EXPRESSION_BODY
-              TYPE_OP type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> origin=SAM_CONVERSION typeOperand=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService>
+              TYPE_OP type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=SAM_CONVERSION typeOperand=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>
                 FUN_EXPR type=kotlin.coroutines.SuspendFunction2<<root>.BoxService, kotlin.Array<out kotlin.Any?>, kotlin.Any?> origin=LAMBDA
                   FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL returnType:kotlin.Any? [suspend]
                     VALUE_PARAMETER kind:Regular name:service index:0 type:<root>.BoxService
@@ -148,17 +149,17 @@ FILE fqName:<root> fileName:/grpc.kt
                             CALL 'public final fun get (index: kotlin.Int): T of kotlin.Array declared in kotlin.Array' type=kotlin.Any? origin=GET_ARRAY_ELEMENT
                               ARG <this>: GET_VAR 'arguments: kotlin.Array<out kotlin.Any?> declared in <root>.BoxService.$rpcServiceStub.Companion.simpleInvokator.<anonymous>' type=kotlin.Array<out kotlin.Any?> origin=null
                               ARG index: CONST Int type=kotlin.Int value=0
-          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-simpleInvokator> visibility:private modality:FINAL returnType:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService>
+          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-simpleInvokator> visibility:private modality:FINAL returnType:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>
             VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub.Companion
             correspondingProperty: PROPERTY name:simpleInvokator visibility:private modality:FINAL [val]
             BLOCK_BODY
-              RETURN type=kotlin.Nothing from='private final fun <get-simpleInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion'
-                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:simpleInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> visibility:private [final]' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> origin=null
+              RETURN type=kotlin.Nothing from='private final fun <get-simpleInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion'
+                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:simpleInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> visibility:private [final]' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=null
                   receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.<get-simpleInvokator>' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
         PROPERTY name:unitInvokator visibility:private modality:FINAL [val]
-          FIELD PROPERTY_BACKING_FIELD name:unitInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> visibility:private [final]
+          FIELD PROPERTY_BACKING_FIELD name:unitInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> visibility:private [final]
             EXPRESSION_BODY
-              TYPE_OP type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> origin=SAM_CONVERSION typeOperand=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService>
+              TYPE_OP type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=SAM_CONVERSION typeOperand=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>
                 FUN_EXPR type=kotlin.coroutines.SuspendFunction2<<root>.BoxService, kotlin.Array<out kotlin.Any?>, kotlin.Any?> origin=LAMBDA
                   FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL returnType:kotlin.Any? [suspend]
                     VALUE_PARAMETER kind:Regular name:service index:0 type:<root>.BoxService
@@ -167,17 +168,17 @@ FILE fqName:<root> fileName:/grpc.kt
                       RETURN type=kotlin.Nothing from='local final fun <anonymous> (service: <root>.BoxService, arguments: kotlin.Array<out kotlin.Any?>): kotlin.Any? declared in <root>.BoxService.$rpcServiceStub.Companion.unitInvokator'
                         CALL 'public abstract fun unit (): kotlin.Unit declared in <root>.BoxService' type=kotlin.Unit origin=null
                           ARG <this>: GET_VAR 'service: <root>.BoxService declared in <root>.BoxService.$rpcServiceStub.Companion.unitInvokator.<anonymous>' type=<root>.BoxService origin=null
-          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-unitInvokator> visibility:private modality:FINAL returnType:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService>
+          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-unitInvokator> visibility:private modality:FINAL returnType:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>
             VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub.Companion
             correspondingProperty: PROPERTY name:unitInvokator visibility:private modality:FINAL [val]
             BLOCK_BODY
-              RETURN type=kotlin.Nothing from='private final fun <get-unitInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion'
-                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:unitInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> visibility:private [final]' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> origin=null
+              RETURN type=kotlin.Nothing from='private final fun <get-unitInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion'
+                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:unitInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> visibility:private [final]' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=null
                   receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.<get-unitInvokator>' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
         PROPERTY name:clientStreamInvokator visibility:private modality:FINAL [val]
-          FIELD PROPERTY_BACKING_FIELD name:clientStreamInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> visibility:private [final]
+          FIELD PROPERTY_BACKING_FIELD name:clientStreamInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> visibility:private [final]
             EXPRESSION_BODY
-              TYPE_OP type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> origin=SAM_CONVERSION typeOperand=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService>
+              TYPE_OP type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=SAM_CONVERSION typeOperand=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>
                 FUN_EXPR type=kotlin.coroutines.SuspendFunction2<<root>.BoxService, kotlin.Array<out kotlin.Any?>, kotlin.Any?> origin=LAMBDA
                   FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL returnType:kotlin.Any? [suspend]
                     VALUE_PARAMETER kind:Regular name:service index:0 type:<root>.BoxService
@@ -190,17 +191,17 @@ FILE fqName:<root> fileName:/grpc.kt
                             CALL 'public final fun get (index: kotlin.Int): T of kotlin.Array declared in kotlin.Array' type=kotlin.Any? origin=GET_ARRAY_ELEMENT
                               ARG <this>: GET_VAR 'arguments: kotlin.Array<out kotlin.Any?> declared in <root>.BoxService.$rpcServiceStub.Companion.clientStreamInvokator.<anonymous>' type=kotlin.Array<out kotlin.Any?> origin=null
                               ARG index: CONST Int type=kotlin.Int value=0
-          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-clientStreamInvokator> visibility:private modality:FINAL returnType:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService>
+          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-clientStreamInvokator> visibility:private modality:FINAL returnType:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>
             VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub.Companion
             correspondingProperty: PROPERTY name:clientStreamInvokator visibility:private modality:FINAL [val]
             BLOCK_BODY
-              RETURN type=kotlin.Nothing from='private final fun <get-clientStreamInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion'
-                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:clientStreamInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> visibility:private [final]' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> origin=null
+              RETURN type=kotlin.Nothing from='private final fun <get-clientStreamInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion'
+                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:clientStreamInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> visibility:private [final]' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=null
                   receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.<get-clientStreamInvokator>' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
         PROPERTY name:serverStreamInvokator visibility:private modality:FINAL [val]
-          FIELD PROPERTY_BACKING_FIELD name:serverStreamInvokator type:kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<<root>.BoxService> visibility:private [final]
+          FIELD PROPERTY_BACKING_FIELD name:serverStreamInvokator type:kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> visibility:private [final]
             EXPRESSION_BODY
-              TYPE_OP type=kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<<root>.BoxService> origin=SAM_CONVERSION typeOperand=kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<<root>.BoxService>
+              TYPE_OP type=kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=SAM_CONVERSION typeOperand=kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>
                 FUN_EXPR type=kotlin.Function2<<root>.BoxService, kotlin.Array<out kotlin.Any?>, kotlinx.coroutines.flow.Flow<kotlin.Any?>> origin=LAMBDA
                   FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL returnType:kotlinx.coroutines.flow.Flow<kotlin.Any?>
                     VALUE_PARAMETER kind:Regular name:service index:0 type:<root>.BoxService
@@ -209,17 +210,17 @@ FILE fqName:<root> fileName:/grpc.kt
                       RETURN type=kotlin.Nothing from='local final fun <anonymous> (service: <root>.BoxService, arguments: kotlin.Array<out kotlin.Any?>): kotlinx.coroutines.flow.Flow<kotlin.Any?> declared in <root>.BoxService.$rpcServiceStub.Companion.serverStreamInvokator'
                         CALL 'public abstract fun serverStream (): kotlinx.coroutines.flow.Flow<kotlin.Unit> declared in <root>.BoxService' type=kotlinx.coroutines.flow.Flow<kotlin.Unit> origin=null
                           ARG <this>: GET_VAR 'service: <root>.BoxService declared in <root>.BoxService.$rpcServiceStub.Companion.serverStreamInvokator.<anonymous>' type=<root>.BoxService origin=null
-          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-serverStreamInvokator> visibility:private modality:FINAL returnType:kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<<root>.BoxService>
+          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-serverStreamInvokator> visibility:private modality:FINAL returnType:kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>
             VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub.Companion
             correspondingProperty: PROPERTY name:serverStreamInvokator visibility:private modality:FINAL [val]
             BLOCK_BODY
-              RETURN type=kotlin.Nothing from='private final fun <get-serverStreamInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<<root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion'
-                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:serverStreamInvokator type:kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<<root>.BoxService> visibility:private [final]' type=kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<<root>.BoxService> origin=null
+              RETURN type=kotlin.Nothing from='private final fun <get-serverStreamInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion'
+                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:serverStreamInvokator type:kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> visibility:private [final]' type=kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=null
                   receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.<get-serverStreamInvokator>' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
         PROPERTY name:bidiStreamInvokator visibility:private modality:FINAL [val]
-          FIELD PROPERTY_BACKING_FIELD name:bidiStreamInvokator type:kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<<root>.BoxService> visibility:private [final]
+          FIELD PROPERTY_BACKING_FIELD name:bidiStreamInvokator type:kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> visibility:private [final]
             EXPRESSION_BODY
-              TYPE_OP type=kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<<root>.BoxService> origin=SAM_CONVERSION typeOperand=kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<<root>.BoxService>
+              TYPE_OP type=kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=SAM_CONVERSION typeOperand=kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>
                 FUN_EXPR type=kotlin.Function2<<root>.BoxService, kotlin.Array<out kotlin.Any?>, kotlinx.coroutines.flow.Flow<kotlin.Any?>> origin=LAMBDA
                   FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL returnType:kotlinx.coroutines.flow.Flow<kotlin.Any?>
                     VALUE_PARAMETER kind:Regular name:service index:0 type:<root>.BoxService
@@ -232,17 +233,17 @@ FILE fqName:<root> fileName:/grpc.kt
                             CALL 'public final fun get (index: kotlin.Int): T of kotlin.Array declared in kotlin.Array' type=kotlin.Any? origin=GET_ARRAY_ELEMENT
                               ARG <this>: GET_VAR 'arguments: kotlin.Array<out kotlin.Any?> declared in <root>.BoxService.$rpcServiceStub.Companion.bidiStreamInvokator.<anonymous>' type=kotlin.Array<out kotlin.Any?> origin=null
                               ARG index: CONST Int type=kotlin.Int value=0
-          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-bidiStreamInvokator> visibility:private modality:FINAL returnType:kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<<root>.BoxService>
+          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-bidiStreamInvokator> visibility:private modality:FINAL returnType:kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>
             VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub.Companion
             correspondingProperty: PROPERTY name:bidiStreamInvokator visibility:private modality:FINAL [val]
             BLOCK_BODY
-              RETURN type=kotlin.Nothing from='private final fun <get-bidiStreamInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<<root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion'
-                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:bidiStreamInvokator type:kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<<root>.BoxService> visibility:private [final]' type=kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<<root>.BoxService> origin=null
+              RETURN type=kotlin.Nothing from='private final fun <get-bidiStreamInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion'
+                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:bidiStreamInvokator type:kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> visibility:private [final]' type=kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=null
                   receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.<get-bidiStreamInvokator>' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
         PROPERTY name:customInvokator visibility:private modality:FINAL [val]
-          FIELD PROPERTY_BACKING_FIELD name:customInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> visibility:private [final]
+          FIELD PROPERTY_BACKING_FIELD name:customInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> visibility:private [final]
             EXPRESSION_BODY
-              TYPE_OP type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> origin=SAM_CONVERSION typeOperand=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService>
+              TYPE_OP type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=SAM_CONVERSION typeOperand=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>
                 FUN_EXPR type=kotlin.coroutines.SuspendFunction2<<root>.BoxService, kotlin.Array<out kotlin.Any?>, kotlin.Any?> origin=LAMBDA
                   FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL returnType:kotlin.Any? [suspend]
                     VALUE_PARAMETER kind:Regular name:service index:0 type:<root>.BoxService
@@ -251,35 +252,36 @@ FILE fqName:<root> fileName:/grpc.kt
                       RETURN type=kotlin.Nothing from='local final fun <anonymous> (service: <root>.BoxService, arguments: kotlin.Array<out kotlin.Any?>): kotlin.Any? declared in <root>.BoxService.$rpcServiceStub.Companion.customInvokator'
                         CALL 'public abstract fun custom (): <root>.Custom declared in <root>.BoxService' type=<root>.Custom origin=null
                           ARG <this>: GET_VAR 'service: <root>.BoxService declared in <root>.BoxService.$rpcServiceStub.Companion.customInvokator.<anonymous>' type=<root>.BoxService origin=null
-          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-customInvokator> visibility:private modality:FINAL returnType:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService>
+          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-customInvokator> visibility:private modality:FINAL returnType:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>
             VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub.Companion
             correspondingProperty: PROPERTY name:customInvokator visibility:private modality:FINAL [val]
             BLOCK_BODY
-              RETURN type=kotlin.Nothing from='private final fun <get-customInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion'
-                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:customInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> visibility:private [final]' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> origin=null
+              RETURN type=kotlin.Nothing from='private final fun <get-customInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion'
+                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:customInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> visibility:private [final]' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=null
                   receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.<get-customInvokator>' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
         PROPERTY name:callables visibility:public modality:FINAL [val]
           overridden:
-            public abstract callables: kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<Service of kotlinx.rpc.descriptor.RpcServiceDescriptor>> declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
-          FIELD PROPERTY_BACKING_FIELD name:callables type:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> visibility:private [final]
+            public abstract callables: kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<Protocol of kotlinx.rpc.descriptor.RpcServiceDescriptor, Service of kotlinx.rpc.descriptor.RpcServiceDescriptor>> declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
+          FIELD PROPERTY_BACKING_FIELD name:callables type:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>> visibility:private [final]
             EXPRESSION_BODY
-              CALL 'public final fun mapOf <K, V> (vararg pairs: kotlin.Pair<K of kotlin.collections.mapOf, V of kotlin.collections.mapOf>): kotlin.collections.Map<K of kotlin.collections.mapOf, V of kotlin.collections.mapOf> declared in kotlin.collections' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=null
+              CALL 'public final fun mapOf <K, V> (vararg pairs: kotlin.Pair<K of kotlin.collections.mapOf, V of kotlin.collections.mapOf>): kotlin.collections.Map<K of kotlin.collections.mapOf, V of kotlin.collections.mapOf> declared in kotlin.collections' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>> origin=null
                 TYPE_ARG K: kotlin.String
-                TYPE_ARG V: kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>
-                ARG pairs: VARARG type=kotlin.Array<out kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>>> varargElementType=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>>
-                  CALL 'public final fun to <A, B> (<this>: A of kotlin.to, that: B of kotlin.to): kotlin.Pair<A of kotlin.to, B of kotlin.to> declared in kotlin' type=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=null
+                TYPE_ARG V: kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>
+                ARG pairs: VARARG type=kotlin.Array<out kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>>> varargElementType=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>>
+                  CALL 'public final fun to <A, B> (<this>: A of kotlin.to, that: B of kotlin.to): kotlin.Pair<A of kotlin.to, B of kotlin.to> declared in kotlin' type=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>> origin=null
                     TYPE_ARG A: kotlin.String
-                    TYPE_ARG B: kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>
+                    TYPE_ARG B: kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>
                     ARG <this>: CONST String type=kotlin.String value="simple"
-                    ARG that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<Service of kotlinx.rpc.descriptor.RpcCallableDefault>, parameters: kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter>) declared in kotlinx.rpc.descriptor.RpcCallableDefault' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
-                      TYPE_ARG Service: <root>.BoxService
+                    ARG that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<Protocol of kotlinx.rpc.descriptor.RpcCallableDefault, Service of kotlinx.rpc.descriptor.RpcCallableDefault>, parameters: kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter>) declared in kotlinx.rpc.descriptor.RpcCallableDefault' type=kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=null
+                      TYPE_ARG (of class) Protocol: kotlinx.rpc.grpc.GrpcProtocol
+                      TYPE_ARG (of class) Service: <root>.BoxService
                       ARG name: CONST String type=kotlin.String value="simple"
                       ARG returnType: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType, annotations: kotlin.collections.List<kotlin.Annotation>) declared in kotlinx.rpc.descriptor.RpcTypeDefault' type=kotlinx.rpc.descriptor.RpcType origin=null
                         ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
                           TYPE_ARG T: kotlin.String
                         ARG annotations: CALL 'public final fun emptyList <T> (): kotlin.collections.List<T of kotlin.collections.emptyList> declared in kotlin.collections' type=kotlin.collections.List<kotlin.Annotation> origin=null
                           TYPE_ARG T: kotlin.Annotation
-                      ARG invokator: CALL 'private final fun <get-simpleInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> origin=GET_PROPERTY
+                      ARG invokator: CALL 'private final fun <get-simpleInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=GET_PROPERTY
                         ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
                       ARG parameters: CALL 'public final fun arrayOf <T> (vararg elements: T of kotlin.arrayOf): kotlin.Array<T of kotlin.arrayOf> declared in kotlin' type=kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter> origin=null
                         TYPE_ARG T: kotlinx.rpc.descriptor.RpcParameter
@@ -294,35 +296,37 @@ FILE fqName:<root> fileName:/grpc.kt
                             ARG isOptional: CONST Boolean type=kotlin.Boolean value=false
                             ARG annotations: CALL 'public final fun emptyList <T> (): kotlin.collections.List<T of kotlin.collections.emptyList> declared in kotlin.collections' type=kotlin.collections.List<kotlin.Annotation> origin=null
                               TYPE_ARG T: kotlin.Annotation
-                  CALL 'public final fun to <A, B> (<this>: A of kotlin.to, that: B of kotlin.to): kotlin.Pair<A of kotlin.to, B of kotlin.to> declared in kotlin' type=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=null
+                  CALL 'public final fun to <A, B> (<this>: A of kotlin.to, that: B of kotlin.to): kotlin.Pair<A of kotlin.to, B of kotlin.to> declared in kotlin' type=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>> origin=null
                     TYPE_ARG A: kotlin.String
-                    TYPE_ARG B: kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>
+                    TYPE_ARG B: kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>
                     ARG <this>: CONST String type=kotlin.String value="unit"
-                    ARG that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<Service of kotlinx.rpc.descriptor.RpcCallableDefault>, parameters: kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter>) declared in kotlinx.rpc.descriptor.RpcCallableDefault' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
-                      TYPE_ARG Service: <root>.BoxService
+                    ARG that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<Protocol of kotlinx.rpc.descriptor.RpcCallableDefault, Service of kotlinx.rpc.descriptor.RpcCallableDefault>, parameters: kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter>) declared in kotlinx.rpc.descriptor.RpcCallableDefault' type=kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=null
+                      TYPE_ARG (of class) Protocol: kotlinx.rpc.grpc.GrpcProtocol
+                      TYPE_ARG (of class) Service: <root>.BoxService
                       ARG name: CONST String type=kotlin.String value="unit"
                       ARG returnType: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType, annotations: kotlin.collections.List<kotlin.Annotation>) declared in kotlinx.rpc.descriptor.RpcTypeDefault' type=kotlinx.rpc.descriptor.RpcType origin=null
                         ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
                           TYPE_ARG T: kotlin.Unit
                         ARG annotations: CALL 'public final fun emptyList <T> (): kotlin.collections.List<T of kotlin.collections.emptyList> declared in kotlin.collections' type=kotlin.collections.List<kotlin.Annotation> origin=null
                           TYPE_ARG T: kotlin.Annotation
-                      ARG invokator: CALL 'private final fun <get-unitInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> origin=GET_PROPERTY
+                      ARG invokator: CALL 'private final fun <get-unitInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=GET_PROPERTY
                         ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
                       ARG parameters: CALL 'public final fun emptyArray <T> (): kotlin.Array<T of kotlin.emptyArray> declared in kotlin' type=kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter> origin=null
                         TYPE_ARG T: kotlinx.rpc.descriptor.RpcParameter
-                  CALL 'public final fun to <A, B> (<this>: A of kotlin.to, that: B of kotlin.to): kotlin.Pair<A of kotlin.to, B of kotlin.to> declared in kotlin' type=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=null
+                  CALL 'public final fun to <A, B> (<this>: A of kotlin.to, that: B of kotlin.to): kotlin.Pair<A of kotlin.to, B of kotlin.to> declared in kotlin' type=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>> origin=null
                     TYPE_ARG A: kotlin.String
-                    TYPE_ARG B: kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>
+                    TYPE_ARG B: kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>
                     ARG <this>: CONST String type=kotlin.String value="clientStream"
-                    ARG that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<Service of kotlinx.rpc.descriptor.RpcCallableDefault>, parameters: kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter>) declared in kotlinx.rpc.descriptor.RpcCallableDefault' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
-                      TYPE_ARG Service: <root>.BoxService
+                    ARG that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<Protocol of kotlinx.rpc.descriptor.RpcCallableDefault, Service of kotlinx.rpc.descriptor.RpcCallableDefault>, parameters: kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter>) declared in kotlinx.rpc.descriptor.RpcCallableDefault' type=kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=null
+                      TYPE_ARG (of class) Protocol: kotlinx.rpc.grpc.GrpcProtocol
+                      TYPE_ARG (of class) Service: <root>.BoxService
                       ARG name: CONST String type=kotlin.String value="clientStream"
                       ARG returnType: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType, annotations: kotlin.collections.List<kotlin.Annotation>) declared in kotlinx.rpc.descriptor.RpcTypeDefault' type=kotlinx.rpc.descriptor.RpcType origin=null
                         ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
                           TYPE_ARG T: kotlin.Unit
                         ARG annotations: CALL 'public final fun emptyList <T> (): kotlin.collections.List<T of kotlin.collections.emptyList> declared in kotlin.collections' type=kotlin.collections.List<kotlin.Annotation> origin=null
                           TYPE_ARG T: kotlin.Annotation
-                      ARG invokator: CALL 'private final fun <get-clientStreamInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> origin=GET_PROPERTY
+                      ARG invokator: CALL 'private final fun <get-clientStreamInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=GET_PROPERTY
                         ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
                       ARG parameters: CALL 'public final fun arrayOf <T> (vararg elements: T of kotlin.arrayOf): kotlin.Array<T of kotlin.arrayOf> declared in kotlin' type=kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter> origin=null
                         TYPE_ARG T: kotlinx.rpc.descriptor.RpcParameter
@@ -337,35 +341,37 @@ FILE fqName:<root> fileName:/grpc.kt
                             ARG isOptional: CONST Boolean type=kotlin.Boolean value=false
                             ARG annotations: CALL 'public final fun emptyList <T> (): kotlin.collections.List<T of kotlin.collections.emptyList> declared in kotlin.collections' type=kotlin.collections.List<kotlin.Annotation> origin=null
                               TYPE_ARG T: kotlin.Annotation
-                  CALL 'public final fun to <A, B> (<this>: A of kotlin.to, that: B of kotlin.to): kotlin.Pair<A of kotlin.to, B of kotlin.to> declared in kotlin' type=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=null
+                  CALL 'public final fun to <A, B> (<this>: A of kotlin.to, that: B of kotlin.to): kotlin.Pair<A of kotlin.to, B of kotlin.to> declared in kotlin' type=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>> origin=null
                     TYPE_ARG A: kotlin.String
-                    TYPE_ARG B: kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>
+                    TYPE_ARG B: kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>
                     ARG <this>: CONST String type=kotlin.String value="serverStream"
-                    ARG that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<Service of kotlinx.rpc.descriptor.RpcCallableDefault>, parameters: kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter>) declared in kotlinx.rpc.descriptor.RpcCallableDefault' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
-                      TYPE_ARG Service: <root>.BoxService
+                    ARG that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<Protocol of kotlinx.rpc.descriptor.RpcCallableDefault, Service of kotlinx.rpc.descriptor.RpcCallableDefault>, parameters: kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter>) declared in kotlinx.rpc.descriptor.RpcCallableDefault' type=kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=null
+                      TYPE_ARG (of class) Protocol: kotlinx.rpc.grpc.GrpcProtocol
+                      TYPE_ARG (of class) Service: <root>.BoxService
                       ARG name: CONST String type=kotlin.String value="serverStream"
                       ARG returnType: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType, annotations: kotlin.collections.List<kotlin.Annotation>) declared in kotlinx.rpc.descriptor.RpcTypeDefault' type=kotlinx.rpc.descriptor.RpcType origin=null
                         ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
                           TYPE_ARG T: kotlin.Unit
                         ARG annotations: CALL 'public final fun emptyList <T> (): kotlin.collections.List<T of kotlin.collections.emptyList> declared in kotlin.collections' type=kotlin.collections.List<kotlin.Annotation> origin=null
                           TYPE_ARG T: kotlin.Annotation
-                      ARG invokator: CALL 'private final fun <get-serverStreamInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<<root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<<root>.BoxService> origin=GET_PROPERTY
+                      ARG invokator: CALL 'private final fun <get-serverStreamInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=GET_PROPERTY
                         ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
                       ARG parameters: CALL 'public final fun emptyArray <T> (): kotlin.Array<T of kotlin.emptyArray> declared in kotlin' type=kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter> origin=null
                         TYPE_ARG T: kotlinx.rpc.descriptor.RpcParameter
-                  CALL 'public final fun to <A, B> (<this>: A of kotlin.to, that: B of kotlin.to): kotlin.Pair<A of kotlin.to, B of kotlin.to> declared in kotlin' type=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=null
+                  CALL 'public final fun to <A, B> (<this>: A of kotlin.to, that: B of kotlin.to): kotlin.Pair<A of kotlin.to, B of kotlin.to> declared in kotlin' type=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>> origin=null
                     TYPE_ARG A: kotlin.String
-                    TYPE_ARG B: kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>
+                    TYPE_ARG B: kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>
                     ARG <this>: CONST String type=kotlin.String value="bidiStream"
-                    ARG that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<Service of kotlinx.rpc.descriptor.RpcCallableDefault>, parameters: kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter>) declared in kotlinx.rpc.descriptor.RpcCallableDefault' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
-                      TYPE_ARG Service: <root>.BoxService
+                    ARG that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<Protocol of kotlinx.rpc.descriptor.RpcCallableDefault, Service of kotlinx.rpc.descriptor.RpcCallableDefault>, parameters: kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter>) declared in kotlinx.rpc.descriptor.RpcCallableDefault' type=kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=null
+                      TYPE_ARG (of class) Protocol: kotlinx.rpc.grpc.GrpcProtocol
+                      TYPE_ARG (of class) Service: <root>.BoxService
                       ARG name: CONST String type=kotlin.String value="bidiStream"
                       ARG returnType: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType, annotations: kotlin.collections.List<kotlin.Annotation>) declared in kotlinx.rpc.descriptor.RpcTypeDefault' type=kotlinx.rpc.descriptor.RpcType origin=null
                         ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
                           TYPE_ARG T: kotlinx.rpc.codegen.test.Message
                         ARG annotations: CALL 'public final fun emptyList <T> (): kotlin.collections.List<T of kotlin.collections.emptyList> declared in kotlin.collections' type=kotlin.collections.List<kotlin.Annotation> origin=null
                           TYPE_ARG T: kotlin.Annotation
-                      ARG invokator: CALL 'private final fun <get-bidiStreamInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<<root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<<root>.BoxService> origin=GET_PROPERTY
+                      ARG invokator: CALL 'private final fun <get-bidiStreamInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlinx.rpc.descriptor.RpcInvokator.FlowResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=GET_PROPERTY
                         ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
                       ARG parameters: CALL 'public final fun arrayOf <T> (vararg elements: T of kotlin.arrayOf): kotlin.Array<T of kotlin.arrayOf> declared in kotlin' type=kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter> origin=null
                         TYPE_ARG T: kotlinx.rpc.descriptor.RpcParameter
@@ -380,35 +386,36 @@ FILE fqName:<root> fileName:/grpc.kt
                             ARG isOptional: CONST Boolean type=kotlin.Boolean value=false
                             ARG annotations: CALL 'public final fun emptyList <T> (): kotlin.collections.List<T of kotlin.collections.emptyList> declared in kotlin.collections' type=kotlin.collections.List<kotlin.Annotation> origin=null
                               TYPE_ARG T: kotlin.Annotation
-                  CALL 'public final fun to <A, B> (<this>: A of kotlin.to, that: B of kotlin.to): kotlin.Pair<A of kotlin.to, B of kotlin.to> declared in kotlin' type=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=null
+                  CALL 'public final fun to <A, B> (<this>: A of kotlin.to, that: B of kotlin.to): kotlin.Pair<A of kotlin.to, B of kotlin.to> declared in kotlin' type=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>> origin=null
                     TYPE_ARG A: kotlin.String
-                    TYPE_ARG B: kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>
+                    TYPE_ARG B: kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>
                     ARG <this>: CONST String type=kotlin.String value="custom"
-                    ARG that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<Service of kotlinx.rpc.descriptor.RpcCallableDefault>, parameters: kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter>) declared in kotlinx.rpc.descriptor.RpcCallableDefault' type=kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService> origin=null
-                      TYPE_ARG Service: <root>.BoxService
+                    ARG that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<Protocol of kotlinx.rpc.descriptor.RpcCallableDefault, Service of kotlinx.rpc.descriptor.RpcCallableDefault>, parameters: kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter>) declared in kotlinx.rpc.descriptor.RpcCallableDefault' type=kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=null
+                      TYPE_ARG (of class) Protocol: kotlinx.rpc.grpc.GrpcProtocol
+                      TYPE_ARG (of class) Service: <root>.BoxService
                       ARG name: CONST String type=kotlin.String value="custom"
                       ARG returnType: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType, annotations: kotlin.collections.List<kotlin.Annotation>) declared in kotlinx.rpc.descriptor.RpcTypeDefault' type=kotlinx.rpc.descriptor.RpcType origin=null
                         ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
                           TYPE_ARG T: <root>.Custom
                         ARG annotations: CALL 'public final fun emptyList <T> (): kotlin.collections.List<T of kotlin.collections.emptyList> declared in kotlin.collections' type=kotlin.collections.List<kotlin.Annotation> origin=null
                           TYPE_ARG T: kotlin.Annotation
-                      ARG invokator: CALL 'private final fun <get-customInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> origin=GET_PROPERTY
+                      ARG invokator: CALL 'private final fun <get-customInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=GET_PROPERTY
                         ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
                       ARG parameters: CALL 'public final fun emptyArray <T> (): kotlin.Array<T of kotlin.emptyArray> declared in kotlin' type=kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter> origin=null
                         TYPE_ARG T: kotlinx.rpc.descriptor.RpcParameter
-          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-callables> visibility:public modality:FINAL returnType:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>>
+          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-callables> visibility:public modality:FINAL returnType:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>>
             VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub.Companion
             correspondingProperty: PROPERTY name:callables visibility:public modality:FINAL [val]
             overridden:
-              public abstract fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<Service of kotlinx.rpc.descriptor.RpcServiceDescriptor>> declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
+              public abstract fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<Protocol of kotlinx.rpc.descriptor.RpcServiceDescriptor, Service of kotlinx.rpc.descriptor.RpcServiceDescriptor>> declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
             BLOCK_BODY
-              RETURN type=kotlin.Nothing from='public final fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> declared in <root>.BoxService.$rpcServiceStub.Companion'
-                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:callables type:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> visibility:private [final]' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=null
+              RETURN type=kotlin.Nothing from='public final fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>> declared in <root>.BoxService.$rpcServiceStub.Companion'
+                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:callables type:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>> visibility:private [final]' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>> origin=null
                   receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.<get-callables>' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
         CONSTRUCTOR visibility:private returnType:<root>.BoxService.$rpcServiceStub.Companion [primary]
           BLOCK_BODY
             DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
-            INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService>]' type=kotlin.Unit
+            INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService>; kotlinx.rpc.RpcServiceStubFactory.EitherResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>]' type=kotlin.Unit
         FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN returnType:kotlin.Boolean [fake_override,operator]
           VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
           VALUE_PARAMETER kind:Regular name:other index:1 type:kotlin.Any?
@@ -422,17 +429,19 @@ FILE fqName:<root> fileName:/grpc.kt
           VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
           overridden:
             public open fun toString (): kotlin.String declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
-        FUN name:createInstance visibility:public modality:OPEN returnType:<root>.BoxService
+        FUN name:create visibility:public modality:OPEN returnType:<root>.BoxService
+          TYPE_PARAMETER name:Caller index:0 variance: superTypes:[kotlinx.rpc.RpcFlowResponseCaller<kotlinx.rpc.grpc.GrpcProtocol>; kotlinx.rpc.RpcUnaryResponseCaller<kotlinx.rpc.grpc.GrpcProtocol>] reified:false
           VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub.Companion
           VALUE_PARAMETER kind:Regular name:serviceId index:1 type:kotlin.Long
-          VALUE_PARAMETER kind:Regular name:client index:2 type:kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol>
+          VALUE_PARAMETER kind:Regular name:caller index:2 type:Caller of <root>.BoxService.$rpcServiceStub.Companion.create
           overridden:
-            public abstract fun createInstance (serviceId: kotlin.Long, client: kotlinx.rpc.RpcClient<Protocol of kotlinx.rpc.descriptor.RpcServiceDescriptor>): Service of kotlinx.rpc.descriptor.RpcServiceDescriptor declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
+            public abstract fun create <Caller> (serviceId: kotlin.Long, caller: Caller of kotlinx.rpc.RpcServiceStubFactory.EitherResponse.create): Service of kotlinx.rpc.RpcServiceStubFactory.EitherResponse declared in kotlinx.rpc.RpcServiceStubFactory.EitherResponse
           BLOCK_BODY
-            RETURN type=kotlin.Nothing from='public open fun createInstance (serviceId: kotlin.Long, client: kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol>): <root>.BoxService declared in <root>.BoxService.$rpcServiceStub.Companion'
-              CONSTRUCTOR_CALL 'public constructor <init> (__rpc_stub_id: kotlin.Long, __rpc_client: kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol>) declared in <root>.BoxService.$rpcServiceStub' type=<root>.BoxService.$rpcServiceStub origin=null
-                ARG __rpc_stub_id: GET_VAR 'serviceId: kotlin.Long declared in <root>.BoxService.$rpcServiceStub.Companion.createInstance' type=kotlin.Long origin=null
-                ARG __rpc_client: GET_VAR 'client: kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> declared in <root>.BoxService.$rpcServiceStub.Companion.createInstance' type=kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> origin=null
+            RETURN type=kotlin.Nothing from='public open fun create <Caller> (serviceId: kotlin.Long, caller: Caller of <root>.BoxService.$rpcServiceStub.Companion.create): <root>.BoxService declared in <root>.BoxService.$rpcServiceStub.Companion'
+              CONSTRUCTOR_CALL 'public constructor <init> (__rpc_stub_id: kotlin.Long, __rpc_caller: T of <root>.BoxService.$rpcServiceStub) declared in <root>.BoxService.$rpcServiceStub' type=<root>.BoxService.$rpcServiceStub<Caller of <root>.BoxService.$rpcServiceStub.Companion.create> origin=null
+                TYPE_ARG (of class) T: Caller of <root>.BoxService.$rpcServiceStub.Companion.create
+                ARG __rpc_stub_id: GET_VAR 'serviceId: kotlin.Long declared in <root>.BoxService.$rpcServiceStub.Companion.create' type=kotlin.Long origin=null
+                ARG __rpc_caller: GET_VAR 'caller: Caller of <root>.BoxService.$rpcServiceStub.Companion.create declared in <root>.BoxService.$rpcServiceStub.Companion.create' type=Caller of <root>.BoxService.$rpcServiceStub.Companion.create origin=null
         FUN name:delegate visibility:public modality:FINAL returnType:kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate
           VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub.Companion
           VALUE_PARAMETER kind:Regular name:resolver index:1 type:kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
@@ -866,20 +875,20 @@ FILE fqName:<root> fileName:/grpc.kt
               CONSTRUCTOR_CALL 'public constructor <init> (methodDescriptorMap: kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>>, serviceDescriptor: io.grpc.ServiceDescriptor) declared in kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate' type=kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate origin=null
                 ARG methodDescriptorMap: GET_VAR 'val tmp_23: kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> origin=null
                 ARG serviceDescriptor: GET_VAR 'val tmp_24: io.grpc.ServiceDescriptor declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=io.grpc.ServiceDescriptor origin=null
-        FUN name:getCallable visibility:public modality:FINAL returnType:kotlinx.rpc.descriptor.RpcCallable?
+        FUN name:getCallable visibility:public modality:FINAL returnType:kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>?
           VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub.Companion
           VALUE_PARAMETER kind:Regular name:name index:1 type:kotlin.String
           overridden:
-            public abstract fun getCallable (name: kotlin.String): kotlinx.rpc.descriptor.RpcCallable<Service of kotlinx.rpc.descriptor.RpcServiceDescriptor>? declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
+            public abstract fun getCallable (name: kotlin.String): kotlinx.rpc.descriptor.RpcCallable<Protocol of kotlinx.rpc.descriptor.RpcServiceDescriptor, Service of kotlinx.rpc.descriptor.RpcServiceDescriptor>? declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
           BLOCK_BODY
-            RETURN type=kotlin.Nothing from='public final fun getCallable (name: kotlin.String): kotlinx.rpc.descriptor.RpcCallable? declared in <root>.BoxService.$rpcServiceStub.Companion'
-              CALL 'public abstract fun get (key: K of kotlin.collections.Map): V of kotlin.collections.Map? declared in kotlin.collections.Map' type=kotlinx.rpc.descriptor.RpcCallable? origin=GET_ARRAY_ELEMENT
-                ARG <this>: CALL 'public final fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> origin=GET_PROPERTY
+            RETURN type=kotlin.Nothing from='public final fun getCallable (name: kotlin.String): kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>? declared in <root>.BoxService.$rpcServiceStub.Companion'
+              CALL 'public abstract fun get (key: K of kotlin.collections.Map): V of kotlin.collections.Map? declared in kotlin.collections.Map' type=kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>? origin=GET_ARRAY_ELEMENT
+                ARG <this>: CALL 'public final fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>> declared in <root>.BoxService.$rpcServiceStub.Companion' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>> origin=GET_PROPERTY
                   ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.getCallable' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
                 ARG key: GET_VAR 'name: kotlin.String declared in <root>.BoxService.$rpcServiceStub.Companion.getCallable' type=kotlin.String origin=null
-      CONSTRUCTOR visibility:public returnType:<root>.BoxService.$rpcServiceStub [primary]
+      CONSTRUCTOR visibility:public returnType:<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> [primary]
         VALUE_PARAMETER kind:Regular name:__rpc_stub_id index:0 type:kotlin.Long
-        VALUE_PARAMETER kind:Regular name:__rpc_client index:1 type:kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol>
+        VALUE_PARAMETER kind:Regular name:__rpc_caller index:1 type:T of <root>.BoxService.$rpcServiceStub
         BLOCK_BODY
           DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
           INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[kotlinx.rpc.codegen.RpcGeneratedStubKey] CLASS name:$rpcServiceStub modality:FINAL visibility:public superTypes:[<root>.BoxService]' type=kotlin.Unit
@@ -897,138 +906,164 @@ FILE fqName:<root> fileName:/grpc.kt
         overridden:
           public open fun toString (): kotlin.String declared in <root>.BoxService
       FUN name:bidiStream visibility:public modality:OPEN returnType:kotlinx.coroutines.flow.Flow<kotlinx.rpc.codegen.test.Message>
-        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub>
         VALUE_PARAMETER kind:Regular name:flow index:1 type:kotlinx.coroutines.flow.Flow<kotlinx.rpc.codegen.test.Message>
         overridden:
           public abstract fun bidiStream (flow: kotlinx.coroutines.flow.Flow<kotlinx.rpc.codegen.test.Message>): kotlinx.coroutines.flow.Flow<kotlinx.rpc.codegen.test.Message> declared in <root>.BoxService
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='public open fun bidiStream (flow: kotlinx.coroutines.flow.Flow<kotlinx.rpc.codegen.test.Message>): kotlinx.coroutines.flow.Flow<kotlinx.rpc.codegen.test.Message> declared in <root>.BoxService.$rpcServiceStub'
-            CALL 'public abstract fun callStreaming <T> (call: kotlinx.rpc.RpcCall): kotlinx.coroutines.flow.Flow<T of kotlinx.rpc.RpcClient.callStreaming> declared in kotlinx.rpc.RpcClient' type=kotlinx.coroutines.flow.Flow<kotlinx.rpc.codegen.test.Message> origin=null
-              TYPE_ARG T: kotlinx.coroutines.flow.Flow<kotlinx.rpc.codegen.test.Message>
-              ARG <this>: CALL 'private final fun <get-__rpc_client> (): kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> declared in <root>.BoxService.$rpcServiceStub' type=kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> origin=GET_PROPERTY
-                ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.bidiStream' type=<root>.BoxService.$rpcServiceStub origin=null
-              ARG call: CONSTRUCTOR_CALL 'public constructor <init> (descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<*, *>, callableName: kotlin.String, arguments: kotlin.Array<kotlin.Any?>, serviceId: kotlin.Long) declared in kotlinx.rpc.RpcCall' type=kotlinx.rpc.RpcCall origin=null
-                ARG descriptor: GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService>]' type=<root>.BoxService.$rpcServiceStub.Companion
+            CALL 'public abstract fun callWithFlowResponse <Service, T> (call: kotlinx.rpc.RpcCall<Protocol of kotlinx.rpc.RpcFlowResponseCaller, Service of kotlinx.rpc.RpcFlowResponseCaller.callWithFlowResponse>): kotlinx.coroutines.flow.Flow<T of kotlinx.rpc.RpcFlowResponseCaller.callWithFlowResponse> declared in kotlinx.rpc.RpcFlowResponseCaller' type=kotlinx.coroutines.flow.Flow<kotlinx.rpc.codegen.test.Message> origin=null
+              TYPE_ARG Service: <root>.BoxService
+              TYPE_ARG T: kotlinx.rpc.codegen.test.Message
+              ARG <this>: CALL 'private final fun <get-__rpc_caller> (): T of <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub' type=T of <root>.BoxService.$rpcServiceStub origin=GET_PROPERTY
+                ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> declared in <root>.BoxService.$rpcServiceStub.bidiStream' type=<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> origin=null
+              ARG call: CONSTRUCTOR_CALL 'public constructor <init> (descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<Protocol of kotlinx.rpc.RpcCall, Service of kotlinx.rpc.RpcCall>, callableName: kotlin.String, arguments: kotlin.Array<kotlin.Any?>, serviceId: kotlin.Long) declared in kotlinx.rpc.RpcCall' type=kotlinx.rpc.RpcCall<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=null
+                TYPE_ARG (of class) Protocol: kotlinx.rpc.grpc.GrpcProtocol
+                TYPE_ARG (of class) Service: <root>.BoxService
+                ARG descriptor: GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService>; kotlinx.rpc.RpcServiceStubFactory.EitherResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>]' type=<root>.BoxService.$rpcServiceStub.Companion
                 ARG callableName: CONST String type=kotlin.String value="bidiStream"
                 ARG arguments: CALL 'public final fun arrayOf <T> (vararg elements: T of kotlin.arrayOf): kotlin.Array<T of kotlin.arrayOf> declared in kotlin' type=kotlin.Array<out kotlin.Any?> origin=null
                   TYPE_ARG T: kotlin.Any?
                   ARG elements: VARARG type=kotlin.Array<kotlin.Any?> varargElementType=kotlin.Any?
                     GET_VAR 'flow: kotlinx.coroutines.flow.Flow<kotlinx.rpc.codegen.test.Message> declared in <root>.BoxService.$rpcServiceStub.bidiStream' type=kotlinx.coroutines.flow.Flow<kotlinx.rpc.codegen.test.Message> origin=null
                 ARG serviceId: CALL 'private final fun <get-__rpc_stub_id> (): kotlin.Long declared in <root>.BoxService.$rpcServiceStub' type=kotlin.Long origin=GET_PROPERTY
-                  ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.bidiStream' type=<root>.BoxService.$rpcServiceStub origin=null
+                  ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> declared in <root>.BoxService.$rpcServiceStub.bidiStream' type=<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> origin=null
       FUN name:clientStream visibility:public modality:OPEN returnType:kotlin.Unit [suspend]
-        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub>
         VALUE_PARAMETER kind:Regular name:flow index:1 type:kotlinx.coroutines.flow.Flow<kotlin.String>
         overridden:
           public abstract fun clientStream (flow: kotlinx.coroutines.flow.Flow<kotlin.String>): kotlin.Unit declared in <root>.BoxService
         BLOCK_BODY
-          CALL 'public abstract fun call <T> (call: kotlinx.rpc.RpcCall): T of kotlinx.rpc.RpcClient.call declared in kotlinx.rpc.RpcClient' type=kotlin.Unit origin=null
+          CALL 'public abstract fun callWithUnaryResponse <Service, T> (call: kotlinx.rpc.RpcCall<Protocol of kotlinx.rpc.RpcUnaryResponseCaller, Service of kotlinx.rpc.RpcUnaryResponseCaller.callWithUnaryResponse>): T of kotlinx.rpc.RpcUnaryResponseCaller.callWithUnaryResponse declared in kotlinx.rpc.RpcUnaryResponseCaller' type=kotlin.Unit origin=null
+            TYPE_ARG Service: <root>.BoxService
             TYPE_ARG T: kotlin.Unit
-            ARG <this>: CALL 'private final fun <get-__rpc_client> (): kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> declared in <root>.BoxService.$rpcServiceStub' type=kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> origin=GET_PROPERTY
-              ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.clientStream' type=<root>.BoxService.$rpcServiceStub origin=null
-            ARG call: CONSTRUCTOR_CALL 'public constructor <init> (descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<*, *>, callableName: kotlin.String, arguments: kotlin.Array<kotlin.Any?>, serviceId: kotlin.Long) declared in kotlinx.rpc.RpcCall' type=kotlinx.rpc.RpcCall origin=null
-              ARG descriptor: GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService>]' type=<root>.BoxService.$rpcServiceStub.Companion
+            ARG <this>: CALL 'private final fun <get-__rpc_caller> (): T of <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub' type=T of <root>.BoxService.$rpcServiceStub origin=GET_PROPERTY
+              ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> declared in <root>.BoxService.$rpcServiceStub.clientStream' type=<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> origin=null
+            ARG call: CONSTRUCTOR_CALL 'public constructor <init> (descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<Protocol of kotlinx.rpc.RpcCall, Service of kotlinx.rpc.RpcCall>, callableName: kotlin.String, arguments: kotlin.Array<kotlin.Any?>, serviceId: kotlin.Long) declared in kotlinx.rpc.RpcCall' type=kotlinx.rpc.RpcCall<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=null
+              TYPE_ARG (of class) Protocol: kotlinx.rpc.grpc.GrpcProtocol
+              TYPE_ARG (of class) Service: <root>.BoxService
+              ARG descriptor: GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService>; kotlinx.rpc.RpcServiceStubFactory.EitherResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>]' type=<root>.BoxService.$rpcServiceStub.Companion
               ARG callableName: CONST String type=kotlin.String value="clientStream"
               ARG arguments: CALL 'public final fun arrayOf <T> (vararg elements: T of kotlin.arrayOf): kotlin.Array<T of kotlin.arrayOf> declared in kotlin' type=kotlin.Array<out kotlin.Any?> origin=null
                 TYPE_ARG T: kotlin.Any?
                 ARG elements: VARARG type=kotlin.Array<kotlin.Any?> varargElementType=kotlin.Any?
                   GET_VAR 'flow: kotlinx.coroutines.flow.Flow<kotlin.String> declared in <root>.BoxService.$rpcServiceStub.clientStream' type=kotlinx.coroutines.flow.Flow<kotlin.String> origin=null
               ARG serviceId: CALL 'private final fun <get-__rpc_stub_id> (): kotlin.Long declared in <root>.BoxService.$rpcServiceStub' type=kotlin.Long origin=GET_PROPERTY
-                ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.clientStream' type=<root>.BoxService.$rpcServiceStub origin=null
+                ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> declared in <root>.BoxService.$rpcServiceStub.clientStream' type=<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> origin=null
       FUN name:custom visibility:public modality:OPEN returnType:<root>.Custom [suspend]
-        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub>
         overridden:
           public abstract fun custom (): <root>.Custom declared in <root>.BoxService
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='public open fun custom (): <root>.Custom declared in <root>.BoxService.$rpcServiceStub'
-            CALL 'public abstract fun call <T> (call: kotlinx.rpc.RpcCall): T of kotlinx.rpc.RpcClient.call declared in kotlinx.rpc.RpcClient' type=<root>.Custom origin=null
+            CALL 'public abstract fun callWithUnaryResponse <Service, T> (call: kotlinx.rpc.RpcCall<Protocol of kotlinx.rpc.RpcUnaryResponseCaller, Service of kotlinx.rpc.RpcUnaryResponseCaller.callWithUnaryResponse>): T of kotlinx.rpc.RpcUnaryResponseCaller.callWithUnaryResponse declared in kotlinx.rpc.RpcUnaryResponseCaller' type=<root>.Custom origin=null
+              TYPE_ARG Service: <root>.BoxService
               TYPE_ARG T: <root>.Custom
-              ARG <this>: CALL 'private final fun <get-__rpc_client> (): kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> declared in <root>.BoxService.$rpcServiceStub' type=kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> origin=GET_PROPERTY
-                ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.custom' type=<root>.BoxService.$rpcServiceStub origin=null
-              ARG call: CONSTRUCTOR_CALL 'public constructor <init> (descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<*, *>, callableName: kotlin.String, arguments: kotlin.Array<kotlin.Any?>, serviceId: kotlin.Long) declared in kotlinx.rpc.RpcCall' type=kotlinx.rpc.RpcCall origin=null
-                ARG descriptor: GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService>]' type=<root>.BoxService.$rpcServiceStub.Companion
+              ARG <this>: CALL 'private final fun <get-__rpc_caller> (): T of <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub' type=T of <root>.BoxService.$rpcServiceStub origin=GET_PROPERTY
+                ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> declared in <root>.BoxService.$rpcServiceStub.custom' type=<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> origin=null
+              ARG call: CONSTRUCTOR_CALL 'public constructor <init> (descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<Protocol of kotlinx.rpc.RpcCall, Service of kotlinx.rpc.RpcCall>, callableName: kotlin.String, arguments: kotlin.Array<kotlin.Any?>, serviceId: kotlin.Long) declared in kotlinx.rpc.RpcCall' type=kotlinx.rpc.RpcCall<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=null
+                TYPE_ARG (of class) Protocol: kotlinx.rpc.grpc.GrpcProtocol
+                TYPE_ARG (of class) Service: <root>.BoxService
+                ARG descriptor: GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService>; kotlinx.rpc.RpcServiceStubFactory.EitherResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>]' type=<root>.BoxService.$rpcServiceStub.Companion
                 ARG callableName: CONST String type=kotlin.String value="custom"
                 ARG arguments: CALL 'public final fun emptyArray <T> (): kotlin.Array<T of kotlin.emptyArray> declared in kotlin' type=kotlin.Array<out kotlin.Any?> origin=null
                   TYPE_ARG T: kotlin.Any?
                 ARG serviceId: CALL 'private final fun <get-__rpc_stub_id> (): kotlin.Long declared in <root>.BoxService.$rpcServiceStub' type=kotlin.Long origin=GET_PROPERTY
-                  ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.custom' type=<root>.BoxService.$rpcServiceStub origin=null
+                  ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> declared in <root>.BoxService.$rpcServiceStub.custom' type=<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> origin=null
       FUN name:serverStream visibility:public modality:OPEN returnType:kotlinx.coroutines.flow.Flow<kotlin.Unit>
-        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub>
         overridden:
           public abstract fun serverStream (): kotlinx.coroutines.flow.Flow<kotlin.Unit> declared in <root>.BoxService
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='public open fun serverStream (): kotlinx.coroutines.flow.Flow<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub'
-            CALL 'public abstract fun callStreaming <T> (call: kotlinx.rpc.RpcCall): kotlinx.coroutines.flow.Flow<T of kotlinx.rpc.RpcClient.callStreaming> declared in kotlinx.rpc.RpcClient' type=kotlinx.coroutines.flow.Flow<kotlin.Unit> origin=null
-              TYPE_ARG T: kotlinx.coroutines.flow.Flow<kotlin.Unit>
-              ARG <this>: CALL 'private final fun <get-__rpc_client> (): kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> declared in <root>.BoxService.$rpcServiceStub' type=kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> origin=GET_PROPERTY
-                ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.serverStream' type=<root>.BoxService.$rpcServiceStub origin=null
-              ARG call: CONSTRUCTOR_CALL 'public constructor <init> (descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<*, *>, callableName: kotlin.String, arguments: kotlin.Array<kotlin.Any?>, serviceId: kotlin.Long) declared in kotlinx.rpc.RpcCall' type=kotlinx.rpc.RpcCall origin=null
-                ARG descriptor: GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService>]' type=<root>.BoxService.$rpcServiceStub.Companion
+            CALL 'public abstract fun callWithFlowResponse <Service, T> (call: kotlinx.rpc.RpcCall<Protocol of kotlinx.rpc.RpcFlowResponseCaller, Service of kotlinx.rpc.RpcFlowResponseCaller.callWithFlowResponse>): kotlinx.coroutines.flow.Flow<T of kotlinx.rpc.RpcFlowResponseCaller.callWithFlowResponse> declared in kotlinx.rpc.RpcFlowResponseCaller' type=kotlinx.coroutines.flow.Flow<kotlin.Unit> origin=null
+              TYPE_ARG Service: <root>.BoxService
+              TYPE_ARG T: kotlin.Unit
+              ARG <this>: CALL 'private final fun <get-__rpc_caller> (): T of <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub' type=T of <root>.BoxService.$rpcServiceStub origin=GET_PROPERTY
+                ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> declared in <root>.BoxService.$rpcServiceStub.serverStream' type=<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> origin=null
+              ARG call: CONSTRUCTOR_CALL 'public constructor <init> (descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<Protocol of kotlinx.rpc.RpcCall, Service of kotlinx.rpc.RpcCall>, callableName: kotlin.String, arguments: kotlin.Array<kotlin.Any?>, serviceId: kotlin.Long) declared in kotlinx.rpc.RpcCall' type=kotlinx.rpc.RpcCall<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=null
+                TYPE_ARG (of class) Protocol: kotlinx.rpc.grpc.GrpcProtocol
+                TYPE_ARG (of class) Service: <root>.BoxService
+                ARG descriptor: GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService>; kotlinx.rpc.RpcServiceStubFactory.EitherResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>]' type=<root>.BoxService.$rpcServiceStub.Companion
                 ARG callableName: CONST String type=kotlin.String value="serverStream"
                 ARG arguments: CALL 'public final fun emptyArray <T> (): kotlin.Array<T of kotlin.emptyArray> declared in kotlin' type=kotlin.Array<out kotlin.Any?> origin=null
                   TYPE_ARG T: kotlin.Any?
                 ARG serviceId: CALL 'private final fun <get-__rpc_stub_id> (): kotlin.Long declared in <root>.BoxService.$rpcServiceStub' type=kotlin.Long origin=GET_PROPERTY
-                  ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.serverStream' type=<root>.BoxService.$rpcServiceStub origin=null
+                  ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> declared in <root>.BoxService.$rpcServiceStub.serverStream' type=<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> origin=null
       FUN name:simple visibility:public modality:OPEN returnType:kotlin.String [suspend]
-        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub>
         VALUE_PARAMETER kind:Regular name:value index:1 type:kotlin.String
         overridden:
           public abstract fun simple (value: kotlin.String): kotlin.String declared in <root>.BoxService
         BLOCK_BODY
           RETURN type=kotlin.Nothing from='public open fun simple (value: kotlin.String): kotlin.String declared in <root>.BoxService.$rpcServiceStub'
-            CALL 'public abstract fun call <T> (call: kotlinx.rpc.RpcCall): T of kotlinx.rpc.RpcClient.call declared in kotlinx.rpc.RpcClient' type=kotlin.String origin=null
+            CALL 'public abstract fun callWithUnaryResponse <Service, T> (call: kotlinx.rpc.RpcCall<Protocol of kotlinx.rpc.RpcUnaryResponseCaller, Service of kotlinx.rpc.RpcUnaryResponseCaller.callWithUnaryResponse>): T of kotlinx.rpc.RpcUnaryResponseCaller.callWithUnaryResponse declared in kotlinx.rpc.RpcUnaryResponseCaller' type=kotlin.String origin=null
+              TYPE_ARG Service: <root>.BoxService
               TYPE_ARG T: kotlin.String
-              ARG <this>: CALL 'private final fun <get-__rpc_client> (): kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> declared in <root>.BoxService.$rpcServiceStub' type=kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> origin=GET_PROPERTY
-                ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.simple' type=<root>.BoxService.$rpcServiceStub origin=null
-              ARG call: CONSTRUCTOR_CALL 'public constructor <init> (descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<*, *>, callableName: kotlin.String, arguments: kotlin.Array<kotlin.Any?>, serviceId: kotlin.Long) declared in kotlinx.rpc.RpcCall' type=kotlinx.rpc.RpcCall origin=null
-                ARG descriptor: GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService>]' type=<root>.BoxService.$rpcServiceStub.Companion
+              ARG <this>: CALL 'private final fun <get-__rpc_caller> (): T of <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub' type=T of <root>.BoxService.$rpcServiceStub origin=GET_PROPERTY
+                ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> declared in <root>.BoxService.$rpcServiceStub.simple' type=<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> origin=null
+              ARG call: CONSTRUCTOR_CALL 'public constructor <init> (descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<Protocol of kotlinx.rpc.RpcCall, Service of kotlinx.rpc.RpcCall>, callableName: kotlin.String, arguments: kotlin.Array<kotlin.Any?>, serviceId: kotlin.Long) declared in kotlinx.rpc.RpcCall' type=kotlinx.rpc.RpcCall<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=null
+                TYPE_ARG (of class) Protocol: kotlinx.rpc.grpc.GrpcProtocol
+                TYPE_ARG (of class) Service: <root>.BoxService
+                ARG descriptor: GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService>; kotlinx.rpc.RpcServiceStubFactory.EitherResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>]' type=<root>.BoxService.$rpcServiceStub.Companion
                 ARG callableName: CONST String type=kotlin.String value="simple"
                 ARG arguments: CALL 'public final fun arrayOf <T> (vararg elements: T of kotlin.arrayOf): kotlin.Array<T of kotlin.arrayOf> declared in kotlin' type=kotlin.Array<out kotlin.Any?> origin=null
                   TYPE_ARG T: kotlin.Any?
                   ARG elements: VARARG type=kotlin.Array<kotlin.Any?> varargElementType=kotlin.Any?
                     GET_VAR 'value: kotlin.String declared in <root>.BoxService.$rpcServiceStub.simple' type=kotlin.String origin=null
                 ARG serviceId: CALL 'private final fun <get-__rpc_stub_id> (): kotlin.Long declared in <root>.BoxService.$rpcServiceStub' type=kotlin.Long origin=GET_PROPERTY
-                  ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.simple' type=<root>.BoxService.$rpcServiceStub origin=null
+                  ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> declared in <root>.BoxService.$rpcServiceStub.simple' type=<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> origin=null
       FUN name:unit visibility:public modality:OPEN returnType:kotlin.Unit [suspend]
-        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub>
         overridden:
           public abstract fun unit (): kotlin.Unit declared in <root>.BoxService
         BLOCK_BODY
-          CALL 'public abstract fun call <T> (call: kotlinx.rpc.RpcCall): T of kotlinx.rpc.RpcClient.call declared in kotlinx.rpc.RpcClient' type=kotlin.Unit origin=null
+          CALL 'public abstract fun callWithUnaryResponse <Service, T> (call: kotlinx.rpc.RpcCall<Protocol of kotlinx.rpc.RpcUnaryResponseCaller, Service of kotlinx.rpc.RpcUnaryResponseCaller.callWithUnaryResponse>): T of kotlinx.rpc.RpcUnaryResponseCaller.callWithUnaryResponse declared in kotlinx.rpc.RpcUnaryResponseCaller' type=kotlin.Unit origin=null
+            TYPE_ARG Service: <root>.BoxService
             TYPE_ARG T: kotlin.Unit
-            ARG <this>: CALL 'private final fun <get-__rpc_client> (): kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> declared in <root>.BoxService.$rpcServiceStub' type=kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> origin=GET_PROPERTY
-              ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.unit' type=<root>.BoxService.$rpcServiceStub origin=null
-            ARG call: CONSTRUCTOR_CALL 'public constructor <init> (descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<*, *>, callableName: kotlin.String, arguments: kotlin.Array<kotlin.Any?>, serviceId: kotlin.Long) declared in kotlinx.rpc.RpcCall' type=kotlinx.rpc.RpcCall origin=null
-              ARG descriptor: GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService>]' type=<root>.BoxService.$rpcServiceStub.Companion
+            ARG <this>: CALL 'private final fun <get-__rpc_caller> (): T of <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub' type=T of <root>.BoxService.$rpcServiceStub origin=GET_PROPERTY
+              ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> declared in <root>.BoxService.$rpcServiceStub.unit' type=<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> origin=null
+            ARG call: CONSTRUCTOR_CALL 'public constructor <init> (descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<Protocol of kotlinx.rpc.RpcCall, Service of kotlinx.rpc.RpcCall>, callableName: kotlin.String, arguments: kotlin.Array<kotlin.Any?>, serviceId: kotlin.Long) declared in kotlinx.rpc.RpcCall' type=kotlinx.rpc.RpcCall<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> origin=null
+              TYPE_ARG (of class) Protocol: kotlinx.rpc.grpc.GrpcProtocol
+              TYPE_ARG (of class) Service: <root>.BoxService
+              ARG descriptor: GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService>; kotlinx.rpc.RpcServiceStubFactory.EitherResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>]' type=<root>.BoxService.$rpcServiceStub.Companion
               ARG callableName: CONST String type=kotlin.String value="unit"
               ARG arguments: CALL 'public final fun emptyArray <T> (): kotlin.Array<T of kotlin.emptyArray> declared in kotlin' type=kotlin.Array<out kotlin.Any?> origin=null
                 TYPE_ARG T: kotlin.Any?
               ARG serviceId: CALL 'private final fun <get-__rpc_stub_id> (): kotlin.Long declared in <root>.BoxService.$rpcServiceStub' type=kotlin.Long origin=GET_PROPERTY
-                ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub declared in <root>.BoxService.$rpcServiceStub.unit' type=<root>.BoxService.$rpcServiceStub origin=null
+                ARG <this>: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> declared in <root>.BoxService.$rpcServiceStub.unit' type=<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub> origin=null
       PROPERTY FAKE_OVERRIDE name:descriptor visibility:public modality:OPEN [fake_override,val]
         overridden:
-          public open descriptor: kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService> declared in <root>.BoxService
-        FUN FAKE_OVERRIDE name:<get-descriptor> visibility:public modality:OPEN returnType:kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService> [fake_override]
-          VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub
+          public open descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> declared in <root>.BoxService
+        FUN FAKE_OVERRIDE name:<get-descriptor> visibility:public modality:OPEN returnType:kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> [fake_override]
+          VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub>
           correspondingProperty: PROPERTY FAKE_OVERRIDE name:descriptor visibility:public modality:OPEN [fake_override,val]
           overridden:
-            public open fun <get-descriptor> (): kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService> declared in <root>.BoxService
+            public open fun <get-descriptor> (): kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> declared in <root>.BoxService
+      PROPERTY FAKE_OVERRIDE name:factory visibility:public modality:OPEN [fake_override,val]
+        overridden:
+          public open factory: kotlinx.rpc.RpcServiceStubFactory.EitherResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> declared in <root>.BoxService
+        FUN FAKE_OVERRIDE name:<get-factory> visibility:public modality:OPEN returnType:kotlinx.rpc.RpcServiceStubFactory.EitherResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> [fake_override]
+          VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub<T of <root>.BoxService.$rpcServiceStub>
+          correspondingProperty: PROPERTY FAKE_OVERRIDE name:factory visibility:public modality:OPEN [fake_override,val]
+          overridden:
+            public open fun <get-factory> (): kotlinx.rpc.RpcServiceStubFactory.EitherResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> declared in <root>.BoxService
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN returnType:kotlin.Boolean [fake_override,operator]
       VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
       VALUE_PARAMETER kind:Regular name:other index:1 type:kotlin.Any?
       overridden:
         public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in kotlin.Any
-        public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in kotlinx.rpc.grpc.GrpcService
+        public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in kotlinx.rpc.RpcService
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN returnType:kotlin.Int [fake_override]
       VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
       overridden:
         public open fun hashCode (): kotlin.Int declared in kotlin.Any
-        public open fun hashCode (): kotlin.Int declared in kotlinx.rpc.grpc.GrpcService
+        public open fun hashCode (): kotlin.Int declared in kotlinx.rpc.RpcService
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN returnType:kotlin.String [fake_override]
       VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
       overridden:
         public open fun toString (): kotlin.String declared in kotlin.Any
-        public open fun toString (): kotlin.String declared in kotlinx.rpc.grpc.GrpcService
+        public open fun toString (): kotlin.String declared in kotlinx.rpc.RpcService
     FUN name:bidiStream visibility:public modality:ABSTRACT returnType:kotlinx.coroutines.flow.Flow<kotlinx.rpc.codegen.test.Message>
       VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService
       VALUE_PARAMETER kind:Regular name:flow index:1 type:kotlinx.coroutines.flow.Flow<kotlinx.rpc.codegen.test.Message>
@@ -1046,45 +1081,57 @@ FILE fqName:<root> fileName:/grpc.kt
       VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService
     PROPERTY GENERATED[kotlinx.rpc.codegen.FirRpcServiceDescriptorPropertyKey] name:descriptor visibility:public modality:OPEN [val]
       overridden:
-        public abstract descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, T of kotlinx.rpc.grpc.GrpcService> declared in kotlinx.rpc.grpc.GrpcService
-      FUN DEFAULT_PROPERTY_ACCESSOR name:<get-descriptor> visibility:public modality:OPEN returnType:kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService>
+        public abstract descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<Protocol of kotlinx.rpc.RpcService, Self of kotlinx.rpc.RpcService> declared in kotlinx.rpc.RpcService
+      FUN DEFAULT_PROPERTY_ACCESSOR name:<get-descriptor> visibility:public modality:OPEN returnType:kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService
         correspondingProperty: PROPERTY GENERATED[kotlinx.rpc.codegen.FirRpcServiceDescriptorPropertyKey] name:descriptor visibility:public modality:OPEN [val]
         overridden:
-          public abstract fun <get-descriptor> (): kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, T of kotlinx.rpc.grpc.GrpcService> declared in kotlinx.rpc.grpc.GrpcService
+          public abstract fun <get-descriptor> (): kotlinx.rpc.descriptor.RpcServiceDescriptor<Protocol of kotlinx.rpc.RpcService, Self of kotlinx.rpc.RpcService> declared in kotlinx.rpc.RpcService
         BLOCK_BODY
-          RETURN type=kotlin.Nothing from='public open fun <get-descriptor> (): kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService> declared in <root>.BoxService'
-            GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService>]' type=<root>.BoxService.$rpcServiceStub.Companion
-  CLASS INTERFACE name:ProtoPkgService modality:ABSTRACT visibility:public superTypes:[kotlin.Any; kotlinx.rpc.grpc.GrpcService<<root>.ProtoPkgService>]
+          RETURN type=kotlin.Nothing from='public open fun <get-descriptor> (): kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> declared in <root>.BoxService'
+            GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService>; kotlinx.rpc.RpcServiceStubFactory.EitherResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>]' type=<root>.BoxService.$rpcServiceStub.Companion
+    PROPERTY GENERATED[kotlinx.rpc.codegen.FirRpcServiceFactoryPropertyKey] name:factory visibility:public modality:OPEN [val]
+      overridden:
+        public abstract factory: kotlinx.rpc.RpcServiceStubFactory<Protocol of kotlinx.rpc.RpcService, Self of kotlinx.rpc.RpcService> declared in kotlinx.rpc.RpcService
+      FUN DEFAULT_PROPERTY_ACCESSOR name:<get-factory> visibility:public modality:OPEN returnType:kotlinx.rpc.RpcServiceStubFactory.EitherResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService
+        correspondingProperty: PROPERTY GENERATED[kotlinx.rpc.codegen.FirRpcServiceFactoryPropertyKey] name:factory visibility:public modality:OPEN [val]
+        overridden:
+          public abstract fun <get-factory> (): kotlinx.rpc.RpcServiceStubFactory<Protocol of kotlinx.rpc.RpcService, Self of kotlinx.rpc.RpcService> declared in kotlinx.rpc.RpcService
+        BLOCK_BODY
+          RETURN type=kotlin.Nothing from='public open fun <get-factory> (): kotlinx.rpc.RpcServiceStubFactory.EitherResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService> declared in <root>.BoxService'
+            GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.BoxService>; kotlinx.rpc.RpcServiceStubFactory.EitherResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.BoxService>]' type=<root>.BoxService.$rpcServiceStub.Companion
+  CLASS INTERFACE name:ProtoPkgService modality:ABSTRACT visibility:public superTypes:[kotlin.Any; kotlinx.rpc.RpcService<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>]
     annotations:
       Grpc(protoPackage = "my.proto.package", protoServiceName = <null>)
       WithServiceDescriptor(stub = Companion::class)
     thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:<root>.ProtoPkgService
     CLASS GENERATED[kotlinx.rpc.codegen.RpcGeneratedStubKey] CLASS name:$rpcServiceStub modality:FINAL visibility:public superTypes:[<root>.ProtoPkgService]
-      thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:<root>.ProtoPkgService.$rpcServiceStub
+      thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:<root>.ProtoPkgService.$rpcServiceStub<T of <root>.ProtoPkgService.$rpcServiceStub>
+      TYPE_PARAMETER GENERATED[kotlinx.rpc.codegen.RpcGeneratedStubKey] name:T index:0 variance: superTypes:[kotlinx.rpc.RpcUnaryResponseCaller<kotlinx.rpc.grpc.GrpcProtocol>] reified:false
       PROPERTY name:__rpc_stub_id visibility:private modality:FINAL [val]
         FIELD PROPERTY_BACKING_FIELD name:__rpc_stub_id type:kotlin.Long visibility:private [final]
           EXPRESSION_BODY
             GET_VAR '__rpc_stub_id: kotlin.Long declared in <root>.ProtoPkgService.$rpcServiceStub.<init>' type=kotlin.Long origin=INITIALIZE_PROPERTY_FROM_PARAMETER
         FUN DEFAULT_PROPERTY_ACCESSOR name:<get-__rpc_stub_id> visibility:private modality:FINAL returnType:kotlin.Long
-          VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.ProtoPkgService.$rpcServiceStub
+          VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.ProtoPkgService.$rpcServiceStub<T of <root>.ProtoPkgService.$rpcServiceStub>
           correspondingProperty: PROPERTY name:__rpc_stub_id visibility:private modality:FINAL [val]
           BLOCK_BODY
             RETURN type=kotlin.Nothing from='private final fun <get-__rpc_stub_id> (): kotlin.Long declared in <root>.ProtoPkgService.$rpcServiceStub'
               GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:__rpc_stub_id type:kotlin.Long visibility:private [final]' type=kotlin.Long origin=null
-                receiver: GET_VAR '<this>: <root>.ProtoPkgService.$rpcServiceStub declared in <root>.ProtoPkgService.$rpcServiceStub.<get-__rpc_stub_id>' type=<root>.ProtoPkgService.$rpcServiceStub origin=null
-      PROPERTY name:__rpc_client visibility:private modality:FINAL [val]
-        FIELD PROPERTY_BACKING_FIELD name:__rpc_client type:kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> visibility:private [final]
+                receiver: GET_VAR '<this>: <root>.ProtoPkgService.$rpcServiceStub<T of <root>.ProtoPkgService.$rpcServiceStub> declared in <root>.ProtoPkgService.$rpcServiceStub.<get-__rpc_stub_id>' type=<root>.ProtoPkgService.$rpcServiceStub<T of <root>.ProtoPkgService.$rpcServiceStub> origin=null
+      PROPERTY name:__rpc_caller visibility:private modality:FINAL [val]
+        FIELD PROPERTY_BACKING_FIELD name:__rpc_caller type:T of <root>.ProtoPkgService.$rpcServiceStub visibility:private [final]
           EXPRESSION_BODY
-            GET_VAR '__rpc_client: kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> declared in <root>.ProtoPkgService.$rpcServiceStub.<init>' type=kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> origin=INITIALIZE_PROPERTY_FROM_PARAMETER
-        FUN DEFAULT_PROPERTY_ACCESSOR name:<get-__rpc_client> visibility:private modality:FINAL returnType:kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol>
-          VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.ProtoPkgService.$rpcServiceStub
-          correspondingProperty: PROPERTY name:__rpc_client visibility:private modality:FINAL [val]
+            GET_VAR '__rpc_caller: T of <root>.ProtoPkgService.$rpcServiceStub declared in <root>.ProtoPkgService.$rpcServiceStub.<init>' type=T of <root>.ProtoPkgService.$rpcServiceStub origin=INITIALIZE_PROPERTY_FROM_PARAMETER
+        FUN DEFAULT_PROPERTY_ACCESSOR name:<get-__rpc_caller> visibility:private modality:FINAL returnType:T of <root>.ProtoPkgService.$rpcServiceStub
+          VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.ProtoPkgService.$rpcServiceStub<T of <root>.ProtoPkgService.$rpcServiceStub>
+          correspondingProperty: PROPERTY name:__rpc_caller visibility:private modality:FINAL [val]
           BLOCK_BODY
-            RETURN type=kotlin.Nothing from='private final fun <get-__rpc_client> (): kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> declared in <root>.ProtoPkgService.$rpcServiceStub'
-              GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:__rpc_client type:kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> visibility:private [final]' type=kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> origin=null
-                receiver: GET_VAR '<this>: <root>.ProtoPkgService.$rpcServiceStub declared in <root>.ProtoPkgService.$rpcServiceStub.<get-__rpc_client>' type=<root>.ProtoPkgService.$rpcServiceStub origin=null
-      CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.ProtoPkgService>]
+            RETURN type=kotlin.Nothing from='private final fun <get-__rpc_caller> (): T of <root>.ProtoPkgService.$rpcServiceStub declared in <root>.ProtoPkgService.$rpcServiceStub'
+              GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:__rpc_caller type:T of <root>.ProtoPkgService.$rpcServiceStub visibility:private [final]' type=T of <root>.ProtoPkgService.$rpcServiceStub origin=null
+                receiver: GET_VAR '<this>: <root>.ProtoPkgService.$rpcServiceStub<T of <root>.ProtoPkgService.$rpcServiceStub> declared in <root>.ProtoPkgService.$rpcServiceStub.<get-__rpc_caller>' type=<root>.ProtoPkgService.$rpcServiceStub<T of <root>.ProtoPkgService.$rpcServiceStub> origin=null
+      CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.ProtoPkgService>; kotlinx.rpc.RpcServiceStubFactory.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>]
         thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:<root>.ProtoPkgService.$rpcServiceStub.Companion
         PROPERTY name:simpleName visibility:public modality:FINAL [val]
           overridden:
@@ -1117,9 +1164,9 @@ FILE fqName:<root> fileName:/grpc.kt
                 GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:fqName type:kotlin.String visibility:private [final]' type=kotlin.String origin=null
                   receiver: GET_VAR '<this>: <root>.ProtoPkgService.$rpcServiceStub.Companion declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.<get-fqName>' type=<root>.ProtoPkgService.$rpcServiceStub.Companion origin=null
         PROPERTY name:unitInvokator visibility:private modality:FINAL [val]
-          FIELD PROPERTY_BACKING_FIELD name:unitInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.ProtoPkgService> visibility:private [final]
+          FIELD PROPERTY_BACKING_FIELD name:unitInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService> visibility:private [final]
             EXPRESSION_BODY
-              TYPE_OP type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.ProtoPkgService> origin=SAM_CONVERSION typeOperand=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.ProtoPkgService>
+              TYPE_OP type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService> origin=SAM_CONVERSION typeOperand=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>
                 FUN_EXPR type=kotlin.coroutines.SuspendFunction2<<root>.ProtoPkgService, kotlin.Array<out kotlin.Any?>, kotlin.Any?> origin=LAMBDA
                   FUN LOCAL_FUNCTION_FOR_LAMBDA name:<anonymous> visibility:local modality:FINAL returnType:kotlin.Any? [suspend]
                     VALUE_PARAMETER kind:Regular name:service index:0 type:<root>.ProtoPkgService
@@ -1128,51 +1175,52 @@ FILE fqName:<root> fileName:/grpc.kt
                       RETURN type=kotlin.Nothing from='local final fun <anonymous> (service: <root>.ProtoPkgService, arguments: kotlin.Array<out kotlin.Any?>): kotlin.Any? declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.unitInvokator'
                         CALL 'public abstract fun unit (): kotlin.Unit declared in <root>.ProtoPkgService' type=kotlin.Unit origin=null
                           ARG <this>: GET_VAR 'service: <root>.ProtoPkgService declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.unitInvokator.<anonymous>' type=<root>.ProtoPkgService origin=null
-          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-unitInvokator> visibility:private modality:FINAL returnType:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.ProtoPkgService>
+          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-unitInvokator> visibility:private modality:FINAL returnType:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>
             VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.ProtoPkgService.$rpcServiceStub.Companion
             correspondingProperty: PROPERTY name:unitInvokator visibility:private modality:FINAL [val]
             BLOCK_BODY
-              RETURN type=kotlin.Nothing from='private final fun <get-unitInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.ProtoPkgService> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion'
-                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:unitInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.ProtoPkgService> visibility:private [final]' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.ProtoPkgService> origin=null
+              RETURN type=kotlin.Nothing from='private final fun <get-unitInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion'
+                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:unitInvokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService> visibility:private [final]' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService> origin=null
                   receiver: GET_VAR '<this>: <root>.ProtoPkgService.$rpcServiceStub.Companion declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.<get-unitInvokator>' type=<root>.ProtoPkgService.$rpcServiceStub.Companion origin=null
         PROPERTY name:callables visibility:public modality:FINAL [val]
           overridden:
-            public abstract callables: kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<Service of kotlinx.rpc.descriptor.RpcServiceDescriptor>> declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
-          FIELD PROPERTY_BACKING_FIELD name:callables type:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> visibility:private [final]
+            public abstract callables: kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<Protocol of kotlinx.rpc.descriptor.RpcServiceDescriptor, Service of kotlinx.rpc.descriptor.RpcServiceDescriptor>> declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
+          FIELD PROPERTY_BACKING_FIELD name:callables type:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>> visibility:private [final]
             EXPRESSION_BODY
-              CALL 'public final fun mapOf <K, V> (vararg pairs: kotlin.Pair<K of kotlin.collections.mapOf, V of kotlin.collections.mapOf>): kotlin.collections.Map<K of kotlin.collections.mapOf, V of kotlin.collections.mapOf> declared in kotlin.collections' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> origin=null
+              CALL 'public final fun mapOf <K, V> (vararg pairs: kotlin.Pair<K of kotlin.collections.mapOf, V of kotlin.collections.mapOf>): kotlin.collections.Map<K of kotlin.collections.mapOf, V of kotlin.collections.mapOf> declared in kotlin.collections' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>> origin=null
                 TYPE_ARG K: kotlin.String
-                TYPE_ARG V: kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>
-                ARG pairs: VARARG type=kotlin.Array<out kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>>> varargElementType=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>>
-                  CALL 'public final fun to <A, B> (<this>: A of kotlin.to, that: B of kotlin.to): kotlin.Pair<A of kotlin.to, B of kotlin.to> declared in kotlin' type=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> origin=null
+                TYPE_ARG V: kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>
+                ARG pairs: VARARG type=kotlin.Array<out kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>>> varargElementType=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>>
+                  CALL 'public final fun to <A, B> (<this>: A of kotlin.to, that: B of kotlin.to): kotlin.Pair<A of kotlin.to, B of kotlin.to> declared in kotlin' type=kotlin.Pair<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>> origin=null
                     TYPE_ARG A: kotlin.String
-                    TYPE_ARG B: kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>
+                    TYPE_ARG B: kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>
                     ARG <this>: CONST String type=kotlin.String value="unit"
-                    ARG that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<Service of kotlinx.rpc.descriptor.RpcCallableDefault>, parameters: kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter>) declared in kotlinx.rpc.descriptor.RpcCallableDefault' type=kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService> origin=null
-                      TYPE_ARG Service: <root>.ProtoPkgService
+                    ARG that: CONSTRUCTOR_CALL 'public constructor <init> (name: kotlin.String, returnType: kotlinx.rpc.descriptor.RpcType, invokator: kotlinx.rpc.descriptor.RpcInvokator<Protocol of kotlinx.rpc.descriptor.RpcCallableDefault, Service of kotlinx.rpc.descriptor.RpcCallableDefault>, parameters: kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter>) declared in kotlinx.rpc.descriptor.RpcCallableDefault' type=kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService> origin=null
+                      TYPE_ARG (of class) Protocol: kotlinx.rpc.grpc.GrpcProtocol
+                      TYPE_ARG (of class) Service: <root>.ProtoPkgService
                       ARG name: CONST String type=kotlin.String value="unit"
                       ARG returnType: CONSTRUCTOR_CALL 'public constructor <init> (kType: kotlin.reflect.KType, annotations: kotlin.collections.List<kotlin.Annotation>) declared in kotlinx.rpc.descriptor.RpcTypeDefault' type=kotlinx.rpc.descriptor.RpcType origin=null
                         ARG kType: CALL 'public final fun typeOf <T> (): kotlin.reflect.KType declared in kotlin.reflect' type=kotlin.reflect.KType origin=null
                           TYPE_ARG T: kotlin.Unit
                         ARG annotations: CALL 'public final fun emptyList <T> (): kotlin.collections.List<T of kotlin.collections.emptyList> declared in kotlin.collections' type=kotlin.collections.List<kotlin.Annotation> origin=null
                           TYPE_ARG T: kotlin.Annotation
-                      ARG invokator: CALL 'private final fun <get-unitInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.ProtoPkgService> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.ProtoPkgService> origin=GET_PROPERTY
+                      ARG invokator: CALL 'private final fun <get-unitInvokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService> origin=GET_PROPERTY
                         ARG <this>: GET_VAR '<this>: <root>.ProtoPkgService.$rpcServiceStub.Companion declared in <root>.ProtoPkgService.$rpcServiceStub.Companion' type=<root>.ProtoPkgService.$rpcServiceStub.Companion origin=null
                       ARG parameters: CALL 'public final fun emptyArray <T> (): kotlin.Array<T of kotlin.emptyArray> declared in kotlin' type=kotlin.Array<out kotlinx.rpc.descriptor.RpcParameter> origin=null
                         TYPE_ARG T: kotlinx.rpc.descriptor.RpcParameter
-          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-callables> visibility:public modality:FINAL returnType:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>>
+          FUN DEFAULT_PROPERTY_ACCESSOR name:<get-callables> visibility:public modality:FINAL returnType:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>>
             VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.ProtoPkgService.$rpcServiceStub.Companion
             correspondingProperty: PROPERTY name:callables visibility:public modality:FINAL [val]
             overridden:
-              public abstract fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<Service of kotlinx.rpc.descriptor.RpcServiceDescriptor>> declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
+              public abstract fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<Protocol of kotlinx.rpc.descriptor.RpcServiceDescriptor, Service of kotlinx.rpc.descriptor.RpcServiceDescriptor>> declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
             BLOCK_BODY
-              RETURN type=kotlin.Nothing from='public final fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion'
-                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:callables type:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> visibility:private [final]' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> origin=null
+              RETURN type=kotlin.Nothing from='public final fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion'
+                GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:callables type:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>> visibility:private [final]' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>> origin=null
                   receiver: GET_VAR '<this>: <root>.ProtoPkgService.$rpcServiceStub.Companion declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.<get-callables>' type=<root>.ProtoPkgService.$rpcServiceStub.Companion origin=null
         CONSTRUCTOR visibility:private returnType:<root>.ProtoPkgService.$rpcServiceStub.Companion [primary]
           BLOCK_BODY
             DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
-            INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.ProtoPkgService>]' type=kotlin.Unit
+            INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.ProtoPkgService>; kotlinx.rpc.RpcServiceStubFactory.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>]' type=kotlin.Unit
         FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN returnType:kotlin.Boolean [fake_override,operator]
           VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
           VALUE_PARAMETER kind:Regular name:other index:1 type:kotlin.Any?
@@ -1186,17 +1234,18 @@ FILE fqName:<root> fileName:/grpc.kt
           VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
           overridden:
             public open fun toString (): kotlin.String declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
-        FUN name:createInstance visibility:public modality:OPEN returnType:<root>.ProtoPkgService
+        FUN name:create visibility:public modality:OPEN returnType:<root>.ProtoPkgService
           VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.ProtoPkgService.$rpcServiceStub.Companion
           VALUE_PARAMETER kind:Regular name:serviceId index:1 type:kotlin.Long
-          VALUE_PARAMETER kind:Regular name:client index:2 type:kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol>
+          VALUE_PARAMETER kind:Regular name:caller index:2 type:kotlinx.rpc.RpcUnaryResponseCaller<kotlinx.rpc.grpc.GrpcProtocol>
           overridden:
-            public abstract fun createInstance (serviceId: kotlin.Long, client: kotlinx.rpc.RpcClient<Protocol of kotlinx.rpc.descriptor.RpcServiceDescriptor>): Service of kotlinx.rpc.descriptor.RpcServiceDescriptor declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
+            public abstract fun create (serviceId: kotlin.Long, caller: kotlinx.rpc.RpcUnaryResponseCaller<Protocol of kotlinx.rpc.RpcServiceStubFactory.UnaryResponse>): Service of kotlinx.rpc.RpcServiceStubFactory.UnaryResponse declared in kotlinx.rpc.RpcServiceStubFactory.UnaryResponse
           BLOCK_BODY
-            RETURN type=kotlin.Nothing from='public open fun createInstance (serviceId: kotlin.Long, client: kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol>): <root>.ProtoPkgService declared in <root>.ProtoPkgService.$rpcServiceStub.Companion'
-              CONSTRUCTOR_CALL 'public constructor <init> (__rpc_stub_id: kotlin.Long, __rpc_client: kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol>) declared in <root>.ProtoPkgService.$rpcServiceStub' type=<root>.ProtoPkgService.$rpcServiceStub origin=null
-                ARG __rpc_stub_id: GET_VAR 'serviceId: kotlin.Long declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.createInstance' type=kotlin.Long origin=null
-                ARG __rpc_client: GET_VAR 'client: kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.createInstance' type=kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> origin=null
+            RETURN type=kotlin.Nothing from='public open fun create (serviceId: kotlin.Long, caller: kotlinx.rpc.RpcUnaryResponseCaller<kotlinx.rpc.grpc.GrpcProtocol>): <root>.ProtoPkgService declared in <root>.ProtoPkgService.$rpcServiceStub.Companion'
+              CONSTRUCTOR_CALL 'public constructor <init> (__rpc_stub_id: kotlin.Long, __rpc_caller: T of <root>.ProtoPkgService.$rpcServiceStub) declared in <root>.ProtoPkgService.$rpcServiceStub' type=<root>.ProtoPkgService.$rpcServiceStub<kotlinx.rpc.RpcUnaryResponseCaller<kotlinx.rpc.grpc.GrpcProtocol>> origin=null
+                TYPE_ARG (of class) T: kotlinx.rpc.RpcUnaryResponseCaller<kotlinx.rpc.grpc.GrpcProtocol>
+                ARG __rpc_stub_id: GET_VAR 'serviceId: kotlin.Long declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.create' type=kotlin.Long origin=null
+                ARG __rpc_caller: GET_VAR 'caller: kotlinx.rpc.RpcUnaryResponseCaller<kotlinx.rpc.grpc.GrpcProtocol> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.create' type=kotlinx.rpc.RpcUnaryResponseCaller<kotlinx.rpc.grpc.GrpcProtocol> origin=null
         FUN name:delegate visibility:public modality:FINAL returnType:kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate
           VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.ProtoPkgService.$rpcServiceStub.Companion
           VALUE_PARAMETER kind:Regular name:resolver index:1 type:kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
@@ -1290,20 +1339,20 @@ FILE fqName:<root> fileName:/grpc.kt
               CONSTRUCTOR_CALL 'public constructor <init> (methodDescriptorMap: kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>>, serviceDescriptor: io.grpc.ServiceDescriptor) declared in kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate' type=kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate origin=null
                 ARG methodDescriptorMap: GET_VAR 'val tmp_29: kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> origin=null
                 ARG serviceDescriptor: GET_VAR 'val tmp_30: io.grpc.ServiceDescriptor declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=io.grpc.ServiceDescriptor origin=null
-        FUN name:getCallable visibility:public modality:FINAL returnType:kotlinx.rpc.descriptor.RpcCallable?
+        FUN name:getCallable visibility:public modality:FINAL returnType:kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>?
           VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.ProtoPkgService.$rpcServiceStub.Companion
           VALUE_PARAMETER kind:Regular name:name index:1 type:kotlin.String
           overridden:
-            public abstract fun getCallable (name: kotlin.String): kotlinx.rpc.descriptor.RpcCallable<Service of kotlinx.rpc.descriptor.RpcServiceDescriptor>? declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
+            public abstract fun getCallable (name: kotlin.String): kotlinx.rpc.descriptor.RpcCallable<Protocol of kotlinx.rpc.descriptor.RpcServiceDescriptor, Service of kotlinx.rpc.descriptor.RpcServiceDescriptor>? declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
           BLOCK_BODY
-            RETURN type=kotlin.Nothing from='public final fun getCallable (name: kotlin.String): kotlinx.rpc.descriptor.RpcCallable? declared in <root>.ProtoPkgService.$rpcServiceStub.Companion'
-              CALL 'public abstract fun get (key: K of kotlin.collections.Map): V of kotlin.collections.Map? declared in kotlin.collections.Map' type=kotlinx.rpc.descriptor.RpcCallable? origin=GET_ARRAY_ELEMENT
-                ARG <this>: CALL 'public final fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.ProtoPkgService>> origin=GET_PROPERTY
+            RETURN type=kotlin.Nothing from='public final fun getCallable (name: kotlin.String): kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>? declared in <root>.ProtoPkgService.$rpcServiceStub.Companion'
+              CALL 'public abstract fun get (key: K of kotlin.collections.Map): V of kotlin.collections.Map? declared in kotlin.collections.Map' type=kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>? origin=GET_ARRAY_ELEMENT
+                ARG <this>: CALL 'public final fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion' type=kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>> origin=GET_PROPERTY
                   ARG <this>: GET_VAR '<this>: <root>.ProtoPkgService.$rpcServiceStub.Companion declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.getCallable' type=<root>.ProtoPkgService.$rpcServiceStub.Companion origin=null
                 ARG key: GET_VAR 'name: kotlin.String declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.getCallable' type=kotlin.String origin=null
-      CONSTRUCTOR visibility:public returnType:<root>.ProtoPkgService.$rpcServiceStub [primary]
+      CONSTRUCTOR visibility:public returnType:<root>.ProtoPkgService.$rpcServiceStub<T of <root>.ProtoPkgService.$rpcServiceStub> [primary]
         VALUE_PARAMETER kind:Regular name:__rpc_stub_id index:0 type:kotlin.Long
-        VALUE_PARAMETER kind:Regular name:__rpc_client index:1 type:kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol>
+        VALUE_PARAMETER kind:Regular name:__rpc_caller index:1 type:T of <root>.ProtoPkgService.$rpcServiceStub
         BLOCK_BODY
           DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
           INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[kotlinx.rpc.codegen.RpcGeneratedStubKey] CLASS name:$rpcServiceStub modality:FINAL visibility:public superTypes:[<root>.ProtoPkgService]' type=kotlin.Unit
@@ -1321,58 +1370,80 @@ FILE fqName:<root> fileName:/grpc.kt
         overridden:
           public open fun toString (): kotlin.String declared in <root>.ProtoPkgService
       FUN name:unit visibility:public modality:OPEN returnType:kotlin.Unit [suspend]
-        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.ProtoPkgService.$rpcServiceStub
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.ProtoPkgService.$rpcServiceStub<T of <root>.ProtoPkgService.$rpcServiceStub>
         overridden:
           public abstract fun unit (): kotlin.Unit declared in <root>.ProtoPkgService
         BLOCK_BODY
-          CALL 'public abstract fun call <T> (call: kotlinx.rpc.RpcCall): T of kotlinx.rpc.RpcClient.call declared in kotlinx.rpc.RpcClient' type=kotlin.Unit origin=null
+          CALL 'public abstract fun callWithUnaryResponse <Service, T> (call: kotlinx.rpc.RpcCall<Protocol of kotlinx.rpc.RpcUnaryResponseCaller, Service of kotlinx.rpc.RpcUnaryResponseCaller.callWithUnaryResponse>): T of kotlinx.rpc.RpcUnaryResponseCaller.callWithUnaryResponse declared in kotlinx.rpc.RpcUnaryResponseCaller' type=kotlin.Unit origin=null
+            TYPE_ARG Service: <root>.ProtoPkgService
             TYPE_ARG T: kotlin.Unit
-            ARG <this>: CALL 'private final fun <get-__rpc_client> (): kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> declared in <root>.ProtoPkgService.$rpcServiceStub' type=kotlinx.rpc.RpcClient<kotlinx.rpc.grpc.GrpcProtocol> origin=GET_PROPERTY
-              ARG <this>: GET_VAR '<this>: <root>.ProtoPkgService.$rpcServiceStub declared in <root>.ProtoPkgService.$rpcServiceStub.unit' type=<root>.ProtoPkgService.$rpcServiceStub origin=null
-            ARG call: CONSTRUCTOR_CALL 'public constructor <init> (descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<*, *>, callableName: kotlin.String, arguments: kotlin.Array<kotlin.Any?>, serviceId: kotlin.Long) declared in kotlinx.rpc.RpcCall' type=kotlinx.rpc.RpcCall origin=null
-              ARG descriptor: GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.ProtoPkgService>]' type=<root>.ProtoPkgService.$rpcServiceStub.Companion
+            ARG <this>: CALL 'private final fun <get-__rpc_caller> (): T of <root>.ProtoPkgService.$rpcServiceStub declared in <root>.ProtoPkgService.$rpcServiceStub' type=T of <root>.ProtoPkgService.$rpcServiceStub origin=GET_PROPERTY
+              ARG <this>: GET_VAR '<this>: <root>.ProtoPkgService.$rpcServiceStub<T of <root>.ProtoPkgService.$rpcServiceStub> declared in <root>.ProtoPkgService.$rpcServiceStub.unit' type=<root>.ProtoPkgService.$rpcServiceStub<T of <root>.ProtoPkgService.$rpcServiceStub> origin=null
+            ARG call: CONSTRUCTOR_CALL 'public constructor <init> (descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<Protocol of kotlinx.rpc.RpcCall, Service of kotlinx.rpc.RpcCall>, callableName: kotlin.String, arguments: kotlin.Array<kotlin.Any?>, serviceId: kotlin.Long) declared in kotlinx.rpc.RpcCall' type=kotlinx.rpc.RpcCall<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService> origin=null
+              TYPE_ARG (of class) Protocol: kotlinx.rpc.grpc.GrpcProtocol
+              TYPE_ARG (of class) Service: <root>.ProtoPkgService
+              ARG descriptor: GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.ProtoPkgService>; kotlinx.rpc.RpcServiceStubFactory.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>]' type=<root>.ProtoPkgService.$rpcServiceStub.Companion
               ARG callableName: CONST String type=kotlin.String value="unit"
               ARG arguments: CALL 'public final fun emptyArray <T> (): kotlin.Array<T of kotlin.emptyArray> declared in kotlin' type=kotlin.Array<out kotlin.Any?> origin=null
                 TYPE_ARG T: kotlin.Any?
               ARG serviceId: CALL 'private final fun <get-__rpc_stub_id> (): kotlin.Long declared in <root>.ProtoPkgService.$rpcServiceStub' type=kotlin.Long origin=GET_PROPERTY
-                ARG <this>: GET_VAR '<this>: <root>.ProtoPkgService.$rpcServiceStub declared in <root>.ProtoPkgService.$rpcServiceStub.unit' type=<root>.ProtoPkgService.$rpcServiceStub origin=null
+                ARG <this>: GET_VAR '<this>: <root>.ProtoPkgService.$rpcServiceStub<T of <root>.ProtoPkgService.$rpcServiceStub> declared in <root>.ProtoPkgService.$rpcServiceStub.unit' type=<root>.ProtoPkgService.$rpcServiceStub<T of <root>.ProtoPkgService.$rpcServiceStub> origin=null
       PROPERTY FAKE_OVERRIDE name:descriptor visibility:public modality:OPEN [fake_override,val]
         overridden:
-          public open descriptor: kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.ProtoPkgService> declared in <root>.ProtoPkgService
-        FUN FAKE_OVERRIDE name:<get-descriptor> visibility:public modality:OPEN returnType:kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.ProtoPkgService> [fake_override]
-          VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.ProtoPkgService.$rpcServiceStub
+          public open descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService> declared in <root>.ProtoPkgService
+        FUN FAKE_OVERRIDE name:<get-descriptor> visibility:public modality:OPEN returnType:kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService> [fake_override]
+          VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.ProtoPkgService.$rpcServiceStub<T of <root>.ProtoPkgService.$rpcServiceStub>
           correspondingProperty: PROPERTY FAKE_OVERRIDE name:descriptor visibility:public modality:OPEN [fake_override,val]
           overridden:
-            public open fun <get-descriptor> (): kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.ProtoPkgService> declared in <root>.ProtoPkgService
+            public open fun <get-descriptor> (): kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService> declared in <root>.ProtoPkgService
+      PROPERTY FAKE_OVERRIDE name:factory visibility:public modality:OPEN [fake_override,val]
+        overridden:
+          public open factory: kotlinx.rpc.RpcServiceStubFactory.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService> declared in <root>.ProtoPkgService
+        FUN FAKE_OVERRIDE name:<get-factory> visibility:public modality:OPEN returnType:kotlinx.rpc.RpcServiceStubFactory.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService> [fake_override]
+          VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.ProtoPkgService.$rpcServiceStub<T of <root>.ProtoPkgService.$rpcServiceStub>
+          correspondingProperty: PROPERTY FAKE_OVERRIDE name:factory visibility:public modality:OPEN [fake_override,val]
+          overridden:
+            public open fun <get-factory> (): kotlinx.rpc.RpcServiceStubFactory.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService> declared in <root>.ProtoPkgService
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN returnType:kotlin.Boolean [fake_override,operator]
       VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
       VALUE_PARAMETER kind:Regular name:other index:1 type:kotlin.Any?
       overridden:
         public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in kotlin.Any
-        public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in kotlinx.rpc.grpc.GrpcService
+        public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in kotlinx.rpc.RpcService
     FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN returnType:kotlin.Int [fake_override]
       VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
       overridden:
         public open fun hashCode (): kotlin.Int declared in kotlin.Any
-        public open fun hashCode (): kotlin.Int declared in kotlinx.rpc.grpc.GrpcService
+        public open fun hashCode (): kotlin.Int declared in kotlinx.rpc.RpcService
     FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN returnType:kotlin.String [fake_override]
       VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
       overridden:
         public open fun toString (): kotlin.String declared in kotlin.Any
-        public open fun toString (): kotlin.String declared in kotlinx.rpc.grpc.GrpcService
+        public open fun toString (): kotlin.String declared in kotlinx.rpc.RpcService
     FUN name:unit visibility:public modality:ABSTRACT returnType:kotlin.Unit [suspend]
       VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.ProtoPkgService
     PROPERTY GENERATED[kotlinx.rpc.codegen.FirRpcServiceDescriptorPropertyKey] name:descriptor visibility:public modality:OPEN [val]
       overridden:
-        public abstract descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, T of kotlinx.rpc.grpc.GrpcService> declared in kotlinx.rpc.grpc.GrpcService
-      FUN DEFAULT_PROPERTY_ACCESSOR name:<get-descriptor> visibility:public modality:OPEN returnType:kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.ProtoPkgService>
+        public abstract descriptor: kotlinx.rpc.descriptor.RpcServiceDescriptor<Protocol of kotlinx.rpc.RpcService, Self of kotlinx.rpc.RpcService> declared in kotlinx.rpc.RpcService
+      FUN DEFAULT_PROPERTY_ACCESSOR name:<get-descriptor> visibility:public modality:OPEN returnType:kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.ProtoPkgService
         correspondingProperty: PROPERTY GENERATED[kotlinx.rpc.codegen.FirRpcServiceDescriptorPropertyKey] name:descriptor visibility:public modality:OPEN [val]
         overridden:
-          public abstract fun <get-descriptor> (): kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, T of kotlinx.rpc.grpc.GrpcService> declared in kotlinx.rpc.grpc.GrpcService
+          public abstract fun <get-descriptor> (): kotlinx.rpc.descriptor.RpcServiceDescriptor<Protocol of kotlinx.rpc.RpcService, Self of kotlinx.rpc.RpcService> declared in kotlinx.rpc.RpcService
         BLOCK_BODY
-          RETURN type=kotlin.Nothing from='public open fun <get-descriptor> (): kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.ProtoPkgService> declared in <root>.ProtoPkgService'
-            GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.ProtoPkgService>]' type=<root>.ProtoPkgService.$rpcServiceStub.Companion
+          RETURN type=kotlin.Nothing from='public open fun <get-descriptor> (): kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService> declared in <root>.ProtoPkgService'
+            GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.ProtoPkgService>; kotlinx.rpc.RpcServiceStubFactory.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>]' type=<root>.ProtoPkgService.$rpcServiceStub.Companion
+    PROPERTY GENERATED[kotlinx.rpc.codegen.FirRpcServiceFactoryPropertyKey] name:factory visibility:public modality:OPEN [val]
+      overridden:
+        public abstract factory: kotlinx.rpc.RpcServiceStubFactory<Protocol of kotlinx.rpc.RpcService, Self of kotlinx.rpc.RpcService> declared in kotlinx.rpc.RpcService
+      FUN DEFAULT_PROPERTY_ACCESSOR name:<get-factory> visibility:public modality:OPEN returnType:kotlinx.rpc.RpcServiceStubFactory.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.ProtoPkgService
+        correspondingProperty: PROPERTY GENERATED[kotlinx.rpc.codegen.FirRpcServiceFactoryPropertyKey] name:factory visibility:public modality:OPEN [val]
+        overridden:
+          public abstract fun <get-factory> (): kotlinx.rpc.RpcServiceStubFactory<Protocol of kotlinx.rpc.RpcService, Self of kotlinx.rpc.RpcService> declared in kotlinx.rpc.RpcService
+        BLOCK_BODY
+          RETURN type=kotlin.Nothing from='public open fun <get-factory> (): kotlinx.rpc.RpcServiceStubFactory.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService> declared in <root>.ProtoPkgService'
+            GET_OBJECT 'CLASS GENERATED[kotlinx.rpc.codegen.FirRpcServiceStubCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlinx.rpc.descriptor.RpcServiceDescriptor<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>; kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor<<root>.ProtoPkgService>; kotlinx.rpc.RpcServiceStubFactory.UnaryResponse<kotlinx.rpc.grpc.GrpcProtocol, <root>.ProtoPkgService>]' type=<root>.ProtoPkgService.$rpcServiceStub.Companion
   FUN name:box visibility:public modality:FINAL returnType:kotlin.String
     BLOCK_BODY
       VAR name:delegate type:kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate [val]

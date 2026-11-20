@@ -5,8 +5,5 @@
 package kotlinx.rpc.grpc
 
 import kotlinx.rpc.RpcService
-import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
 
-public interface GrpcService<T: GrpcService<T>>: RpcService<GrpcProtocol, T> {
-    public override val descriptor: GrpcServiceDescriptor<T>
-}
+public typealias GrpcService<T> = RpcService<GrpcProtocol, T>

@@ -56,6 +56,7 @@ import org.jetbrains.kotlin.ir.util.getAnnotation
 import org.jetbrains.kotlin.ir.util.kotlinFqName
 import org.jetbrains.kotlin.ir.util.packageFqName
 import org.jetbrains.kotlin.ir.util.primaryConstructor
+import org.jetbrains.kotlin.ir.util.properties
 import org.jetbrains.kotlin.name.Name
 
 private object GrpcDescriptor {
@@ -71,7 +72,6 @@ internal class GrpcStubGenerator(
     ctx: RpcIrContext,
     logger: MessageCollector,
 ) : RpcStubGenerator(declaration, ctx, logger) {
-    // TODO: Move the GrpcAnnotation prop accesses into a helper?
     private val grpcAnnotation = declaration.service.getAnnotation(RpcClassId.grpcAnnotation.asSingleFqName())
         ?: error("Expected @Grpc annotation on ${declaration.fqName}")
 
@@ -86,11 +86,14 @@ internal class GrpcStubGenerator(
     // the name of the service based on the proto file (or @Grpc annotation)
     private val serviceFqName: String = if (protoPackage.isNotEmpty()) "$protoPackage.$simpleName" else simpleName
 
-    // TODO: Can be done better?
-    override fun descriptorSimpleName(): String = simpleName
+    override fun getAdditionDescriptorSuperType(): IrType {
+        return ctx.grpcServiceDescriptor.typeWith(declaration.serviceType)
+    }
 
     override fun IrClass.generateAdditionalDescriptorContent() {
         generateGrpcDelegateProperty()
+
+        overrideSimpleName()
     }
 
     /**
@@ -223,8 +226,8 @@ internal class GrpcStubGenerator(
         val requestParameterType = method.arguments.getOrNull(0)?.type ?: ctx.irBuiltIns.unitType
         val responseParameterType = method.function.returnType
 
-        val requestType: IrType = requestParameterType.unwrapFlow(declaration.stubClass.file)
-        val responseType: IrType = responseParameterType.unwrapFlow(declaration.stubClass.file)
+        val requestType: IrType = requestParameterType.unwrapFlow()
+        val responseType: IrType = responseParameterType.unwrapFlow()
 
         val methodDescriptorType = ctx.grpcPlatformMethodDescriptor(declaration.stubClass.file)
             .typeWith(requestType, responseType)
@@ -428,14 +431,6 @@ internal class GrpcStubGenerator(
         return null
     }
 
-    private fun IrType.unwrapFlow(from: IrFile): IrType {
-        return if (classOrNull == ctx.flow(from)) {
-            (this as IrSimpleType).arguments[0].typeOrFail
-        } else {
-            this
-        }
-    }
-
     /**
      * Ir call to `serviceDescriptor`
      *
@@ -508,4 +503,13 @@ internal class GrpcStubGenerator(
 
     private fun IrExpression.assertConstString(): String = vsApi { asConstValueVS(String::class) }
         ?: error("Expected IrConst of kind String, got ${dumpKotlinLike()}")
+
+
+    private fun IrClass.overrideSimpleName() {
+        properties.first {
+            it.name.toString() == Descriptor.SIMPLE_NAME
+        }.backingField?.initializer = factory.createExpressionBody(
+            stringConst(simpleName)
+        )
+    }
 }

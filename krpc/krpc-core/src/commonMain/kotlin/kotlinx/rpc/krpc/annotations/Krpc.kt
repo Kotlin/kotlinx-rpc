@@ -6,7 +6,6 @@ package kotlinx.rpc.krpc.annotations
 
 import kotlinx.rpc.annotations.RpcMeta
 import kotlinx.rpc.krpc.KrpcProtocol
-import kotlinx.rpc.krpc.KrpcService
 import kotlinx.rpc.krpc.descriptor.KrpcServiceDescriptor
 
 // TODO: Adapt KDoc
@@ -46,5 +45,5 @@ import kotlinx.rpc.krpc.descriptor.KrpcServiceDescriptor
  */
 @Target(AnnotationTarget.CLASS)
 //@Retention(AnnotationRetention.RUNTIME) // Runtime is the default retention, also see KT-41082
-@RpcMeta(KrpcService::class, KrpcProtocol::class, KrpcServiceDescriptor::class)
+@RpcMeta(KrpcProtocol::class)
 public annotation class Krpc

@@ -41,6 +41,10 @@ internal class KrpcStubGenerator(
     ctx: RpcIrContext,
     logger: MessageCollector,
 ) : RpcStubGenerator(declaration, ctx, logger) {
+    override fun getAdditionDescriptorSuperType(): IrType {
+        return ctx.krpcServiceDescriptor.typeWith(declaration.serviceType)
+    }
+
     override fun IrClass.generateAdditionalDescriptorContent() {
         generateSerializersProperty()
     }

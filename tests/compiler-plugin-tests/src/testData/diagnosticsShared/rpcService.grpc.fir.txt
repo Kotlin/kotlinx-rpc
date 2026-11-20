@@ -1,6 +1,6 @@
 FILE: rpcService.kt
     @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|)) [evaluated = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|))])
-    @R|kotlinx/rpc/grpc/annotations/Grpc|() public abstract interface MyService : R|kotlin/Any|, R|kotlinx/rpc/grpc/GrpcService<MyService>| {
+    @R|kotlinx/rpc/grpc/annotations/Grpc|() public abstract interface MyService : R|kotlin/Any|, R|kotlinx/rpc/RpcService<kotlinx/rpc/grpc/GrpcProtocol, MyService>| {
         public abstract fun hello(): R|kotlin/Unit|
 
         public abstract suspend fun <T> generic(a: R|T|): R|kotlin/Unit|
@@ -19,32 +19,41 @@ FILE: rpcService.kt
 
         public abstract suspend fun sameName2(a: R|kotlin/Int|): R|kotlin/Unit|
 
-        public open override val descriptor: R|kotlinx/rpc/grpc/descriptor/GrpcServiceDescriptor<MyService>|
-            public get(): R|kotlinx/rpc/grpc/descriptor/GrpcServiceDescriptor<MyService>|
+        public open override val descriptor: R|kotlinx/rpc/descriptor/RpcServiceDescriptor<kotlinx/rpc/grpc/GrpcProtocol, MyService>|
+            public get(): R|kotlinx/rpc/descriptor/RpcServiceDescriptor<kotlinx/rpc/grpc/GrpcProtocol, MyService>|
 
-        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
+        public open override val factory: R|kotlinx/rpc/RpcServiceStubFactory.EitherResponse<kotlinx/rpc/grpc/GrpcProtocol, MyService>|
+            public get(): R|kotlinx/rpc/RpcServiceStubFactory.EitherResponse<kotlinx/rpc/grpc/GrpcProtocol, MyService>|
+
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub<T : R|kotlinx/rpc/RpcFlowResponseCaller<kotlinx/rpc/grpc/GrpcProtocol>|, R|kotlinx/rpc/RpcUnaryResponseCaller<kotlinx/rpc/grpc/GrpcProtocol>|> : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
 
         }
 
     }
-    @R|kotlinx/rpc/grpc/annotations/Grpc|() public abstract interface MyServiceT<T> : R|kotlin/Any|, R|kotlinx/rpc/grpc/GrpcService<MyServiceT>| {
-        public open override val descriptor: R|kotlinx/rpc/grpc/descriptor/GrpcServiceDescriptor<MyServiceT<T>>|
-            public get(): R|kotlinx/rpc/grpc/descriptor/GrpcServiceDescriptor<MyServiceT<T>>|
+    @R|kotlinx/rpc/grpc/annotations/Grpc|() public abstract interface MyServiceT<T> : R|kotlin/Any|, R|kotlinx/rpc/RpcService<kotlinx/rpc/grpc/GrpcProtocol, MyServiceT>| {
+        public open override val descriptor: R|kotlinx/rpc/descriptor/RpcServiceDescriptor<kotlinx/rpc/grpc/GrpcProtocol, MyServiceT<T>>|
+            public get(): R|kotlinx/rpc/descriptor/RpcServiceDescriptor<kotlinx/rpc/grpc/GrpcProtocol, MyServiceT<T>>|
 
-        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
+        public open override val factory: R|kotlinx/rpc/RpcServiceStubFactory<kotlinx/rpc/grpc/GrpcProtocol, MyServiceT<T>>|
+            public get(): R|kotlinx/rpc/RpcServiceStubFactory<kotlinx/rpc/grpc/GrpcProtocol, MyServiceT<T>>|
+
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub<T> : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
 
         }
 
     }
-    @R|kotlinx/rpc/grpc/annotations/Grpc|() public abstract interface MyServiceT2<T, R, A, B> : R|kotlin/Any|, R|kotlinx/rpc/grpc/GrpcService<MyServiceT2>| {
-        public open override val descriptor: R|kotlinx/rpc/grpc/descriptor/GrpcServiceDescriptor<MyServiceT2<T, R, A, B>>|
-            public get(): R|kotlinx/rpc/grpc/descriptor/GrpcServiceDescriptor<MyServiceT2<T, R, A, B>>|
+    @R|kotlinx/rpc/grpc/annotations/Grpc|() public abstract interface MyServiceT2<T, R, A, B> : R|kotlin/Any|, R|kotlinx/rpc/RpcService<kotlinx/rpc/grpc/GrpcProtocol, MyServiceT2>| {
+        public open override val descriptor: R|kotlinx/rpc/descriptor/RpcServiceDescriptor<kotlinx/rpc/grpc/GrpcProtocol, MyServiceT2<T, R, A, B>>|
+            public get(): R|kotlinx/rpc/descriptor/RpcServiceDescriptor<kotlinx/rpc/grpc/GrpcProtocol, MyServiceT2<T, R, A, B>>|
 
-        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
+        public open override val factory: R|kotlinx/rpc/RpcServiceStubFactory<kotlinx/rpc/grpc/GrpcProtocol, MyServiceT2<T, R, A, B>>|
+            public get(): R|kotlinx/rpc/RpcServiceStubFactory<kotlinx/rpc/grpc/GrpcProtocol, MyServiceT2<T, R, A, B>>|
+
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub<T> : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
 

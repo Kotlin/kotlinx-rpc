@@ -11,10 +11,13 @@ public final class kotlinx/rpc/RpcCall {
 
 public abstract class kotlinx/rpc/RpcClient {
 	public fun <init> ()V
-	public abstract fun call (Lkotlinx/rpc/RpcCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun callStreaming (Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/flow/Flow;
+	protected abstract fun createStub (Lkotlinx/rpc/RpcServiceStubFactory;J)Lkotlinx/rpc/RpcService;
 	public final fun service (Lkotlin/reflect/KClass;)Lkotlinx/rpc/RpcService;
 	public final fun service (Lkotlin/reflect/KType;)Lkotlinx/rpc/RpcService;
+}
+
+public abstract interface class kotlinx/rpc/RpcFlowResponseCaller {
+	public abstract fun callWithFlowResponse (Lkotlinx/rpc/RpcCall;)Lkotlinx/coroutines/flow/Flow;
 }
 
 public abstract interface class kotlinx/rpc/RpcProtocol {
@@ -28,10 +31,31 @@ public abstract class kotlinx/rpc/RpcServer {
 
 public abstract interface class kotlinx/rpc/RpcService {
 	public abstract fun getDescriptor ()Lkotlinx/rpc/descriptor/RpcServiceDescriptor;
+	public abstract fun getFactory ()Lkotlinx/rpc/RpcServiceStubFactory;
 }
 
 public final class kotlinx/rpc/RpcServiceKt {
 	public static final fun getDescriptor (Lkotlin/reflect/KClass;)Lkotlinx/rpc/descriptor/RpcServiceDescriptor;
+	public static final fun getFactory (Lkotlin/reflect/KClass;)Lkotlinx/rpc/RpcServiceStubFactory;
+}
+
+public abstract interface class kotlinx/rpc/RpcServiceStubFactory {
+}
+
+public abstract interface class kotlinx/rpc/RpcServiceStubFactory$EitherResponse : kotlinx/rpc/RpcServiceStubFactory {
+	public abstract fun create (JLkotlinx/rpc/RpcFlowResponseCaller;)Lkotlinx/rpc/RpcService;
+}
+
+public abstract interface class kotlinx/rpc/RpcServiceStubFactory$FlowResponse : kotlinx/rpc/RpcServiceStubFactory {
+	public abstract fun create (JLkotlinx/rpc/RpcFlowResponseCaller;)Lkotlinx/rpc/RpcService;
+}
+
+public abstract interface class kotlinx/rpc/RpcServiceStubFactory$UnaryResponse : kotlinx/rpc/RpcServiceStubFactory {
+	public abstract fun create (JLkotlinx/rpc/RpcUnaryResponseCaller;)Lkotlinx/rpc/RpcService;
+}
+
+public abstract interface class kotlinx/rpc/RpcUnaryResponseCaller {
+	public abstract fun callWithUnaryResponse (Lkotlinx/rpc/RpcCall;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public abstract interface annotation class kotlinx/rpc/annotations/CheckedTypeAnnotation : java/lang/annotation/Annotation {
@@ -41,7 +65,6 @@ public abstract interface annotation class kotlinx/rpc/annotations/CheckedTypeAn
 public abstract interface annotation class kotlinx/rpc/annotations/RpcMeta : java/lang/annotation/Annotation {
 	public abstract fun descriptorClass ()Ljava/lang/Class;
 	public abstract fun protocolClass ()Ljava/lang/Class;
-	public abstract fun serviceClass ()Ljava/lang/Class;
 }
 
 public abstract interface class kotlinx/rpc/descriptor/RpcCallable {
@@ -70,7 +93,6 @@ public abstract interface class kotlinx/rpc/descriptor/RpcParameter {
 }
 
 public abstract interface class kotlinx/rpc/descriptor/RpcServiceDescriptor {
-	public abstract fun createInstance (JLkotlinx/rpc/RpcClient;)Lkotlinx/rpc/RpcService;
 	public abstract fun getCallable (Ljava/lang/String;)Lkotlinx/rpc/descriptor/RpcCallable;
 	public abstract fun getCallables ()Ljava/util/Map;
 	public abstract fun getFqName ()Ljava/lang/String;

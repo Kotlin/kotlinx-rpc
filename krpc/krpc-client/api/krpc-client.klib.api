@@ -13,13 +13,14 @@ abstract class kotlinx.rpc.krpc.client/InitializedKrpcClient : kotlinx.rpc.krpc.
     final suspend fun initializeTransport(): kotlinx.rpc.krpc/KrpcTransport // kotlinx.rpc.krpc.client/InitializedKrpcClient.initializeTransport|initializeTransport(){}[0]
 }
 
-abstract class kotlinx.rpc.krpc.client/KrpcClient : kotlinx.rpc.krpc.internal/KrpcEndpoint, kotlinx.rpc/RpcClient<kotlinx.rpc.krpc/KrpcProtocol> { // kotlinx.rpc.krpc.client/KrpcClient|null[0]
+abstract class kotlinx.rpc.krpc.client/KrpcClient : kotlinx.rpc.krpc.internal/KrpcEndpoint, kotlinx.rpc/RpcClient<kotlinx.rpc.krpc/KrpcProtocol>, kotlinx.rpc/RpcFlowResponseCaller<kotlinx.rpc.krpc/KrpcProtocol>, kotlinx.rpc/RpcUnaryResponseCaller<kotlinx.rpc.krpc/KrpcProtocol> { // kotlinx.rpc.krpc.client/KrpcClient|null[0]
     constructor <init>() // kotlinx.rpc.krpc.client/KrpcClient.<init>|<init>(){}[0]
 
     abstract fun initializeConfig(): kotlinx.rpc.krpc/KrpcConfig.Client // kotlinx.rpc.krpc.client/KrpcClient.initializeConfig|initializeConfig(){}[0]
     abstract suspend fun initializeTransport(): kotlinx.rpc.krpc/KrpcTransport // kotlinx.rpc.krpc.client/KrpcClient.initializeTransport|initializeTransport(){}[0]
-    final fun <#A1: kotlin/Any?> callStreaming(kotlinx.rpc/RpcCall): kotlinx.coroutines.flow/Flow<#A1> // kotlinx.rpc.krpc.client/KrpcClient.callStreaming|callStreaming(kotlinx.rpc.RpcCall){0§<kotlin.Any?>}[0]
+    final fun <#A1: kotlinx.rpc/RpcService<kotlinx.rpc.krpc/KrpcProtocol, #A1>, #B1: kotlin/Any?> callWithFlowResponse(kotlinx.rpc/RpcCall<kotlinx.rpc.krpc/KrpcProtocol, #A1>): kotlinx.coroutines.flow/Flow<#B1> // kotlinx.rpc.krpc.client/KrpcClient.callWithFlowResponse|callWithFlowResponse(kotlinx.rpc.RpcCall<kotlinx.rpc.krpc.KrpcProtocol,0:0>){0§<kotlinx.rpc.RpcService<kotlinx.rpc.krpc.KrpcProtocol,0:0>>;1§<kotlin.Any?>}[0]
+    final fun <#A1: kotlinx.rpc/RpcService<kotlinx.rpc.krpc/KrpcProtocol, #A1>> createStub(kotlinx.rpc/RpcServiceStubFactory<kotlinx.rpc.krpc/KrpcProtocol, #A1>, kotlin/Long): #A1 // kotlinx.rpc.krpc.client/KrpcClient.createStub|createStub(kotlinx.rpc.RpcServiceStubFactory<kotlinx.rpc.krpc.KrpcProtocol,0:0>;kotlin.Long){0§<kotlinx.rpc.RpcService<kotlinx.rpc.krpc.KrpcProtocol,0:0>>}[0]
     final fun close(kotlin/String? = ...) // kotlinx.rpc.krpc.client/KrpcClient.close|close(kotlin.String?){}[0]
-    final suspend fun <#A1: kotlin/Any?> call(kotlinx.rpc/RpcCall): #A1 // kotlinx.rpc.krpc.client/KrpcClient.call|call(kotlinx.rpc.RpcCall){0§<kotlin.Any?>}[0]
+    final suspend fun <#A1: kotlinx.rpc/RpcService<kotlinx.rpc.krpc/KrpcProtocol, #A1>, #B1: kotlin/Any?> callWithUnaryResponse(kotlinx.rpc/RpcCall<kotlinx.rpc.krpc/KrpcProtocol, #A1>): #B1 // kotlinx.rpc.krpc.client/KrpcClient.callWithUnaryResponse|callWithUnaryResponse(kotlinx.rpc.RpcCall<kotlinx.rpc.krpc.KrpcProtocol,0:0>){0§<kotlinx.rpc.RpcService<kotlinx.rpc.krpc.KrpcProtocol,0:0>>;1§<kotlin.Any?>}[0]
     final suspend fun awaitCompletion() // kotlinx.rpc.krpc.client/KrpcClient.awaitCompletion|awaitCompletion(){}[0]
 }

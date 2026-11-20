@@ -58,6 +58,7 @@ fun IrProperty.addDefaultGetter(
     }
 }
 
+// TODO: Are these still necessary with the removed support of the older Kotlin versions?
 // A collection of functions that proved to be useful,
 // but appeared only in the latest Kotlin versions.
 // Copied and placed here as is

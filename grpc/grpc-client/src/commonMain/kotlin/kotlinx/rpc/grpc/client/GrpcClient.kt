@@ -7,8 +7,12 @@ package kotlinx.rpc.grpc.client
 import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.RpcCall
 import kotlinx.rpc.RpcClient
+import kotlinx.rpc.RpcServiceStubFactory
+import kotlinx.rpc.RpcFlowResponseCaller
+import kotlinx.rpc.RpcUnaryResponseCaller
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcProtocol
+import kotlinx.rpc.grpc.GrpcService
 import kotlinx.rpc.grpc.client.internal.ManagedChannel
 import kotlinx.rpc.grpc.client.internal.ManagedChannelBuilder
 import kotlinx.rpc.grpc.client.internal.bidirectionalStreamingRpc
@@ -38,7 +42,7 @@ private typealias RequestClient = Any
 /**
  * GrpcClient manages gRPC communication by providing implementation for making asynchronous RPC calls.
  */
-public class GrpcClient internal constructor(
+public abstract class GrpcClient internal constructor(
     internal val channel: ManagedChannel,
     messageMarshallerResolver: GrpcMarshallerResolver = GrpcEmptyMarshallerResolver,
     internal val interceptors: List<GrpcClientInterceptor>,
@@ -46,8 +50,8 @@ public class GrpcClient internal constructor(
     internal val callCredentials: GrpcCallCredentials,
     internal val marshallerConfig: GrpcMarshallerConfig?,
 ) : RpcClient<GrpcProtocol>() {
-    private val delegates = RpcInternalConcurrentHashMap<String, GrpcServiceDelegate>()
-    private val messageMarshallerResolver = messageMarshallerResolver + ThrowingGrpcMarshallerResolver
+    internal val delegates = RpcInternalConcurrentHashMap<String, GrpcServiceDelegate>()
+    internal val messageMarshallerResolver = messageMarshallerResolver + ThrowingGrpcMarshallerResolver
 
     public fun shutdown() {
         delegates.clear()
@@ -62,8 +66,25 @@ public class GrpcClient internal constructor(
     public suspend fun awaitTermination(duration: Duration = Duration.INFINITE) {
         channel.awaitTermination(duration)
     }
+}
 
-    override suspend fun <T> call(call: RpcCall): T = withGrpcCall(call) { methodDescriptor, request ->
+internal class GrpcClientImpl internal constructor(
+    channel: ManagedChannel,
+    messageMarshallerResolver: GrpcMarshallerResolver,
+    interceptors: List<GrpcClientInterceptor>,
+    callCredentials: GrpcCallCredentials,
+    marshallerConfig: GrpcMarshallerConfig?,
+) : GrpcClient(
+    channel = channel,
+    messageMarshallerResolver = messageMarshallerResolver,
+    interceptors = interceptors,
+    callCredentials = callCredentials,
+    marshallerConfig = marshallerConfig,
+), RpcFlowResponseCaller<GrpcProtocol>, RpcUnaryResponseCaller<GrpcProtocol> {
+
+    override suspend fun <Service : GrpcService<Service>, T> callWithUnaryResponse(
+        call: RpcCall<GrpcProtocol, Service>,
+    ): T = withGrpcCall(call) { methodDescriptor, request ->
         val callOptions = GrpcCallOptions()
         val trailers = GrpcMetadata()
 
@@ -86,7 +107,9 @@ public class GrpcClient internal constructor(
         }
     }
 
-    override fun <T> callStreaming(call: RpcCall): Flow<T> = withGrpcCall(call) { methodDescriptor, request ->
+    override fun <Service : GrpcService<Service>, T> callWithFlowResponse(
+        call: RpcCall<GrpcProtocol, Service>,
+    ): Flow<T> = withGrpcCall(call) { methodDescriptor, request ->
         val callOptions = GrpcCallOptions()
         val headers = GrpcMetadata()
 
@@ -109,7 +132,16 @@ public class GrpcClient internal constructor(
         }
     }
 
-    private inline fun <T, R> withGrpcCall(call: RpcCall, body: (GrpcMethodDescriptor<RequestClient, T>, Any) -> R): R {
+    override fun <T : GrpcService<T>> createStub(
+        factory: RpcServiceStubFactory<GrpcProtocol, T>,
+        serviceId: Long,
+    ): T = when (factory) {
+        is RpcServiceStubFactory.UnaryResponse -> factory.create(serviceId, this)
+        is RpcServiceStubFactory.FlowResponse -> factory.create(serviceId, this)
+        is RpcServiceStubFactory.EitherResponse -> factory.create(serviceId, this)
+    }
+
+    private inline fun <T, R> withGrpcCall(call: RpcCall<*, *>, body: (GrpcMethodDescriptor<RequestClient, T>, Any) -> R): R {
         require(call.arguments.size <= 1) {
             "Call parameter size must be 0 or 1, but ${call.arguments.size}"
         }
@@ -187,7 +219,7 @@ private fun GrpcClient(
 ): GrpcClient {
     val channel = builder.buildChannel(config)
     val callCredentials = config.credentials?.realCallCredentials ?: GrpcEmptyCallCredentials
-    return GrpcClient(
+    return GrpcClientImpl(
         channel = channel,
         messageMarshallerResolver = config.messageMarshallerResolver,
         interceptors = config.interceptors,

@@ -6,7 +6,9 @@ package kotlinx.rpc.codegen
 
 import kotlinx.rpc.codegen.common.ProtoNames
 import kotlinx.rpc.codegen.common.RpcClassId
+import kotlinx.rpc.codegen.common.RpcNames
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.builtins.StandardNames.FqNames.parameterName
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.FirClassLikeDeclaration
 import org.jetbrains.kotlin.fir.declarations.findArgumentByName
@@ -15,7 +17,6 @@ import org.jetbrains.kotlin.fir.declarations.toAnnotationClassIdSafe
 import org.jetbrains.kotlin.fir.deserialization.toQualifiedPropertyAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirAnnotation
 import org.jetbrains.kotlin.fir.expressions.FirCall
-import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirLiteralExpression
 import org.jetbrains.kotlin.fir.expressions.FirVarargArgumentsExpression
 import org.jetbrains.kotlin.fir.expressions.UnresolvedExpressionTypeAccess
@@ -46,25 +47,20 @@ import org.jetbrains.kotlin.types.ConstantValueKind
 import kotlin.collections.plus
 import kotlin.collections.set
 
-fun FirAnnotation.classFromRpcMeta(session: FirSession, parameterName: Name): ConeKotlinType? {
-    val annotationSymbol = resolvedType.toRegularClassSymbol(session) ?: return null
+@OptIn(SymbolInternals::class)
+fun FirAnnotation.protocolType(session: FirSession): ConeClassLikeType {
+    val annotationSymbol =
+        resolvedType.toRegularClassSymbol(session) ?: error("No annotation symbol found for type $resolvedType")
 
-    val rpcMetaAnnotation = annotationSymbol.resolvedCompilerAnnotationsWithClassIds.firstOrNull { annotation ->
-        annotation.toAnnotationClassIdSafe(session) == RpcClassId.rpcMetaAnnotation
-    } ?: return null
+    val rpcMetaAnnotation = annotationSymbol.fir.annotations.firstOrNull {
+        it.toAnnotationClassIdSafe(session) == RpcClassId.rpcMetaAnnotation
+    } ?: error("No RPC meta annotation found $annotationSymbol")
 
-    val serviceArgument = rpcMetaAnnotation.argumentMapping.mapping[parameterName] ?: return null
-    return serviceArgument.getType()
-}
+    val argumentClass = rpcMetaAnnotation.argumentMapping.mapping[RpcNames.RPC_META_PROTOCOL_CLASS]
+        ?: error("Protocol argument not found in RPC meta annotation $annotationSymbol")
 
-private fun FirExpression.getType(): ConeKotlinType? {
-    val markerType = resolvedType as? ConeClassLikeType ?: return null
-
-    return if (markerType.lookupTag.classId == StandardClassIds.KClass) {
-        markerType.typeArguments.firstOrNull()?.type as? ConeClassLikeType
-    } else {
-        markerType
-    }
+    return argumentClass.resolvedType.typeArguments.firstOrNull()?.type as? ConeClassLikeType
+        ?: error("Argument '$parameterName' is not a class literal")
 }
 
 fun FirBasedSymbol<*>.rpcAnnotationSource(
