@@ -29,6 +29,7 @@ pluginDevKit {
         splitDev(2, 4)
         splitDev(2, 4, 20)
         splitDev(2, 5)
+        splitDev(2, 5, 20)
     }
 }
 
