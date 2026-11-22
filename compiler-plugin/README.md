@@ -1,7 +1,6 @@
 # Overview
 
-This is the Kotlin compiler plugin for kotlinx-rpc. 
-It runs in two phases: FIR (frontend diagnostics + declaration generation, uses K2) and IR (backend codegen).
+The Kotlin K2 compiler plugin of kotlinx-rpc. It has two parts: FIR (diagnostics and declaration generation) and IR (code generation).
 
 ## Build & Test
 
@@ -56,28 +55,24 @@ A test fails when a file with a version is the same as the file of the next high
 | Supported Kotlin and IDE versions | `gradle-conventions/src/main/kotlin/util/devkit.kt` |
 | Minimal versions | `kotlin-min` and `idea-min` in `versions-root/libs.versions.toml` |
 
-## Generation References (detailed)
+## Generated code
 
-Protocol-specific codegen and diagnostics details live alongside each protocol module:
-- [kRPC codegen](../krpc/codegen.md) -- stub class, companion descriptor, invokators
-- [gRPC codegen](../grpc/codegen.md) -- gRPC-specific additions: `delegate()`, `MethodDescriptor`, streaming types
-- [Protobuf codegen](../protobuf/codegen.md) -- `Builder` interface, `@WithProtoDescriptor`/`@WithGrpcMarshaller` annotations
+| Protocol | Reference |
+|---|---|
+| kRPC | [krpc/codegen.md](../krpc/codegen.md): stub class, companion descriptor, invokators |
+| gRPC | [grpc/codegen.md](../grpc/codegen.md): `delegate()`, `MethodDescriptor`, streaming types |
+| Protobuf | [protobuf/codegen.md](../protobuf/codegen.md): `Builder` interface, `@WithProtoDescriptor` and `@WithGrpcMarshaller` |
 
 ## Generated test runners
 
 The test tasks run the `generateTests*` tasks first. These tasks write the JUnit test classes
 (`BoxTestGenerated.java`, `DiagnosticTestGenerated.java`) to `build/test-gen/`, one set for each Kotlin version.
 
-## Version Compatibility
+## Version compatibility
 
-See `verify-compiler-plugin-compatibility` skill.
+Use the `verify-compiler-plugin-compatibility` skill.
 
-## Compiler internals investigation tip
+## Compiler API
 
-When debugging issues involving the Kotlin compiler (compiler plugin code, FIR, IR),
-**read the implementation of the API you're calling**, not just the signature. Compiler
-APIs often have non-obvious side effects — e.g., a method named `addAnnotation` may
-also validate argument types and modify the declaration's annotation list. Use
-`searching_dependency_sources` to find the class, then `read_dependency_sources` to
-read the actual method body. This prevents hours of guessing about behavior that is
-plainly visible in the source.
+Before you rely on a compiler API, read its implementation with the `searching_dependency_sources` skill, not only
+its signature. A compiler function often has side effects that its name doesn't show.

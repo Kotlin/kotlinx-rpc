@@ -1,35 +1,28 @@
-# kRPC Codegen Reference
+# kRPC codegen
 
-What the compiler plugin generates for `@Rpc` service interfaces.
+What the compiler plugin generates for an `@Rpc` interface.
+An `@Grpc` interface gets the same code and the additions in [gRPC codegen](../grpc/codegen.md).
 
-The compiler plugin works in two phases. 
-First, the FIR phase declares empty "shell" classes (a stub class and its companion) inside the service interface. 
-Then, the IR phase fills these shells with actual method implementations: the stub class gets override methods that delegate to `RpcClient`, and the companion gets the `RpcServiceDescriptor` implementation. 
+## Declarations (FIR)
 
-At runtime, the generated descriptor is accessed via `serviceDescriptorOf<MyService>()`, 
-and `client.withService<MyService>()` creates the instance of the generated stub implementation.
-
-## FIR Phase -- Declaration Shapes
-
-`FirRpcServiceGenerator` triggers on interfaces matched by `FirRpcPredicates.rpc`:
+`FirRpcServiceGenerator` declares two empty classes in each interface that `FirRpcPredicates.rpc` matches:
 
 ```
-@Rpc interface MyService { ... }
-  └─ nested class $rpcServiceStub        (key: RpcGeneratedStubKey)
-       └─ companion object               (key: FirRpcServiceStubCompanionObject)
+@Rpc interface MyService
+  └─ class $rpcServiceStub     key RpcGeneratedStubKey. public, final, @Deprecated(HIDDEN)
+       └─ companion object     key FirRpcServiceStubCompanionObject
 ```
 
-The stub class is marked `FINAL`, `PUBLIC`, and `@Deprecated(hidden)` (hidden from user code).
+## Bodies (IR)
 
-## IR Phase -- Stub Class
+`RpcStubGenerator` fills the two classes:
 
-`RpcStubGenerator.generateStubClass()` fills in the FIR stub.
+| Declaration | Generated code |
+|---|---|
+| `$rpcServiceStub` | Implements the service. Each function passes an `RpcCall` to the `RpcClient`. |
+| The companion | Implements `RpcServiceDescriptor<MyService>`, with one `RpcCallable` for each function |
+| The service interface | Gets the `@WithServiceDescriptor($rpcServiceStub.Companion::class)` annotation |
 
-### Method Generation
-
-For each method in the service interface, one of two call patterns is generated:
-
-**Suspend method (unary RPC):**
 ```kotlin
 final override suspend fun myMethod(arg1: Type1, arg2: Type2): ReturnType {
     return __rpc_client.call(RpcCall(
@@ -41,51 +34,29 @@ final override suspend fun myMethod(arg1: Type1, arg2: Type2): ReturnType {
 }
 ```
 
-**Non-suspend method returning Flow (server streaming):**
-```kotlin
-final override fun streamMethod(arg: Type1): Flow<ReturnType> {
-    return __rpc_client.callServerStreaming(RpcCall(
-        descriptor = Companion,
-        callableName = "streamMethod",
-        arguments = arrayOf(arg),
-        serviceId = __rpc_stub_id,
-    ))
-}
-```
+A function that isn't `suspend` and returns a `Flow` calls `__rpc_client.callServerStreaming` (`isNonSuspendingWithFlowReturn()`).
 
-The branching logic is in `isNonSuspendingWithFlowReturn()` -- checks `returnType == Flow<> && !isSuspend`.
+At runtime, `serviceDescriptorOf<MyService>()` returns the descriptor, and `client.withService<MyService>()` creates the stub.
 
-## IR Phase
+## Diagnostics
 
-Makes the companion extend `RpcServiceDescriptor<MyService>` and generates the implementation.
-
-After stub generation, `@WithServiceDescriptor($rpcServiceStub.Companion::class)` is added to the original service interface.
-
-## FIR Diagnostics
-
-### Core RPC (`FirRpcServiceDeclarationChecker`)
-
-Runs on all `@Rpc` interfaces:
+`FirRpcServiceDeclarationChecker` checks each `@Rpc` interface:
 
 | Diagnostic | Condition |
 |---|---|
-| `TYPE_PARAMETERS_IN_RPC_INTERFACE` | Interface has type parameters |
-| `TYPE_PARAMETERS_IN_RPC_FUNCTION` | Method has type parameters |
-| `NON_SUSPENDING_REQUEST_WITHOUT_STREAMING_RETURN_TYPE` | Non-suspend method returns non-Flow type |
-| `AD_HOC_POLYMORPHISM_IN_RPC_SERVICE` | Multiple methods with same name (overloading) |
-| `FIELD_IN_RPC_SERVICE` | Property declared in interface |
-| `SUSPENDING_SERVER_STREAMING_IN_RPC_SERVICE` | `suspend fun` returning `Flow` |
-| `STATE_FLOW_IN_RPC_SERVICE` | `StateFlow` anywhere in method signatures (recursive) |
-| `SHARED_FLOW_IN_RPC_SERVICE` | `SharedFlow` anywhere in method signatures (recursive) |
-| `NESTED_STREAMING_IN_RPC_SERVICE` | `Flow<Flow<T>>` -- parent chain contains another Flow |
-| `NON_TOP_LEVEL_SERVER_STREAMING_IN_RPC_SERVICE` | `Flow` nested inside parameter/return types (not direct return) |
+| `TYPE_PARAMETERS_IN_RPC_INTERFACE` | The interface has type parameters |
+| `TYPE_PARAMETERS_IN_RPC_FUNCTION` | A function has type parameters |
+| `NON_SUSPENDING_REQUEST_WITHOUT_STREAMING_RETURN_TYPE` | A function isn't `suspend` and doesn't return a `Flow` |
+| `SUSPENDING_SERVER_STREAMING_IN_RPC_SERVICE` | A `suspend` function returns a `Flow` |
+| `AD_HOC_POLYMORPHISM_IN_RPC_SERVICE` | Two functions have the same name |
+| `FIELD_IN_RPC_SERVICE` | The interface has a property |
+| `STATE_FLOW_IN_RPC_SERVICE`, `SHARED_FLOW_IN_RPC_SERVICE` | A function signature has a `StateFlow` or a `SharedFlow`, at any depth |
+| `NESTED_STREAMING_IN_RPC_SERVICE` | A `Flow` is inside another `Flow` |
+| `NON_TOP_LEVEL_SERVER_STREAMING_IN_RPC_SERVICE` | A `Flow` is inside a parameter type or a return type, not the return type itself |
 
-### Checked Type Annotation (`FirCheckedAnnotationCheckers`)
+Other checkers:
 
-Cross-cutting, applies to type arguments marked with `@CheckedTypeAnnotation`:
-
-| Diagnostic | Condition |
-|---|---|
-| `CHECKED_ANNOTATION_VIOLATION` | Type argument doesn't carry the required annotation |
-
-Check [README.md](../core/README.md) to learn more about `@CheckedTypeAnnotation`.
+| Checker | Diagnostic | Condition |
+|---|---|---|
+| `FirRpcAnnotationChecker` | `WRONG_RPC_ANNOTATION_TARGET` | `@Rpc` is on a class that isn't an interface |
+| `FirCheckedAnnotationCheckers.kt` | `CHECKED_ANNOTATION_VIOLATION` | A type argument doesn't have the annotation that [`@CheckedTypeAnnotation`](../core/README.md) requires |

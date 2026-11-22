@@ -1,18 +1,18 @@
 # Overview
 
-Protoc plugins for kotlinx-rpc. Two code generators that translate `.proto` files into idiomatic Kotlin multiplatform code, 
-invoked by Google's `protoc` compiler (or Buf's `protoc` compiler) via the standard plugin protocol (binary `CodeGeneratorRequest` on stdin, `CodeGeneratorResponse` on stdout).
+Two protoc plugins that generate Kotlin Multiplatform code from `.proto` files.
+`protoc` or Buf runs them through the standard plugin protocol: a binary `CodeGeneratorRequest` on stdin, a `CodeGeneratorResponse` on stdout.
 
-This is a **separate included Gradle build** (JVM-only). Published artifacts are fat JARs consumed by the kotlinx-rpc Gradle plugin during user builds. The generated code depends on the `protobuf/` runtime modules.
+This is an included Gradle build for the JVM only. It publishes fat JARs, which the kotlinx-rpc Gradle plugin runs in user builds.
+The generated code depends on the `protobuf/` runtime modules.
 
-See [codegen.md](codegen.md) for what each plugin generates, with full examples of `.proto` → Kotlin output.
+[codegen.md](codegen.md) shows what each plugin generates.
 
-## Downstream generated code — Do not edit manually
+## Generated code in other modules
 
-Changes to `protoc-gen/` affect checked-in generated code in other modules. 
-**Never edit these files by hand** — regenerate them instead:
+A change in `protoc-gen/` changes generated code that is checked in. Never edit that code by hand. Regenerate it:
 
-| Generated files | Regeneration task |
+| Generated files | Task |
 |---|---|
 | `protobuf/protobuf-wkt/src/commonMain/generated-code/` | `:protobuf:protobuf-wkt:bufGenerateCommonMain` |
-| `tests/protobuf-conformance/src/main/generated-code/` | `:tests:protobuf-conformance:bufGenerateMain` |
+| `tests/protobuf-conformance/src/commonMain/generated-code/` | `:tests:protobuf-conformance:bufGenerateCommonMain` |

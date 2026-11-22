@@ -1,50 +1,52 @@
 # Overview
 
-This is the `gradle-plugin` subproject of kotlinx-rpc — an included Gradle build that provides the `org.jetbrains.kotlinx.rpc.plugin` Gradle plugin.
+The `gradle-plugin` included build has the `org.jetbrains.kotlinx.rpc.plugin` Gradle plugin. The plugin does two things:
 
-## Build & Test
+- It adds the kotlinx-rpc compiler plugin to the Kotlin compilation.
+- It generates code from `.proto` files with `buf generate`, for JVM, KMP, and Android projects.
 
-**Prefer running individual tests** — the full suite is slow (multiple Gradle/KGP/AGP version combinations). 
-Only run all tests when explicitly asked.
+On apply, the plugin:
 
-Run the tests from the root build: `:gradle-plugin:test` and `:gradle-plugin:allVersionedFunctionalTests`.
-A standalone build (`-p gradle-plugin`) can run `test`, but not the functional tests,
-because they need the libraries of the root build.
+1. Checks that the Kotlin Gradle plugin is on the classpath.
+2. Creates the `rpc {}` extension (`RpcExtension`).
+3. Applies the compiler plugin.
+4. Creates the protobuf and gRPC generation setup (`createProtoExtensions()`), but only when the build script
+   calls `rpc { protoc() }` or `gradle.properties` has `kotlinx.rpc.protoc=true`.
 
-The standalone build includes the `compiler-plugin` build.
-Another build that includes `gradle-plugin` must include `compiler-plugin` too.
+## Build and test
 
-## What the plugin does
+Run single tests. The full suite is slow, because it runs many combinations of Gradle, KGP, and AGP versions.
+Run all tests only on request.
 
-1. Verifies Kotlin Gradle Plugin is on the classpath
-2. Creates the `rpc {}` DSL extension (`RpcExtension`)
-3. Applies compiler plugin
-4. Creates protobuf/gRPC code generation infrastructure (`createProtoExtensions()`) on demand (when `rpc { protoc() }` is called in the build script or `kotlinx.rpc.protoc=true` is set in `gradle.properties`)
+- Run the tests from the root build: `:gradle-plugin:test` and `:gradle-plugin:allVersionedFunctionalTests`.
+- A standalone build (`-p gradle-plugin`) can run `test`, but not the functional tests, because they need the
+  libraries of the root build.
+- The standalone build includes the `compiler-plugin` build. Another build that includes `gradle-plugin` must
+  include `compiler-plugin` too.
 
-## Two concerns in one plugin
+## Protobuf generation
 
-The plugin handles two distinct responsibilities:
-- **Compiler plugin integration** — wires the kotlinx-rpc compiler plugin into Kotlin compilation.
-- **Protobuf/gRPC code generation** — manages `buf generate` for `.proto` files across JVM, KMP, and Android projects.
+When the build script calls `rpc { protoc() }`:
 
-## Details
+1. `DefaultProtocExtension` finds the source sets (Kotlin, Android, or Android KMP) and creates a `ProtoSourceSet`
+   for each Kotlin source set.
+2. It registers these tasks for each source set: `processXxxProtoFiles`, `processXxxProtoFilesImports`,
+   `generateBufYamlXxx`, `generateBufGenYamlXxx`, `bufGenerateXxx`.
 
-### Protoc-gen generation
+| Output | Directory |
+|---|---|
+| Buf projects | `build/protoBuild/sourceSets/<sourceSet>/` |
+| Kotlin sources | `build/protoBuild/generated/<sourceSet>/kotlin-multiplatform/` |
 
-When users call `rpc { protoc() }` in their build script:
-1. `DefaultProtocExtension` discovers source sets (Kotlin, Android, or Android KMP) and creates a `ProtoSourceSet` per Kotlin source set
-2. For each source set, it registers Gradle tasks: `processXxxProtoFiles`, `processXxxProtoFilesImports`, `generateBufYamlXxx`, `generateBufGenYamlXxx`, `bufGenerateXxx`
-3. Generated Buf projects land in `build/protoBuild/sourceSets/<sourceSet>/`
-4. Generated Kotlin sources land in `build/protoBuild/generated/<sourceSet>/kotlin-multiplatform/`
+The plugin runs the `buf` CLI, not `protoc`. The code is in `buf/`:
 
-### Buf integration (`buf/`)
+| Class | Purpose |
+|---|---|
+| `BufExtension` | Flags of `buf generate`: include-imports, include-wkt, error-format, comments |
+| `BufGenerateTask` | Runs `buf generate` |
+| `GenerateBufYaml`, `GenerateBufGenYaml` | Write `buf.yaml` and `buf.gen.yaml` from the DSL |
 
-The plugin uses `buf` CLI tool (not `protoc` directly) for code generation:
-- `BufExtension` — configuration for `buf generate` flags (include-imports, include-wkt, error-format, comments)
-- `BufGenerateTask` — Gradle task wrapping `buf generate`
-- `GenerateBufYaml`/`GenerateBufGenYaml` — tasks that generate `buf.yaml` and `buf.gen.yaml` configuration files from the DSL
-
-### Compiler plugin artifact
+## Compiler plugin artifact
 
 The compiler plugin is one artifact for all Kotlin versions: `org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin:<library version>`.
 In the root build, Gradle replaces the artifact with the `compiler-plugin` included build.
@@ -52,15 +54,25 @@ In the root build, Gradle replaces the artifact with the `compiler-plugin` inclu
 `pluginDevKit {}` in `build.gradle.kts` generates the `PluginInfo` object with the compiler plugin ID and the artifact coordinates.
 `RpcCompilerSupportPlugin` passes them to the Kotlin Gradle plugin.
 
-### Generated sources at build time — Do not edit manually
+## Generated sources
 
-`build.gradle.kts` generates two files at build time. **Do not edit them manually** — they are regenerated automatically on every build:
-- `build/generated-sources/kotlin/main/Versions.kt` — `LIBRARY_VERSION`, `BUF_TOOL_VERSION` constants
-- `build/generated-sources/kotlin/test/TestVersions.kt` — `RPC_VERSION`, `ANDROID_HOME_DIR`, `BUILD_REPO` constants
+`build.gradle.kts` generates two files on each build. Don't edit them:
 
-### Test matrix
+| File | Constants |
+|---|---|
+| `build/generated-sources/kotlin/main/Versions.kt` | `LIBRARY_VERSION`, `BUF_TOOL_VERSION` |
+| `build/generated-sources/kotlin/test/TestVersions.kt` | `RPC_VERSION`, `ANDROID_HOME_DIR`, `BUILD_REPO` |
 
-Tests run against multiple Gradle/KGP/AGP version combinations (defined in `BaseTest.kt`).
+## Tests
+
+### Unit tests
+
+- `BaseTest.kt` declares the combinations of Gradle, KGP, and AGP versions.
+  A test uses `@TestFactory` with `runWithGradleVersions()` to make one dynamic test for each combination.
+- Each test function has a project template in `src/test/resources/projects/<TestClassName>/<test_function_name>/`:
+  a `build.gradle.kts` and the proto files. `<test_function_name>` is the function name in lower case, with `_`
+  for each space.
+- `BaseTest.setupTest()` replaces the `<kotlin-version>`, `<rpc-version>`, and `<android-version>` placeholders.
 
 ### Functional tests
 
@@ -69,21 +81,11 @@ The project depends on the `kotlinx-rpc-core` library of this repository. One te
 
 - `:gradle-plugin:k<version>FunctionalTest` runs one Kotlin version, for example `k2420FunctionalTest` for 2.4.20.
 - [functional-test-repository](../tests/functional-test-repository/build.gradle.kts) lists the libraries
-that the root build publishes for the tests.
+  that the root build publishes for the tests.
 - A compiler can't read a Kotlin standard library that is more than one minor version newer.
-On such a Kotlin version, the test that runs the generated code doesn't run.
-
-### Test project templates
-
-Each test method has a corresponding directory under `src/test/resources/projects/<TestClassName>/<test_method_name>/` containing a `build.gradle.kts` template and proto source files. 
-Templates use placeholders (`<kotlin-version>`, `<rpc-version>`, `<android-version>`) that `BaseTest.setupTest()` replaces at runtime.
-
-Tests use `@TestFactory` with `runWithGradleVersions()` to generate dynamic tests per version combination.
-
-`<test_method_name>` is mapped by taking the name of the test method, making it lowercase and replacing spaces with underscores.
-That way tests can have more readable names.
+  On such a Kotlin version, the test that runs the generated code doesn't run.
 
 ## Conventions
 
-- Dangerous APIs (like disabling annotation type-safety) are marked with `@RpcDangerousApi`
-- Internal APIs use `@InternalRpcApi`
+- Mark a dangerous API, for example one that disables the annotation type checks, with `@RpcDangerousApi`.
+- Mark an internal API with `@InternalRpcApi`.

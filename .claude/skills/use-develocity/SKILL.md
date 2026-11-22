@@ -1,71 +1,32 @@
 ---
 name: use-develocity
-description: >
-  Query and analyze kotlinx-rpc build scans, test results, and failure patterns
-  from the Develocity server (develocity.jetbrains.com) using MCP tools. Use this skill
-  whenever the user wants to look at build scans, investigate CI failures across
-  builds, check build cache hit rates, analyze flaky tests, find recurring
-  failure patterns, or query build performance history. Also trigger when the
-  user mentions "Develocity", "build scan", "GE", "develocity.jetbrains.com",
-  "build cache stats", "flaky tests", "failure groups", or asks about build
-  trends, test stability, or CI health. Trigger even if the user doesn't say
-  "Develocity" explicitly -- if they want to look at historical build data,
-  cross-build test analysis, or failure aggregation, this is the right skill.
-  Do NOT use this skill for running local Gradle builds -- use
-  `running_gradle_builds` or `running_gradle_tests` instead. Do NOT use this
-  skill for TeamCity build triggering or queue management -- use `use-teamcity`.
+description: Queries the kotlinx-rpc build scans on develocity.jetbrains.com with the Develocity MCP tools, for build history, failures across builds, unstable tests, cache hit rates, and build performance. For local builds, use the Gradle skills. For TeamCity builds, use use-teamcity.
 ---
 
 # Develocity for kotlinx-rpc
 
-Query build scans, test results, and failure patterns from the kotlinx-rpc
-Develocity instance via `mcp__develocity__*` MCP tools.
+Query the scans with the `mcp__develocity__*` tools.
 
-## Project Setup
+| Setting | Value |
+|---|---|
+| Server | `https://develocity.jetbrains.com` |
+| Build scan URL | `https://develocity.jetbrains.com/s/<buildId>` |
+| Gradle project name | `kotlinx-rpc` |
+| Build tool | `gradle` |
 
-- **Server**: `https://develocity.jetbrains.com`
-- **Build scan URL pattern**: `https://develocity.jetbrains.com/s/<buildId>`
-- **Gradle project name**: `kotlinx-rpc`
-- **Build tool**: `gradle`
+## Project setup
 
-### How it's wired
+The settings plugin `conventions-develocity` in `gradle-conventions-settings/develocity/` has the whole configuration.
 
-All Develocity configuration lives in a single convention plugin:
-`gradle-conventions-settings/develocity/` which exposes
-`conventions-develocity` as a settings plugin. Builds opt in by applying
-`id("conventions-develocity")` in their `settings.gradle.kts`.
+- The root build, `compiler-plugin/`, and `dokka-plugin/` publish scans. `gradle-plugin/` and `protoc-gen/` don't.
+- All builds read the remote build cache. Only CI builds write to it.
+- A scan has these custom values and links for filters:
 
-| Build                                | Publishes scans? |
-|--------------------------------------|------------------|
-| Root (`:`)                           | Yes              |
-| `compiler-plugin/`                   | Yes              |
-| `dokka-plugin/`                      | Yes              |
-| `gradle-plugin/`                     | No               |
-| `protoc-gen/`                        | No               |
+  | Build | Custom values | Custom links |
+  |---|---|---|
+  | CI | `CI build id` | `kotlinx.rpc TeamCity build` |
+  | Local | `Git Commit ID`, `Git Branch Name`, `Git Status` (only with local changes) | `GitHub Commit Link`, `GitHub Branch Link` |
 
-### Build cache
-
-- Remote cache at `develocity.jetbrains.com` is always **readable**.
-- Only CI builds **push** to the remote cache (`isPush = isCIRun`).
-- Local cache is disabled on CI.
-
-### Custom scan metadata
-
-Scans include custom values and links that are useful for filtering:
-
-| Context   | Custom value          | Custom link                           |
-|-----------|-----------------------|---------------------------------------|
-| CI (TC)   | `CI build id`         | `kotlinx.rpc TeamCity build` (link)   |
-| Local     | `Git Commit ID`       | `GitHub Commit Link`                  |
-| Local     | `Git Branch Name`     | `GitHub Branch Link`                  |
-| Local     | `Git Status` (dirty)  | --                                    |
-
-### Opt-out properties
-
-Developers can add these to `~/.gradle/gradle.properties`:
-- `kotlinx.rpc.develocity.skipBuildScans=true` -- stop publishing scans
-- `kotlinx.rpc.develocity.skipGitTags=true` -- stop adding git metadata
-
-## MCP Tools
-
-Use develocity MCP to query and analyze build scans.
+- A developer can set these properties in `~/.gradle/gradle.properties`:
+  - `kotlinx.rpc.develocity.skipBuildScans=true`: the build doesn't publish scans.
+  - `kotlinx.rpc.develocity.skipGitTags=true`: the scan has no Git values.

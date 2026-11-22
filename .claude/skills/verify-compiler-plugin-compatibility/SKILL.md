@@ -1,14 +1,6 @@
 ---
 name: verify-compiler-plugin-compatibility
-description: >
-  Verify that the kotlinx-rpc compiler plugin compiles successfully against multiple
-  Kotlin compiler versions, and fix any incompatibilities found. Use this skill whenever
-  the user wants to check compiler plugin compatibility across Kotlin versions, test a
-  new Kotlin version, fix compiler plugin build failures after a Kotlin upgrade, ensure
-  the expect/actual version-specific code is valid for all supported versions, or test
-  against Kotlin Master. Trigger on phrases like "verify compiler plugin", "check
-  compatibility", "test Kotlin versions", "compiler plugin broken", "fix for Kotlin X.Y",
-  "support new Kotlin version", or "Kotlin master".
+description: Checks that the compiler plugin compiles and passes its tests on each supported Kotlin and IDE compiler version and on Kotlin Master, and fixes the incompatibilities. Use for each change in compiler-plugin/, for a new Kotlin version, and for a compiler plugin build that fails on one Kotlin version.
 ---
 
 # Verify Compiler Plugin Compatibility

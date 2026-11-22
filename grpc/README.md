@@ -1,40 +1,40 @@
 # Overview
 
-This module implements gRPC protocol support. 
-It provides Kotlin Multiplatform gRPC clients and servers. JVM and Android use gRPC Java.
-Apple clients (iOS, macOS, tvOS, and watchOS) use grpc-swift-2 with Apple's Network.framework through the
-[Swift bridge](https://github.com/Kotlin/kotlinx-rpc-grpc-swift). The gRPC server supports the JVM only.
-WASM, JS, and MinGW are not supported yet.
+The `grpc` modules have the gRPC protocol: Kotlin Multiplatform clients and a server.
 
-## Module Dependency Graph
+| Target | Client | Server |
+|---|---|---|
+| JVM | gRPC Java | gRPC Java |
+| Android | gRPC Java | None |
+| iOS, macOS, tvOS, watchOS | grpc-swift-2 on Network.framework, through the [Swift bridge](https://github.com/Kotlin/kotlinx-rpc-grpc-swift) | None |
+| JS, WASM, Linux, MinGW | None | None |
+
+Generated services, protobuf messages, interceptors, and unary and streaming calls have one common API on all client targets.
 
 ```
 grpc-ktor-server --> grpc-server --\
-                                    --> grpc-core --> grpc-marshaller --> :core (RPC abstractions)
+                                    --> grpc-core --> grpc-marshaller --> :core
                      grpc-client --/
-                     
+
 grpc-marshaller-kotlinx-serialization --> grpc-marshaller
 
-grpc-client (appleMain) --> kotlinx-rpc-grpc-swift (SwiftPM) --> grpc-swift-2 + grpc-swift-nio-transport
+grpc-client (appleMain) --> kotlinx-rpc-grpc-swift (SwiftPM) --> grpc-swift-2, grpc-swift-nio-transport
 ```
 
-Generated Kotlin services, protobuf messages,
-interceptors, and unary and streaming calls use the common API on every supported client target.
-The Swift bridge does not provide a server backend.
+Generated code: [gRPC codegen](codegen.md) and [protoc-gen codegen](../protoc-gen/codegen.md).
+
+## Tests
+
+The tests of `grpc-core` and `grpc-client` use [grpc-test-server](../tests/grpc-test-server/README.md).
+Gradle builds the server, starts it on a free port, and waits for the `[GRPC-TEST-SERVER] Server started` line
+before the tests run.
 
 ## iOS integration
 
-The iOS client requires iOS 18 or newer and Xcode with Swift tools 6.3 or newer. The Kotlin Gradle
-plugin discovers its transitive SwiftPM dependencies, but the consuming app must also configure
-Xcode linkage. Use the Kotlin Multiplatform IDE plugin's Project Environment Preflight Checks setup
-action, or run `integrateLinkagePackage` for the app's framework-producing Gradle module.
-If the Kotlin framework build phase is missing, also run `integrateEmbedAndSign`.
-See the [user setup guide](https://kotlin.github.io/kotlinx-rpc/grpc-configuration.html#grpc-ios-xcode)
-and the [bridge README](https://github.com/Kotlin/kotlinx-rpc-grpc-swift) for details.
-
-**Test server dependency**: Integration tests in `grpc-core` and `grpc-client` automatically build and start the `:tests:grpc-test-server` as a background process on a free port. 
-The test task waits for `[GRPC-TEST-SERVER] Server started` before proceeding.
-
-**`@Grpc`** annotation -- marks an interface as a gRPC service (analogous to `@Rpc` for kRPC).
-
-See [protoc-gen codegen reference](../protoc-gen/codegen.md) for details on generated code.
+- The iOS client requires iOS 18 or newer, and Xcode with Swift tools 6.3 or newer.
+- The Kotlin Gradle plugin finds the transitive SwiftPM dependencies, but the application must also configure the
+  Xcode linkage. Use the setup action of the Project Environment Preflight Checks in the Kotlin Multiplatform IDE
+  plugin, or run `integrateLinkagePackage` for the Gradle module that makes the framework.
+- If the build phase of the Kotlin framework is missing, also run `integrateEmbedAndSign`.
+- More: the [user setup guide](https://kotlin.github.io/kotlinx-rpc/grpc-configuration.html#grpc-ios-xcode)
+  and the [bridge README](https://github.com/Kotlin/kotlinx-rpc-grpc-swift).

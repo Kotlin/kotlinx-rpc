@@ -1,72 +1,59 @@
-# Issue Description Templates
+# Issue description templates
 
-Templates for writing KRPC YouTrack issue descriptions. The team uses Markdown.
+Descriptions are Markdown. They state the problem, not a solution.
 
-**Critical rule: Do NOT include proposed solutions, implementation approaches, or design
-suggestions.** The agent's job is to **analyze and report** the problem clearly, not to solve
-it. Leave the "how to fix" to the team. Only include an approach if the user explicitly
-dictates one.
-
-## Bug Reports
+## Bug
 
 ```markdown
 ## Problem
 
-Clear description of what's broken and the user-visible impact.
+What is broken, and the effect on the user.
 
 ## Steps to Reproduce
 
-1. Version info (Kotlin, Gradle, kotlinx-rpc versions)
-2. Configuration or setup steps
-3. Code that triggers the bug (use fenced code blocks)
+1. Versions of Kotlin, Gradle, and kotlinx-rpc
+2. Configuration
+3. Code that causes the bug, in a code block
 
 ## Expected Behavior
 
-What should happen instead.
-
 ## Actual Behavior
 
-What actually happens (error messages, stack traces in code blocks).
+Error messages and stack traces, in code blocks.
 ```
 
-If the bug originates from a GitHub issue, start the description with:
-```
+For a bug from a GitHub issue, put this before the template:
+
+```markdown
 Original GitHub issue: <url>
 
 ---
 ```
-Then include the reproduction details.
 
-## Features / Tasks
-
-Keep it concise -- state what needs to happen and why. Do not propose how to implement it.
+## Feature or task
 
 ```markdown
-Brief description of the work and its motivation.
+What to do, in a few sentences.
 
 ## Context
 
-Why this matters -- what problem it solves or what it enables.
+The problem that the work solves, or what it makes possible.
 ```
 
-## Meta Issues
+## Meta issue
 
-Just a brief paragraph describing the umbrella goal and motivation. Subtasks will carry the details.
+One paragraph with the goal. The subtasks have the details.
 
-## Usability / Performance Problems
-
-Similar to bugs, but focus on the current behavior and why it's problematic rather than "broken":
+## Usability or performance problem
 
 ```markdown
 ## Current Behavior
 
-What happens today and why it's a problem.
+What happens, and why it is a problem.
 
 ## Desired Behavior
 
-How it should work instead.
-
 ## Context
 
-Who is affected and how frequently.
+Who has the problem, and how often.
 ```
