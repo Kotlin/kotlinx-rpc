@@ -5,8 +5,10 @@
 package kotlinx.rpc.codegen
 
 import kotlinx.rpc.codegen.common.ProtoClassId
+import kotlinx.rpc.codegen.common.ProtoClassId.builderClassId
 import kotlinx.rpc.codegen.common.ProtoNames
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.builtins.functions.FunctionTypeKind
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.compiler.plugin.devkit.pluginGenerated
 import org.jetbrains.kotlin.descriptors.ClassKind
@@ -20,9 +22,11 @@ import org.jetbrains.kotlin.fir.declarations.processAllDeclaredCallables
 import org.jetbrains.kotlin.fir.declarations.utils.isInterface
 import org.jetbrains.kotlin.fir.extensions.*
 import org.jetbrains.kotlin.fir.plugin.createCompanionObject
+import org.jetbrains.kotlin.fir.plugin.createConeType
 import org.jetbrains.kotlin.fir.plugin.createMemberFunction
 import org.jetbrains.kotlin.fir.plugin.createMemberProperty
 import org.jetbrains.kotlin.fir.plugin.createNestedClass
+import org.jetbrains.kotlin.fir.resolve.createFunctionType
 import org.jetbrains.kotlin.fir.resolve.defaultType
 import org.jetbrains.kotlin.fir.resolve.providers.getRegularClassSymbolByClassId
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
@@ -35,6 +39,21 @@ import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.SpecialNames
 
+/**
+ * Generates the additional FIR declarations for a generated protobuf message interface.
+ *
+ * The generated declarations are:
+ * - the companion object with its `invoke` operator function
+ * - the message builder interface
+ *
+ * The [getNestedClassifiersNames] provides those nested class like declaration names,
+ * while [generateNestedClassLikeDeclaration] provides the actual declarations for them.
+ *
+ * The [getCallableNamesForClass] provides all property and function declaration names that are generated inside those
+ * nested declarations; i.e. the builder's (`var`) properties and `clear<X>` functions and the `invoke` function.
+ * [generateProperties] and [generateFunctions] then respectively provide the actual declaration for the these
+ * declaration names.
+ */
 class FirProtobufMessageGenerator(
     session: FirSession,
     @Suppress("unused")
@@ -131,7 +150,7 @@ class FirProtobufMessageGenerator(
             }
 
             SpecialNames.DEFAULT_NAME_FOR_COMPANION_OBJECT -> {
-                createCompanionObject(owner, FirGeneratedProtoMessageCompanionObject).symbol
+                createCompanionObject(owner, FirGeneratedProtoMessageCompanionObjectKey(owner)).symbol
             }
 
             else -> {
@@ -144,11 +163,17 @@ class FirProtobufMessageGenerator(
         classSymbol: FirClassSymbol<*>,
         context: MemberGenerationContext
     ): Set<Name> {
-        val messageClassSymbol = classSymbol.generatedProtoMessageBuilderKey?.message
-            ?: return super.getCallableNamesForClass(classSymbol, context)
+        val protoMessageBuilderKey = classSymbol.generatedProtoMessageBuilderKey
+        if (protoMessageBuilderKey != null) {
+            val generatedNames = messageCallablesCache.getValue(protoMessageBuilderKey.message)
+            return generatedNames.propertyNames.keys + generatedNames.functionNames.keys
+        }
 
-        val generatedNames = messageCallablesCache.getValue(messageClassSymbol)
-        return generatedNames.propertyNames.keys + generatedNames.functionNames.keys
+        if (classSymbol.generatedProtoMessageCompanionObjectKey != null) {
+            return setOf(ProtoNames.INVOKE_NAME)
+        }
+
+        return super.getCallableNamesForClass(classSymbol, context)
     }
 
     override fun generateProperties(
@@ -188,6 +213,45 @@ class FirProtobufMessageGenerator(
         context: MemberGenerationContext?
     ): List<FirNamedFunctionSymbol> {
         context ?: return super.generateFunctions(callableId, context)
+
+        val companionObjectKey = context.owner.generatedProtoMessageCompanionObjectKey
+        if (
+            companionObjectKey != null &&
+            callableId.callableName == ProtoNames.INVOKE_NAME
+        ) {
+            // Generate companion object's invoke operator function declaration
+            // ```
+            // public operator fun invoke(
+            //     body: <message-name>.Builder.() -> Unit,
+            // ): <message-name>
+            // ```
+            val messageClassSymbol = companionObjectKey.message
+            val builderClassId = messageClassSymbol.classId.builderClassId
+
+            return listOf(
+                createMemberFunction(
+                    owner = context.owner,
+                    key = FirGeneratedProtoMessageCompanionObjectFunctionKey,
+                    name = ProtoNames.INVOKE_NAME,
+                    returnType = messageClassSymbol.defaultType(),
+                ) {
+                    visibility = Visibilities.Public
+                    status {
+                        isOperator = true
+                    }
+                    source = messageClassSymbol.source?.pluginGenerated()
+
+                    // <message-name>.Builder.() -> Unit
+                    val bodyType = createFunctionType(
+                        kind = FunctionTypeKind.Function,
+                        parameters = listOf(),
+                        receiverType = builderClassId.defaultType(listOf()),
+                        rawReturnType = session.builtinTypes.unitType.coneType,
+                    )
+                    valueParameter(ProtoNames.INVOKE_ARG_NAME, bodyType)
+                }.symbol
+            )
+        }
 
         val messageClassSymbol = context.owner.generatedProtoMessageBuilderKey?.message
             ?: return super.generateFunctions(callableId, context)

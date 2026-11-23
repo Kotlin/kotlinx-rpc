@@ -27,9 +27,20 @@ internal object FirRpcServiceStubCompanionObject : GeneratedDeclarationKey() {
     }
 }
 
-internal object FirGeneratedProtoMessageCompanionObject : GeneratedDeclarationKey() {
+internal class FirGeneratedProtoMessageCompanionObjectKey(
+    val message: FirClassSymbol<*>
+) : GeneratedDeclarationKey() {
     override fun toString(): String {
-        return "FirGeneratedProtoMessageCompanionObject"
+        return "FirGeneratedProtoMessageCompanionObjectKey.${message.classId}"
+    }
+}
+
+internal val FirBasedSymbol<*>.generatedProtoMessageCompanionObjectKey: FirGeneratedProtoMessageCompanionObjectKey?
+    get() = (origin as? FirDeclarationOrigin.Plugin)?.key as? FirGeneratedProtoMessageCompanionObjectKey
+
+internal object FirGeneratedProtoMessageCompanionObjectFunctionKey : GeneratedDeclarationKey() {
+    override fun toString(): String {
+        return "FirGeneratedProtoMessageCompanionObjectFunctionKey"
     }
 }
 
