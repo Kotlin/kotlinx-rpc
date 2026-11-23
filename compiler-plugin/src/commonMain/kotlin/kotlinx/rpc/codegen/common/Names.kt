@@ -60,4 +60,5 @@ object ProtoNames {
     val MARSHALLER_NAME = Name.identifier("MARSHALLER")
     val INVOKE_NAME = Name.identifier("invoke")
     val INVOKE_ARG_NAME = Name.identifier("body")
+    val INTERNAL_CHECK_REQUIRED_FIELDS_NAME = Name.identifier("checkRequiredFields")
 }
