@@ -1,23 +1,22 @@
 # Overview
 
-`gradle-conventions` is the build-logic module for kotlinx-rpc. 
-It provides precompiled Gradle convention plugins that standardize how all subprojects are built, tested, published, and documented.
-It also stores common configuration and utilities, making the actual build scripts more concise and clean.
-It is an **included build** — not a standalone project.
+`gradle-conventions` is the included build with the build logic. Its precompiled convention plugins configure how
+the subprojects are built, tested, published, and documented.
 
-Its companion, `gradle-conventions-settings/`, provides settings-phase plugins (repositories, version resolution, Develocity). 
-Both are included from the root `settings.gradle.kts`.
+`gradle-conventions-settings/` has the settings plugins: repositories, version resolution, Develocity.
+The root `settings.gradle.kts` includes both builds.
 
-## Key Patterns
+| Code | Purpose |
+|---|---|
+| `OptionalProperty` (`util/other/optionalProperty.kt`) | Property delegate for the `kotlinx.rpc.*` switches in `gradle.properties` |
+| `KmpConfig` (`util/targets/kmpConfig.kt`) | Selects the KMP targets from the Kotlin version, the host OS, and the `kotlinx.rpc.exclude.<target>=true` properties of the module |
+| `includePublic()` (in `gradle-conventions-settings`) | Makes a module public: publication, ABI validation, documentation. Check with `project.isPublicModule`. |
 
-- **`OptionalProperty`** (`util/other/optionalProperty.kt`) — Property delegation for feature toggling via `gradle.properties`. Properties follow `kotlinx.rpc.*` naming.
-- **`KmpConfig`** (`util/targets/kmpConfig.kt`) — Determines which KMP targets to enable based on Kotlin version, host OS, and per-module exclusions (`kotlinx.rpc.exclude.<target>=true`).
-- **Public vs internal modules** — `includePublic()` (from `gradle-conventions-settings`) marks modules as public. Public modules get full publication, ABI validation, and documentation. Check via `project.isPublicModule`.
-- **Artifact ID normalization** — Published artifacts auto-prefixed with `kotlinx-rpc-`. Protoc-gen artifacts use a different scheme.
+Published artifacts get the `kotlinx-rpc-` prefix. The protoc-gen artifacts have their own naming.
 
-## Conventions for Editing
+## Rules
 
-- All dependencies must come from `versions-root/libs.versions.toml` — never inline version strings.
-- When a convention applies to multiple modules, put the logic here rather than in individual `build.gradle.kts` files.
-- New utility code goes under `util/` in the appropriate subdirectory. Plugins themselves should stay thin.
-- The `empty.gradle.kts` plugin exists as a no-op placeholder — don't delete it.
+- Take each dependency from `versions-root/libs.versions.toml`.
+- Put logic for more than one module here, not into the `build.gradle.kts` files.
+- Put utility code into a subdirectory of `util/`. A plugin file stays thin.
+- Don't delete the `empty.gradle.kts` plugin. It is a placeholder without effect.

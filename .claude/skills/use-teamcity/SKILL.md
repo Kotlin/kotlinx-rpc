@@ -1,215 +1,57 @@
 ---
 name: use-teamcity
-description: >
-  Interact with the kotlinx-rpc TeamCity CI/CD project using the `teamcity` CLI.
-  Use this skill whenever the user wants to trigger builds, check build status,
-  view build logs, monitor failures, manage the build queue, inspect agents,
-  or do anything related to TeamCity CI. Also use it when the user mentions
-  "TC", "TeamCity", "CI build", "run build", "build status", "build log",
-  "trigger build", "check CI", or references a build configuration name or ID. 
-  Trigger even if the user doesn't say "TeamCity" explicitly -- if 
-  they ask about CI status, build failures, or want to run something 
-  on CI rather than locally, this is the right skill. 
-  Do NOT use this skill for local Gradle builds -- use
-  `running_gradle_builds` or `running_gradle_tests` instead.
+description: Works with the kotlinx-rpc TeamCity project through the `teamcity` CLI, for example to start builds, read status, logs, and test results, select the builds for a change, and run release builds. Use for each CI question that isn't about GitHub Actions. For local builds, use the Gradle skills.
 ---
 
-# TeamCity CLI for kotlinx-rpc
+# TeamCity for kotlinx-rpc
 
-Interact with the kotlinx-rpc TeamCity project via the `teamcity` CLI (expected
-to be installed at `/opt/homebrew/bin/teamcity`).
+Use the `teamcity` CLI. `teamcity <command> --help` gives all flags.
+Check the login with `teamcity auth status`. If the user isn't logged in, ask the user to run `! teamcity auth login`.
 
-For **local** Gradle builds and tests, use `running_gradle_builds` /
-`running_gradle_tests` skills instead.
+The root project is `kRPC`. It has the `Build_kRPC` project for CI builds and the `Release_kRPC` project for publication.
 
-## Agent workflow override
-
-When this skill is invoked from the `fix-issue` skill (autonomous issue-fixing workflow),
-**never run `teamcity auth status` or `teamcity auth login`**. Instead, prefix every
-`teamcity` command with `TEAMCITY_TOKEN=$TEAMCITY_AGENT_TOKEN`. The `fix-issue` skill's
-Authentication section has full details. Outside of `fix-issue`, the defaults below apply.
-
-## Prerequisites
-
-Before running any commands, verify authentication:
-
-```bash
-teamcity auth status
-```
-
-If not authenticated, the user needs to log in interactively -- suggest they run
-`! teamcity auth login` in the prompt so the browser-based auth flow works in
-their session.
-
-## TeamCity Project Structure
-
-The root project is **kRPC**. It has two main branches:
-
-- **Build** (`Build_kRPC`) -- CI builds triggered on PRs and commits
-- **Release** (`Release_kRPC`) -- Publication to Maven Central, Space, GitHub
-
-## Reference Files
-
-Read these as needed -- don't load them all upfront:
-
-- **`references/build-ids.md`** -- Full catalog of build configuration IDs
-  (composite builds, platform builds, quality checks, compiler plugin builds,
-  special/scheduled builds). Read when you need to look up a specific build ID.
-
-- **`references/remote-verification-table.md`** -- Decision table mapping changed
-  file paths to the minimal set of TeamCity builds to trigger. Read when deciding
-  which builds to run for a set of changes.
-
-- **`references/release-builds.md`** -- Release pipeline build IDs for Sonatype,
-  Space EAP, and Space gRPC. Read only during release workflows.
-
-## Common Workflows
-
-### Trigger a build on a branch
-
-```bash
-teamcity run start Build_kRPC_All --branch feature/my-branch
-```
-
-Add `--watch` to stream progress in real-time. Without it, the command returns
-immediately after queuing.
-
-To trigger with custom parameters (e.g., override Kotlin version):
-
-```bash
-teamcity run start Build_kRPC_All --branch main -E KOTLIN_VERSION=2.3.20
-```
-
-### Check recent build status
-
-```bash
-# Recent failures across all builds
-teamcity run list --status failure --since 24h
-
-# Recent builds for a specific configuration
-teamcity run list --job Build_kRPC_All --limit 10
-
-# Recent builds on a specific branch
-teamcity run list --job Build_kRPC_All --branch main --limit 5
-
-# Only running builds
-teamcity run list --status running
-```
-
-### Investigate a build failure
-
-```bash
-# View build details
-teamcity run view <build-id>
-
-# Show failure summary (most useful for quick diagnosis)
-teamcity run log <build-id> --failed
-
-# Stream full build log (opens in pager)
-teamcity run log <build-id>
-
-# Show test results
-teamcity run tests <build-id>
-
-# Show VCS changes that triggered the build
-teamcity run changes <build-id>
-```
-
-### Cancel or restart builds
-
-```bash
-# Cancel a running or queued build
-teamcity run cancel <build-id> --comment "Cancelling: wrong branch"
-
-# Restart a failed build
-teamcity run restart <build-id>
-```
-
-### Download build artifacts
-
-```bash
-# List artifacts
-teamcity run artifacts <build-id>
-
-# Download artifacts
-teamcity run download <build-id>
-```
-
-### View project/job hierarchy
-
-```bash
-# List all projects
-teamcity project list
-
-# View project tree
-teamcity project tree kRPC
-
-# List jobs in a project
-teamcity job list --project Build_kRPC
-
-# View snapshot dependency tree for a build config
-teamcity job tree Build_kRPC_All
-```
-
-### Dry-run (preview without triggering)
-
-```bash
-teamcity run start Build_kRPC_All --branch main --dry-run
-```
-
-### JSON output for scripting
-
-```bash
-# Full JSON
-teamcity run list --json --limit 5
-
-# Specific fields
-teamcity run list --json=id,status,webUrl --limit 5
-
-# Plain text (for grep/awk)
-teamcity run list --plain --limit 10
-```
-
-## Build Configuration DSL
-
-The TeamCity Kotlin DSL configs live in the sibling repository:
-
-```
-../kotlinx-rpc-build/.teamcity/src/
-```
-
-Ensure that the repository is cloned and up-to-date before running commands.
-Remote: https://git.jetbrains.team/krpc/krpc-build.git
-If not cloned - notify the user to clone it.
-
-Key files when you need to understand or modify build configs:
-
-| Path (relative to `.teamcity/src/`) | Purpose |
+| Reference | Content |
 |---|---|
-| `project/Project.kt` | Root project definition |
-| `project/build/__project.kt` | Build subproject structure |
-| `project/release/__project.kt` | Release subproject structure |
-| `util/id.kt` | All build configuration IDs |
-| `util/target.kt` | Platform target definitions |
-| `util/agent.kt` | Agent requirements |
-| `util/repository.kt` | Publication repository definitions |
-| `settings/kotlin.kt` | Kotlin version parameters, IDE integration |
-| `settings/artifacts.kt` | Artifact collection rules |
-| `settings/publishing.kt` | Publishing configuration |
-| `dsl/build/` | Build DSL builders (per-platform) |
-| `dsl/release/` | Release DSL builders |
-| `project/vcs.kt` | VCS root configuration |
+| `references/builds.md` | The builds to start for a change, and all other build IDs |
+| `references/release-builds.md` | The release builds, and how to test them |
 
-Read these files from `../kotlinx-rpc-build/` when the user asks about
-how a specific build is configured or wants to modify CI behavior.
+## Commands
 
-## Tips
+```bash
+teamcity run start <build-id> --branch <branch>      # --watch waits for the end, --dry-run starts nothing
+teamcity run start <build-id> --branch main -E KOTLIN_VERSION=2.3.20   # -E environment variable, -P parameter
 
-- Build IDs are case-sensitive -- use them exactly as listed in `references/build-ids.md`.
-- For composite builds (like `Build_kRPC_All`), failures in any dependency build
-  will show in the composite. Use `run log <id> --failed` on the specific
-  dependency build that failed, not the composite.
-- Use `--since` and `--until` with durations like `24h`, `7d`, `1h` for time-based
-  filtering.
-- The `teamcity api` command can make raw REST API calls for anything the CLI
-  doesn't directly support: `teamcity api /app/rest/builds?locator=...`
+teamcity run list --job <build-id> --branch main --limit 5
+teamcity run list --status failure --since 24h       # also --status running, --until, --json=id,status,webUrl
+
+teamcity run view <run-id>
+teamcity run log <run-id> --failed                   # the summary of the failure
+teamcity run tests <run-id>
+teamcity run changes <run-id>
+teamcity run artifacts <run-id>                      # `run download` gets the artifacts
+teamcity run cancel <run-id> --comment "<reason>"
+teamcity run restart <run-id>
+
+teamcity project tree kRPC
+teamcity job list --project Build_kRPC
+teamcity job tree <build-id>                         # the snapshot dependencies
+teamcity api "/app/rest/builds?locator=..."          # REST, for all that the CLI doesn't have
+```
+
+- Build IDs are case-sensitive.
+- A composite build shows the failures of its dependencies. Read the log of the dependency that failed, not of the composite.
+
+## Build configuration sources
+
+The Kotlin DSL is in the sibling repository, in `../kotlinx-rpc-build/.teamcity/src/`.
+If the directory doesn't exist, ask the user to clone `https://github.com/JetBrains/ked-kotlinx-rpc-build.git`.
+Pull the repository before you read it.
+
+| Path | Content |
+|---|---|
+| `project/Project.kt`, `project/vcs.kt` | The root project, the VCS roots |
+| `project/build/`, `project/release/` | The build and release projects. `__project.kt` has the structure. |
+| `util/id.kt` | All build IDs |
+| `util/target.kt`, `util/agent.kt`, `util/repository.kt` | Platform targets, agent requirements, publication repositories |
+| `settings/` | Kotlin version parameters (`kotlin.kt`), artifact rules (`artifacts.kt`), publication (`publication.kt`) |
+| `dsl/build/`, `dsl/release/` | The DSL builders |

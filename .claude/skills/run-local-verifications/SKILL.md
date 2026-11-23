@@ -1,124 +1,47 @@
 ---
 name: run-local-verifications
-description: >
-  Determine which LOCAL verification checks to run for kotlinx-rpc changes and execute
-  them on the developer's machine. TeamCity builds and GitHub Actions workflows are out
-  of scope -- this skill covers only what can and should be run locally before pushing.
-  Use this skill whenever changes are made to the codebase and you need to verify
-  correctness before committing or opening a PR. Also use it when the user asks to
-  "run checks", "verify changes", "run verifications", "what checks do I need",
-  "validate my changes", "pre-PR checks", or "local checks". Trigger proactively after
-  completing any code modification task -- even if the user doesn't explicitly ask,
-  suggest which verifications are relevant based on what changed.
+description: Selects and runs the local checks for a kotlinx-rpc change, such as ABI, detekt, JPMS, artifact list, generated files, and compatibility tests. Use after a code change, before a commit or a PR. Not for TeamCity or GitHub Actions.
 ---
 
-# Run Local Verifications
+# Run local verifications
 
-Identify which verification checks are needed based on what changed, then run them
-locally. This skill covers only checks that can be executed on the developer's machine.
-TeamCity CI builds and GitHub Actions workflows are out of scope -- they run automatically
-on push/PR and cannot be triggered from here.
+1. Get the changed files from `git status` and `git diff`.
+2. Run each check of each matching row. Use `running_gradle_builds` for tasks and `running_gradle_tests` for tests.
+3. Run the tests of the changed modules. For a `commonMain` change, `<module>:jvmTest` is sufficient.
+   Run `jsTest`, `wasmJsTest`, or `nativeTest` only for a change in target-specific code.
 
-## How to Execute
+A row with "commit the changes" has a generator, not a test: run it, check `git status`, and commit the files that changed.
 
-Use the `running_gradle_builds` skill for all Gradle build/generation tasks and the
-`running_gradle_tests` skill for all Gradle test tasks. Do NOT run `./gradlew` directly
-via shell. The only exception is `./scripts/update_implicit_types.sh` and
-`./scripts/validate_published_artifacts.sh` which are standalone shell scripts.
+| Change | Checks |
+|---|---|
+| Public API of a published module (`core/`, `krpc/`, `grpc/`, `protobuf/`, `utils/`) | `checkLegacyAbi` |
+| Kotlin or Java source | `detekt` |
+| Source or dependencies of a published JVM or KMP module, `commonMain` too | `:jpms-check:compileJava` |
+| New or removed module, changed KMP targets, changed publication setup | `./scripts/validate_published_artifacts.sh -s`. `dumpPlatformTable --no-configuration-cache`, commit the changes. For a new module also `updateProperties`, `checkLegacyAbi`, `:jpms-check:compileJava`. |
+| `gradle.properties` of the root or a module | `updateProperties`, commit the changes |
+| `compiler-plugin/`, sources or build scripts | The `verify-compiler-plugin-compatibility` skill, and `:gradle-plugin:allVersionedFunctionalTests` |
+| Compiler plugin setup in `gradle-plugin/` | `:gradle-plugin:allVersionedFunctionalTests` |
+| `protoc-gen/` | All of: `:tests:protobuf-conformance:bufGenerateCommonMain`, `:protobuf:protobuf-wkt:bufGenerateCommonMain`, `./scripts/update_implicit_types.sh` (commit the changes of each), `:tests:protobuf-unittest:test`, `:tests:protobuf-conformance:jvmTest` |
+| `protobuf/protobuf-wkt/` | `:protobuf:protobuf-wkt:bufGenerateCommonMain`, commit the changes |
+| `krpc/` | `:tests:krpc-compatibility-tests:jvmTest`, `:tests:krpc-protocol-compatibility-tests:jvmTest` |
+| `known_failures.txt` or `native_known_failures.txt` in `tests/protobuf-conformance/` | `:tests:protobuf-conformance:jvmTest` |
+| npm dependencies | `kotlinUpgradeYarnLock`, `kotlinWasmUpgradeYarnLock` |
+| Kotlin version | The `verify-compiler-plugin-compatibility` skill, both yarn lock tasks, `checkLegacyAbi`, `:jpms-check:compileJava`, all tests |
+| `CHANGELOG.md` | `updateDocsChangelog`, commit the changes |
 
-## Quick Start: Identify What Changed
+## Results
 
-Before running anything, determine which files were modified. Use `git diff` or
-`git status` to see the changed files, then match them against the decision table below.
+| Check | Facts |
+|---|---|
+| `checkLegacyAbi` | Compares the public API with the dumps, klib dumps too. `@InternalRpcApi` and `*.internal.**` are excluded. If the API change is intended, run `updateLegacyAbi` and commit the dumps. If not, revert the change. |
+| `detekt` | Doesn't fail the build. Read the console output or `detekt/reports/`. Fix each new violation. Don't add to `detekt/baseline.xml`. |
+| `:jpms-check:compileJava` | Compiles `jpms-check/src/main/java/module-info.java`, which requires all published modules. On a failure, check the `Automatic-Module-Name` of the module in the error. |
+| `validate_published_artifacts.sh` | Compares the artifacts with the lists in `gradle/artifacts/`. If the change is intended, run it with `--dump -s`, read the diff, and commit. |
+| `:gradle-plugin:allVersionedFunctionalTests` | Runs generated code with the `core` library on each Kotlin version. Run it from the root build. |
+| Compiler plugin tests | `:compiler-plugin:allTests` runs all Kotlin versions, `:compiler-plugin:k2420Test` one version. To update the `.fir.txt` and `.ir.txt` files, read `references/golden-test-data.md` of the `verify-compiler-plugin-compatibility` skill. |
+| `:tests:krpc-protocol-compatibility-tests:jvmTest` | Checks the wire format against the released versions 0.8, 0.9, and 0.10. A failure is a break of wire compatibility: stop and ask the user. |
+| `:tests:krpc-compatibility-tests:jvmTest` | Checks the old API against the new implementation, with the `oldApi` and `newApi` source sets. |
+| `:tests:protobuf-conformance:jvmTest` | Also builds and runs the native binary, so no native test task is necessary. Each removed known failure must pass, and each added one must fail. If a removed entry fails, the fix isn't complete or the wrong entry is removed. |
+| Yarn lock tasks | If a build fails after them, delete `build/js/`, `build/wasm/`, and each `package-lock.json`, then run them again. |
 
-## Decision Table
-
-Match changed paths to required verifications. Multiple rows can match -- run all that apply.
-The "Gradle task" column shows the task name to pass to the appropriate Gradle skill.
-
-| What changed                                                                           | Verification            | Gradle task / command                                                                     | Why                                                                                |
-|----------------------------------------------------------------------------------------|-------------------------|-------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------|
-| Any public API in published modules (`core/`, `krpc/`, `grpc/`, `protobuf/`, `utils/`) | ABI compatibility       | `checkLegacyAbi`                                                                          | Ensures binary compatibility is preserved for library consumers                    |
-| Any Kotlin/Java source file                                                            | Detekt static analysis  | `detekt`                                                                                  | Code quality. Does NOT fail the build, but check console output for new violations |
-| Any published JVM or KMP module source (including `commonMain`)                        | JPMS check              | `:jpms-check:compileJava`                                                                 | Verifies Java module system compatibility. commonMain code compiles to JVM too     |
-| New/removed modules or KMP target changes                                              | Artifact validation     | Shell: `./scripts/validate_published_artifacts.sh -s`                                               | Ensures the published artifact list stays consistent                               |
-| New/removed modules or KMP target changes                                              | Platform table          | `dumpPlatformTable --no-configuration-cache` then check git status                        | Updates docs/pages platform table                                                  |
-| `gradle.properties` in any module                                                      | Properties sync         | `updateProperties` then check git status                                                  | Keeps all module gradle.properties in sync with root                               |
-| `compiler-plugin/` sources                                                             | Compiler plugin tests   | `:compiler-plugin:allTests` (use `running_gradle_tests`)                                  | Validates codegen and diagnostics on all supported Kotlin versions                 |
-| `compiler-plugin/` sources                                                             | Compiler version compat | Use the `verify-compiler-plugin-compatibility` skill                                      | Ensures all supported Kotlin versions still compile                                |
-| `gradle-plugin/` compiler plugin setup, `compiler-plugin/` sources                     | Functional tests        | `:gradle-plugin:allVersionedFunctionalTests` from the root build (use `running_gradle_tests`) | Runs generated code with the `core` library on each Kotlin version             |
-| `protoc-gen/` sources (any change)                                                     | Protobuf conformance    | `tests:protobuf-conformance:bufGenerateCommonMain` then check git status                  | Codegen changes may affect conformance test output                                 |
-| `protoc-gen/` sources (any change)                                                     | Protobuf unit tests     | `:tests:protobuf-unittest:test` (use `running_gradle_tests`)                           | Validates protobuf codegen correctness                                             |
-| `protoc-gen/` sources (any change)                                                     | Well-Known Types        | `:protobuf:protobuf-wkt:bufGenerateCommonMain` then check git status                      | Codegen changes may affect WKT generated code                                      |
-| `protoc-gen/` sources (any change)                                                     | Implicit imports        | Shell: `./scripts/update_implicit_types.sh` then check git status                                 | Keeps protoc-gen implicit import list current                                      |
-| `protobuf/protobuf-wkt/` sources                                                       | Well-Known Types        | `:protobuf:protobuf-wkt:bufGenerateCommonMain` then check git status                      | Regenerates WKT code                                                               |
-| `krpc/` protocol wire format or serialization                                          | Protocol compat tests   | `:tests:krpc-protocol-compatibility-tests:jvmTest` (use `running_gradle_tests`)           | Ensures wire format backward compatibility                                         |
-| `krpc/` any changes                                                                    | kRPC compat tests       | `:tests:krpc-compatibility-tests:jvmTest` (use `running_gradle_tests`)                    | Ensures old/new API compatibility                                                  |
-| JS/WASM npm dependency changes or Kotlin version update                                | Yarn lock update        | `kotlinUpgradeYarnLock` and/or `kotlinWasmUpgradeYarnLock`                                | Keeps JS/WASM lock files in sync                                                   |
-| `tests/protobuf-conformance/**/known_failures.txt`                                     | Conformance known-failures | `:tests:protobuf-conformance:jvmTest` (see conformance details)                           | Removed entries must actually pass now; added entries must actually fail            |
-
-## Module-Specific Tests
-
-After running the verification checks above, run tests for the specific modules you changed
-using the `running_gradle_tests` skill.
-
-**Prefer `jvmTest` for KMP modules** -- if your changes are in `commonMain` only, `jvmTest`
-is the fastest way to validate them since common code compiles to all targets. Only run
-`jsTest`, `wasmJsTest`, or `nativeTest` if the change is target-specific or you want full
-coverage.
-
-Examples:
-- Single test: task `<module>:jvmTest --tests "TestClass.testMethod"`
-- All JVM tests for a module (preferred for commonMain changes): task `<module>:jvmTest`
-- Target-specific: task `<module>:jsTest`, `<module>:wasmJsTest`, `<module>:nativeTest`
-
-## Common Scenarios
-
-### "I changed a public API in `:core`"
-1. Run `checkLegacyAbi` via `running_gradle_builds` -- if it fails, run `updateLegacyAbi` and commit
-2. Run `detekt` via `running_gradle_builds` -- check output
-3. Run `:jpms-check:compileJava` via `running_gradle_builds`
-4. Run `:core:jvmTest` via `running_gradle_tests`
-
-### "I modified the compiler plugin"
-1. Run `:compiler-plugin:allTests` with `running_gradle_tests`
-2. Run `:gradle-plugin:allVersionedFunctionalTests` with `running_gradle_tests`
-3. Use `verify-compiler-plugin-compatibility` skill when a version fails, and for Kotlin Master
-
-### "I added a new published module"
-1. Run `dumpPlatformTable --no-configuration-cache` via `running_gradle_builds` then commit if changed
-2. Run `./scripts/validate_published_artifacts.sh --dump -s` via shell then commit if changed
-3. Run `updateProperties` via `running_gradle_builds` then commit if changed
-4. Run `checkLegacyAbi` via `running_gradle_builds`
-5. Run `:jpms-check:compileJava` via `running_gradle_builds`
-
-### "I changed protobuf/gRPC code"
-1. Run `:protobuf:protobuf-wkt:bufGenerateCommonMain` via `running_gradle_builds` then commit if changed
-2. Run `tests:protobuf-conformance:bufGenerateCommonMain` via `running_gradle_builds` then commit if changed
-3. Run `:tests:protobuf-unittest:test` via `running_gradle_tests`
-4. Run `./scripts/update_implicit_types.sh` via shell then commit if changed (if protoc-gen changed)
-5. Run `checkLegacyAbi` via `running_gradle_builds`
-6. Run relevant module `jvmTest` via `running_gradle_tests`
-
-### "I changed kRPC code"
-1. Run `:tests:krpc-protocol-compatibility-tests:jvmTest` via `running_gradle_tests`
-2. Run `:tests:krpc-compatibility-tests:jvmTest` via `running_gradle_tests`
-3. Run `checkLegacyAbi` via `running_gradle_builds`
-4. Run `detekt` via `running_gradle_builds` -- check output
-5. Run relevant module `jvmTest` via `running_gradle_tests`
-
-### "I updated the Kotlin version"
-1. Use `verify-compiler-plugin-compatibility` skill
-2. Run `kotlinUpgradeYarnLock` and `kotlinWasmUpgradeYarnLock` via `running_gradle_builds`
-3. Run `checkLegacyAbi` via `running_gradle_builds` -- API dumps may need updating
-4. Run `:jpms-check:compileJava` via `running_gradle_builds`
-5. Full test suite
-
-### "I only changed documentation"
-1. Verify Writerside markup is valid (CI will build it, not runnable locally)
-2. If you changed the changelog: run `updateDocsChangelog` via `running_gradle_builds`
-
-## References
-
-- **Detailed verification guides** (what each check does, failure recovery, edge cases): read `references/verification-details.md` — consult when a check fails or behavior is unclear
-- **Troubleshooting**: read `references/troubleshooting.md` — consult when verifications fail unexpectedly
+The CI builds the Writerside docs. `update-doc` has the local build.

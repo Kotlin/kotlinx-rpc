@@ -1,35 +1,33 @@
 # Overview
 
-This is the `:core` module of kotlinx-rpc -- the protocol-agnostic runtime that defines the public API for RPC services. 
-It is a Kotlin Multiplatform module (JVM, JS, Native, WasmJS, WasmWasi). 
-The compiler plugin generates code against the interfaces defined here.
+The `:core` module is the protocol-agnostic runtime with the public API for RPC services.
+It is a Kotlin Multiplatform module (JVM, JS, Native, WasmJS, WasmWasi).
+The compiler plugin generates code against the interfaces of this module.
 
-`@Rpc` -- annotation that triggers compiler plugin code generation
+## `@CheckedTypeAnnotation`
 
-## @CheckedTypeAnnotation annotations family
+`@CheckedTypeAnnotation` is a meta-annotation for annotations on type parameters, for example `@Rpc`.
+The compiler plugin reports an error when a type argument doesn't have the annotation on its declaration:
 
-`@CheckedTypeAnnotation` is a meta-annotation that enables compile-time type-safety checks on type parameters.
-When an annotation (e.g. `@Rpc`) is itself annotated with `@CheckedTypeAnnotation`,
-the compiler plugin verifies that any type argument passed to a type parameter marked with that annotation
-actually carries the annotation on its declaration. This turns annotation misuse into a compile error
-instead of a runtime failure.
-
-**How it works:**
 ```kotlin
-fun <@Rpc reified T : Any> RpcClient.withService(): T  // T must be an @Rpc-annotated interface
+fun <@Rpc reified T : Any> RpcClient.withService(): T
+
+withService<NotAnRpcService>() // compiler error: NotAnRpcService has no @Rpc
 ```
-Calling `withService<NotAnRpcService>()` produces a compiler error because `NotAnRpcService` is not annotated with `@Rpc`.
 
-The `checkFor` parameter handles the case where the annotation being checked requires constructor arguments
-and therefore cannot be placed directly on a type parameter (e.g. `@HasWithGrpcMarshaller` checks for `@WithGrpcMarshaller`).
+An annotation with constructor arguments can't be on a type parameter. For such an annotation, a second annotation
+names it in `checkFor`: `@HasWithGrpcMarshaller` is `@CheckedTypeAnnotation(WithGrpcMarshaller::class)`, and the
+plugin checks the type argument for `@WithGrpcMarshaller`.
 
-**Applied in the library:**
-- `@Rpc` — annotated with `@CheckedTypeAnnotation`; enforced on type parameters of `withService`, `registerService`, etc.
-- `@HasWithGrpcMarshaller` — annotated with `@CheckedTypeAnnotation(WithGrpcMarshaller::class)`; enforced on gRPC marshaller factory functions
+| Annotation | Checked on |
+|---|---|
+| `@Rpc` | Type parameters of `withService`, `registerService`, and similar functions |
+| `@HasWithGrpcMarshaller` | Type parameters of the gRPC marshaller factory functions |
 
-## Generation References (detailed)
+## Generated code
 
-Protocol-specific codegen and diagnostics details live alongside each protocol module:
-- [kRPC codegen](../krpc/codegen.md) -- stub class, companion descriptor, invokators
-- [gRPC codegen](../grpc/codegen.md) -- gRPC-specific additions: `delegate()`, `MethodDescriptor`, streaming types
-- [Protobuf codegen](../protobuf/codegen.md) -- `Builder` interface, `@WithProtoDescriptor`/`@WithGrpcMarshaller` annotations
+| Protocol | Reference |
+|---|---|
+| kRPC | [krpc/codegen.md](../krpc/codegen.md): stub class, companion descriptor, invokators |
+| gRPC | [grpc/codegen.md](../grpc/codegen.md): `delegate()`, `MethodDescriptor`, streaming types |
+| Protobuf | [protobuf/codegen.md](../protobuf/codegen.md): `Builder` interface, `@WithProtoDescriptor` and `@WithGrpcMarshaller` |

@@ -1,201 +1,85 @@
-# protoc-gen Codegen Reference
+# protoc-gen codegen
 
-What each protoc-gen plugin generates from `.proto` files.
+What the two `protoc` plugins generate from `.proto` files. The compiler plugin then processes the output:
+[protobuf codegen](../protobuf/codegen.md) for messages and [gRPC codegen](../grpc/codegen.md) for services.
 
-Two plugins translate `.proto` definitions into idiomatic Kotlin multiplatform code. 
-Both run as standard protoc plugins. The generated code is then further processed by the [compiler plugin](../compiler-plugin/) 
-which adds FIR declarations (Builder, Companion) and IR annotations (`@WithProtoDescriptor`, `@WithGrpcMarshaller`).
+| Plugin | Module | Input | Output files for `<File>.proto`, in the proto package |
+|---|---|---|---|
+| Protobuf | `protoc-gen/protobuf` | Messages, enums, oneofs, extensions | `<File>.kt`: public message interfaces and enums |
+| | | | `<File>.ext.kt`: extensions (constructors, `copy`, `presence`, oneof accessors) |
+| | | | `_rpc_internal/<File>.kt`: internal classes with the codec, `DESCRIPTOR`, and `MARSHALLER` |
+| gRPC | `protoc-gen/grpc` | Services | `<File>.kt`: `@Grpc` interfaces |
 
-For what the compiler plugin does on top of this output, see:
-- [protobuf/codegen.md](../protobuf/codegen.md) -- FIR/IR processing of generated messages
-- [grpc/codegen.md](../grpc/codegen.md) -- FIR/IR processing of generated services
+`protoc-gen/common` has the shared code: the protoc plugin protocol, the model, and the Kotlin code generator.
 
-## Plugins
-
-| Plugin | Module | Input | Output |
-|---|---|------------------------------------------------------|--------------------------------------------------------------------|
-| **Protobuf** | `protoc-gen/protobuf` | `message`, `enum`, `oneof`, declarations, extensions | Message interfaces + Kotlin extenstions + internal implementations |
-| **gRPC** | `protoc-gen/grpc` | `service` declarations | `@Grpc` service interfaces |
-
-Both plugins share a common framework in `protoc-gen/common` that handles the protoc plugin protocol, model parsing, and a DSL-based Kotlin code generator.
-
-## File Layout
-
-For each `.proto` file, the **protobuf plugin** produces three Kotlin files:
-
-| File | Package | Contains |
-|---|---|---|
-| `<ProtoFile>.kt` | `<proto_package>` | Public message/enum interfaces |
-| `<ProtoFile>.ext.kt` | `<proto_package>` | Extension functions (constructors, `copy`, `presence`) |
-| `_rpc_internal/<ProtoFile>.kt` | `<proto_package>` | Internal implementation classes, marshallers, descriptors, encode/decode |
-
-Each generated `MARSHALLER` is an object extending `ProtoGrpcMarshaller`. It prepares an
-exact-size encoded message and decodes through a bounded `AbstractGrpcMessageReader`.
-
-The **gRPC plugin** produces one file per `.proto` file:
-
-| File | Package | Contains |
-|---|---|---|
-| `<ProtoFile>.kt` | `<proto_package>` | `@Grpc` service interfaces |
-
-## Protobuf Plugin -- Messages
-
-### Example Input
+## Messages
 
 ```protobuf
-syntax = "proto3";
-
 message HelloRequest {
   string name = 1;
   optional uint32 timeout = 2;
 }
-
-message HelloReply {
-  string message = 1;
-}
 ```
 
-### Public File (`HelloworldGrpc.kt`)
-
-Each message becomes an interface annotated with `@GeneratedProtoMessage`. Proto comments are preserved as KDoc. Proto3 `optional` fields map to nullable types.
-
 ```kotlin
+// Helloworld.kt
 @GeneratedProtoMessage
 interface HelloRequest {
     val name: String
     val timeout: UInt?
 }
 
-@GeneratedProtoMessage
-interface HelloReply {
-    val message: String
-}
-```
-
-### Extension File (`HelloworldGrpc.ext.kt`)
-
-Builder-style constructors via `Companion.invoke`, `copy` functions, and presence accessors for optional fields:
-
-```kotlin
-operator fun HelloRequest.Companion.invoke(body: HelloRequest.Builder.() -> Unit): HelloRequest { ... }
-
-fun HelloRequest.copy(body: HelloRequest.Builder.() -> Unit = {}): HelloRequest { ... }
-
-val HelloRequest.presence: HelloRequestPresence get() = this.asInternal()._presence
+// Helloworld.ext.kt
+operator fun HelloRequest.Companion.invoke(body: HelloRequest.Builder.() -> Unit): HelloRequest
+fun HelloRequest.copy(body: HelloRequest.Builder.() -> Unit = {}): HelloRequest
+val HelloRequest.presence: HelloRequestPresence
 
 interface HelloRequestPresence {
     val hasTimeout: Boolean
 }
-```
 
-Usage:
-```kotlin
-val request = HelloRequest {
-    name = "world"
-    timeout = 5000u
-}
+// Use
+val request = HelloRequest { name = "world"; timeout = 5000u }
 val copy = request.copy { timeout = 3000u }
-val isSet = request.presence.hasTimeout  // true
+request.presence.hasTimeout  // true
 ```
 
-### Proto Type Mapping
+- Proto comments become KDoc.
+- The compiler plugin declares `HelloRequest.Builder` and the companion.
+- A nested message is a nested interface: `Outer.Inner`.
+- `MARSHALLER` extends `ProtoGrpcMarshaller`. It computes the exact encoded size before it writes, and reads
+  through a bounded `AbstractGrpcMessageReader`.
 
-| Proto Type          | Kotlin Type                         |
-|---------------------|-------------------------------------|
-| `int32`, `sint32`   | `Int`                               |
-| `int64`, `sint64`   | `Long`                              |
-| `uint32`, `fixed32` | `UInt`                              |
-| `uint64`, `fixed64` | `ULong`                             |
-| `float`             | `Float`                             |
-| `double`            | `Double`                            |
-| `bool`              | `Boolean`                           |
-| `string`            | `String`                            |
-| `bytes`             | `ByteString`                        |
-| `sfixed32`          | `Int`                               |
-| `sfixed64`          | `Long`                              |
-| `optional T`        | `T?` (nullable + presence tracking) |
-| `repeated T`        | `List<T>`                           |
-| `map<K, V>`         | `Map<K, V>`                         |
-| `enum`              | Generated Kotlin sealed class       |
-| `message`           | Generated interface                 |
+| Proto type | Kotlin type |
+|---|---|
+| `int32`, `sint32`, `sfixed32` | `Int` |
+| `int64`, `sint64`, `sfixed64` | `Long` |
+| `uint32`, `fixed32` | `UInt` |
+| `uint64`, `fixed64` | `ULong` |
+| `float`, `double`, `bool`, `string` | `Float`, `Double`, `Boolean`, `String` |
+| `bytes` | `ByteString` |
+| `optional T` | `T?`, with a `has<Field>` presence getter |
+| `repeated T` | `List<T>` |
+| `map<K, V>` | `Map<K, V>` |
+| `message` | The generated interface |
+| `enum` | The generated sealed class |
 
-### Enums
-
-Proto enums become Kotlin sealed types. Unknown values received over the wire are represented as `UNRECOGNIZED`:
-
-```protobuf
-enum Priority {
-  PRIORITY_UNSPECIFIED = 0;
-  HIGH = 1;
-  LOW = 2;
-}
-
-message Task {
-  required Priority priority = 1;
-}
-```
+An enum is a sealed class. `UNRECOGNIZED` holds a number that the `.proto` file doesn't have:
 
 ```kotlin
-val task = Task {
-    priority = Priority.HIGH
+@GeneratedProtoEnum
+sealed class Priority(open val number: Int) {
+    data object PRIORITY_UNSPECIFIED : Priority(number = 0)
+    data object HIGH : Priority(number = 1)
+    data class UNRECOGNIZED(override val number: Int) : Priority(number)
+
+    companion object {
+        val entries: List<Priority>   // without UNRECOGNIZED
+    }
 }
 ```
 
-### Repeated Fields
-
-Repeated fields map to Kotlin `List`:
-
-```protobuf
-message Numbers {
-  repeated int32 values = 1;
-  repeated string labels = 2;
-}
-```
-
-```kotlin
-val numbers = Numbers {
-    values = listOf(1, 2, 3)
-    labels = listOf("a", "b", "c")
-}
-
-val extended = numbers.copy {
-    values = values + 4
-}
-```
-
-### Map Fields
-
-Map fields map to Kotlin `Map`:
-
-```protobuf
-message Config {
-  map<string, int64> settings = 1;
-}
-```
-
-```kotlin
-val config = Config {
-    settings = mapOf("timeout" to 30L, "retries" to 3L)
-}
-
-val updated = config.copy {
-    settings = settings + ("retries" to 5L)
-}
-```
-
-### OneOf
-
-Every member of a proto `oneof` becomes a flat, non-nullable property of the message, exactly like a
-singular field of the same type. When the member is not the active case, the property returns the proto
-default for its type. The oneof itself contributes a top-level `<Message><OneOf>Case` enum class, a
-`<oneOf>` extension property returning the active case, a `clear<OneOf>()` builder function and an
-exhaustive `when<OneOf>` dispatch function. Each member has a `has<Member>` presence getter and a
-`clear<Member>()` builder function.
-
-The `clear<OneOf>()` and `clear<Member>()` functions are members of the `Builder` interface declared by the
-compiler plugin and implemented by the internal class. The internal class is annotated with
-`@GeneratedProtoOneOfs(names = [...])` so that the compiler plugin knows the oneof names
-(see [protobuf/codegen.md](../protobuf/codegen.md)).
+## Oneofs
 
 ```protobuf
 message Event {
@@ -218,99 +102,34 @@ enum class EventPayloadCase { TEXT, CODE, NOT_SET }
 val Event.payload: EventPayloadCase
 inline fun <R> Event.whenPayload(text: (String) -> R, code: (Int) -> R, notSet: () -> R): R
 
-// declared on Event.Builder by the compiler plugin
-fun clearPayload()
-```
-
-```kotlin
+// Use
 val event = Event {
     text = "hello"
-    code = 5       // switches the case: text is "" again, hasText is false
+    code = 5                                   // changes the case: text is "" and hasText is false
 }
-
-event.presence.hasCode                          // true
-event.code                                      // 5
-event.text                                      // ""
-
-val length = event.whenPayload(                 // exhaustive and type-linked
-    text = { it.length },
-    code = { it },
-    notSet = { 0 },
-)
-
-when (event.payload) {                          // exhaustive, not type-linked
-    EventPayloadCase.TEXT -> println(event.text)
-    EventPayloadCase.CODE -> println(event.code)
-    EventPayloadCase.NOT_SET -> {}
-}
-
-val cleared = event.copy { clearPayload() }    // payload == EventPayloadCase.NOT_SET
+event.presence.hasCode                         // true
+event.whenPayload(text = { it.length }, code = { it }, notSet = { 0 })
+event.copy { clearPayload() }.payload          // EventPayloadCase.NOT_SET
 ```
 
-Internally the active case is not stored separately: the members of one oneof have consecutive presence bits,
-and the active member is the one whose bit is set. Values live in at most two typed slots per oneof
-(`Any?` for strings, bytes and messages; `Int` or `Long` for numbers, bools and enums), so setting, decoding
-or reading a oneof member allocates nothing. Floats and doubles are stored as raw bits, enums as their number.
+- Each member is a property of the message that isn't nullable, like a singular field of the same type.
+  A member that isn't the active case returns the proto default of its type.
+- Each member has a `has<Member>` presence getter and a `clear<Member>()` builder function.
+- Each oneof has a `<Message><OneOf>Case` enum, a `<oneOf>` property with the active case, a `clear<OneOf>()`
+  builder function, and a `when<OneOf>` function with one branch for each case.
+- The compiler plugin declares the `clear` functions on `Builder`, and the internal class implements them.
+  The internal class has `@GeneratedProtoOneOfs(names = [...])` to give the oneof names to the compiler plugin.
+- The internal class doesn't store the active case. The members of one oneof have consecutive presence bits,
+  and the active member is the one with a set bit.
+- A oneof has at most two value slots: `Any?` for strings, bytes, and messages, and `Int` or `Long` for numbers,
+  booleans, and enums. So a set, a decode, or a read of a member allocates no object.
+  A float or a double is in the slot as raw bits, and an enum as its number.
 
-With `generateOptionalFieldOrNullGetters=true`, every member also gets a `<member>OrNull` getter.
-Set `generateOneOfWhenFunctions=false` to omit the `when<OneOf>` functions.
-
-### Nested Messages
-
-Nested message types are accessed through the parent type. 
-
-```protobuf
-message Outer {
-  message Inner {
-    required int32 value = 1;
-  }
-
-  required Inner inner = 1;
-}
-```
-
-```kotlin
-val outer = Outer {
-    inner = Outer.Inner {
-        value = 42
-    }
-}
-```
-
-## gRPC Plugin -- Services
-
-### Example Input
-
-```protobuf
-syntax = "proto3";
-
-service GreeterService {
-  rpc SayHello(HelloRequest) returns (HelloReply);
-}
-```
-
-### Kotlin Output
-
-Each service becomes a `@Grpc` interface.
-
-```kotlin
-@Grpc
-interface GreeterService {
-    @Grpc.Method(name = "SayHello")
-    suspend fun sayHello(message: HelloRequest): HelloReply
-}
-```
-
-The compiler plugin then generates the stub class, `RpcServiceDescriptor`, `GrpcServiceDelegate`, and `RpcCallable` entries from this interface (see [grpc/codegen.md](../grpc/codegen.md)).
-
-Note: generated Kotlin names are camel-cased by default. Set `camelCaseNames` to `false` to preserve proto names.
-
-### Streaming
-
-Streaming type is determined by the `stream` keyword in the `.proto` file:
+## Services
 
 ```protobuf
 service StreamingTestService {
+  rpc Unary(References) returns (References);
   rpc Server(References) returns (stream References);
   rpc Client(stream References) returns (References);
   rpc Bidi(stream References) returns (stream References);
@@ -320,6 +139,9 @@ service StreamingTestService {
 ```kotlin
 @Grpc
 interface StreamingTestService {
+    @Grpc.Method(name = "Unary")
+    suspend fun unary(message: References): References
+
     @Grpc.Method(name = "Server")
     fun server(message: References): Flow<References>
 
@@ -331,55 +153,28 @@ interface StreamingTestService {
 }
 ```
 
-Note: server-streaming and bidi methods are **not** `suspend` since they return `Flow` directly.
+A function that returns a `Flow` isn't `suspend`.
 
-### Idempotency
-
-Reads `MethodOptions.IdempotencyLevel` from the `.proto` method options and maps to `@Grpc.Method` annotation parameters:
-
-| Proto `idempotency_level` | Generated annotation |
+| Proto `idempotency_level` | `@Grpc.Method` arguments |
 |---|---|
-| (default) | _(none)_ |
-| `IDEMPOTENT` | `@Grpc.Method(idempotent = true)` |
-| `NO_SIDE_EFFECTS` | `@Grpc.Method(idempotent = true, safe = true)` |
+| Not set | None |
+| `IDEMPOTENT` | `idempotent = true` |
+| `NO_SIDE_EFFECTS` | `idempotent = true, safe = true` |
 
-## Pipeline Overview
+## Plugin options
 
-```
-.proto files
-    │
-    ▼
-protoc (or buf)
-    │
-    ├── protoc-gen-kotlinx-rpc-protobuf ──▶ message interfaces + internals
-    │                                           │
-    └── protoc-gen-kotlinx-rpc-grpc ──────▶ @Grpc service interfaces
-                                                │
-                                                ▼
-                                        Kotlin compiler
-                                     (kotlinx-rpc plugin)
-                                                │
-                                   ┌────────────┴────────────┐
-                                   ▼                         ▼
-                            FIR phase                   IR phase
-                        Builder interface           @WithProtoDescriptor
-                        Companion object            @WithGrpcMarshaller
-                        Diagnostics                 GrpcServiceDelegate
-                                                    RpcCallable metadata
-```
+Both plugins take the same options, as `--<plugin>_opt=<key>=<value>`:
 
-## Plugin Options
-
-Both plugins accept the same options (passed via `--<plugin>_opt=key=value`):
-
-| Option                             | Default | Description                                                                                     |
-|------------------------------------|---------|-------------------------------------------------------------------------------------------------|
-| `explicitApiModeEnabled`           | `false` | Add `public`/`internal` visibility modifiers                                                    |
-| `generateComments`                 | `true`  | Preserve proto comments as KDoc                                                                 |
-| `generateFileLevelComments`        | `true`  | Include file-level proto comments                                                               |
-| `indentSize`                       | `4`     | Indentation width in spaces                                                                     |
-| `platform`                         | —       | Target platform (`COMMON`, `JVM`, `JS`, `NATIVE`, `WASM_JS`, `WASM_WASI`)                       |
-| `debugOutput`                      | `false` | Write debug output into `protoBuild/sourceSets/<sourceSet>/protoc-gen-<protoc-plugin-name>.log` |
-| `camelCaseNames`                   | `true`  | Generate Kotlin declaration and member names in camel case                                      |
-| `generateOptionalFieldOrNullGetters` | `false` | Emit `<field>OrNull` getters for fields with presence, including oneof members                |
-| `generateOneOfWhenFunctions`       | `true`  | Emit the exhaustive `when<OneOf>` dispatch function for every oneof                             |
+| Option | Default | Effect |
+|---|---|---|
+| `explicitApiModeEnabled` | `false` | Adds the `public` and `internal` modifiers |
+| `generateComments` | `true` | Makes KDoc from the proto comments |
+| `generateFileLevelComments` | `true` | Adds the file-level proto comments |
+| `generateOptionalFieldOrNullGetters` | `false` | Adds a `<field>OrNull` getter for each field with presence, including oneof members |
+| `generateOneOfWhenFunctions` | `true` | Adds the `when<OneOf>` function for each oneof |
+| `camelCaseNames` | `true` | Makes Kotlin names in camel case. `false` uses the proto names. |
+| `indentSize` | `4` | Indent in spaces |
+| `platform` | `jvm` | `common`, `jvm`, `android`, `js`, `native`, or `wasm` |
+| `debugOutput` | None | Path of a log file. The Gradle plugin sets `protoc-gen-<plugin name>.log`, in `build/protoBuild/sourceSets/<sourceSet>/`. |
+| `protoNamesOutput` | None | Path of a file that gets the names of the generated declarations |
+| `ignoreFiles` | None | Proto files to skip, with `\u0000` between them. The Gradle plugin sets it to the files that an imported source set generates. |

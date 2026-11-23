@@ -1,105 +1,58 @@
 ---
 name: use-youtrack
-description: >
-  General-purpose YouTrack operations for the kotlinx-rpc project (KRPC). Use this skill
-  whenever the user wants to search, read, update, comment on, link, tag, or otherwise
-  interact with existing YouTrack issues — anything that isn't creating a brand new issue.
-  Also use it when the user asks about issue status, sprint progress, who's working on what,
-  backlog queries, or wants to browse/filter issues. Trigger this even if the user doesn't
-  say "YouTrack" explicitly — if they mention a KRPC-### issue ID, ask about tickets, want
-  to check on an issue, update a status, or log work, this is the right skill.
-  Do NOT use this skill for creating new issues — use file-youtrack-issue instead.
+description: Searches, reads, updates, comments on, links, and tags existing YouTrack issues of kotlinx-rpc (KXRPC-NNN, old key KRPC-NNN), including sprint and backlog queries. To create an issue, use file-youtrack-issue.
 ---
 
-# YouTrack Operations for kotlinx-rpc (KRPC)
+# YouTrack for kotlinx-rpc
 
-General-purpose skill for interacting with the KRPC YouTrack project.
-Project key: **KRPC** | URL: `https://youtrack.jetbrains.com/issue/KRPC-*`
+The project key is `KXRPC`. An issue URL is `https://youtrack.jetbrains.com/issue/KXRPC-<N>`.
+Issues with the old key `KRPC` resolve to the same issues.
 
-For **creating new issues**, use the `file-youtrack-issue` skill instead.
+`../file-youtrack-issue/references/krpc-fields.md` has the scopes, types, states, priorities, and tags.
 
-## Agent workflow override
+## Access
 
-When this skill is invoked from the `fix-issue` skill (autonomous issue-fixing workflow),
-**all YouTrack operations must use the agent identity** instead of the user's:
-- MCP server: `youtrack-agent` (not `youtrack`)
-- REST API token: `$YOUTRACK_AGENT_TOKEN` (not `$YOUTRACK_TOKEN`)
-
-The `fix-issue` skill's Authentication section has full details. Outside of `fix-issue`,
-the defaults below apply.
-
-## Tools Available
-
-Use `mcp__youtrack__*` MCP tools for standard operations. When MCP tools lack a capability
-(bulk updates, custom queries, attachment management, etc.), fall back to the YouTrack REST
-API via `YOUTRACK_TOKEN`:
+Use the tools of the `youtrack` MCP server. For an operation that the tools don't have (attachments, bulk changes), use the
+[REST API](https://www.jetbrains.com/help/youtrack/devportal/api-reference.html):
 
 ```bash
 curl -s -H "Authorization: Bearer $YOUTRACK_TOKEN" \
   "https://youtrack.jetbrains.com/api/<endpoint>?fields=<fields>"
 ```
 
-REST API base: `https://youtrack.jetbrains.com/api`
-Docs: [YouTrack REST API](https://www.jetbrains.com/help/youtrack/devportal/api-reference.html)
+## Search
 
-## Searching Issues
+YouTrack matches exact keywords only. Run several `search_issues` queries with different keywords.
 
-Read `references/query-syntax.md` for the full query syntax reference and common search
-patterns (sprint work, backlog, recently closed, etc.).
+```
+project: KXRPC State: Open Type: Bug
+project: KXRPC for: me                          # or for: <login>, reporter: me
+project: KXRPC tag: {Kxrpc Backlog} Scope: {kRPC. Client}
+project: KXRPC State: Fixed updated: {this week} sort by: updated desc
+project: KXRPC [Kxrpc] Planning Period: {20.03-24.04 (2026)}
+project: KXRPC #unresolved created: {this week}
+```
 
-Key point: YouTrack has **no semantic search** — always run multiple queries with different
-keywords to get good coverage.
+- Put a value with a space or a dot in braces.
+- The current sprint is usually the last planning period without a checkmark in `get_issue_fields_schema`.
+- `customFieldsToReturn` is `["Type", "State", "Assignee"]` by default.
+  Add `"Priority"`, `"Scope"`, `"[Kxrpc] Target Release"`, or `"[Kxrpc] Planning Period"` when you need them.
 
-## Reading Issues
+## Read and update
 
-Use `mcp__youtrack__get_issue` with the issue ID (e.g., `KRPC-531`). This returns:
-- Summary, description, reporter, timestamps
-- Custom fields (Type, State, Priority, Scope, Assignee, Target Release, Planning Period)
-- Recent comments (configurable count via `recentCommentsCount`)
-- Tags, votes, linked issue counts, attachments
+| Operation | Tool |
+|---|---|
+| Read an issue with its fields and recent comments | `get_issue` (`recentCommentsCount`) |
+| Read all comments | `get_issue_comments` |
+| Change the summary, description, or custom fields | `update_issue` |
+| Change the assignee | `change_issue_assignee`. Find the login with `find_user`. |
+| Add or remove tags | `manage_issue_tags` |
+| Comment (Markdown) | `add_issue_comment` |
+| Link issues | `link_issues`: `relates to`, `subtask of`, `parent for`, `depends on`, `is required for`, `duplicates` |
+| Log work | `log_work` |
+| Knowledge base articles | `search_articles`, `get_article`, `create_article`, `update_article` |
 
-For full comment history, use `mcp__youtrack__get_issue_comments`.
-
-## Updating Issues
-
-Read `references/update-operations.md` for the full reference on changing fields, assignees,
-tags, comments, links, and logging work.
-
-Key rules:
-- `Scope` must be a **JSON array**, even for a single value
-- Multiline text fields need **actual newlines**, not literal `\n` escape sequences
-- **Always add the `Vibe-report` tag** alongside any other tags the user requests
-
-## KRPC Project Reference
-
-For full field definitions (scopes with determination logic, types, priorities, tags,
-optional fields, team members), read
-`file-youtrack-issue/references/krpc-fields.md` (relative to `.claude/skills/`).
-
-Quick lists for common lookups:
-
-### Scopes
-Compiler Plugin, kRPC, kRPC. Client, kRPC. Server, kRPC. Transport,
-gRPC, gRPC. Client, gRPC. Server, gRPC. Web, Core, Protoc Plugin,
-Gradle Plugin, Infra, Housekeeping, Documentation, Other
-
-### States
-Submitted, Open, In progress, In design, Fixed in branch, Fixed,
-Wait for reply, Duplicate, Closed
-
-### Types
-Bug, Feature, Task, Usability Problem, Performance Problem, Meta Issue,
-Security Problem
-
-## Knowledge Base Articles
-
-YouTrack also hosts articles (wiki-like docs). Use:
-- `mcp__youtrack__search_articles` — find articles by keyword
-- `mcp__youtrack__get_article` — read a specific article
-- `mcp__youtrack__create_article` / `mcp__youtrack__update_article` — manage articles
-
-## Important Terminology
-
-**kRPC and gRPC are protocols, not transports.** This matters in issue descriptions,
-comments, and when choosing scopes. kRPC is the custom RPC protocol; gRPC is HTTP/2 +
-Protocol Buffers. Both support multiple serialization formats.
+- `Scope` is a JSON array, also for one value: `["Housekeeping", "Infra"]`.
+- A text field takes real newlines. YouTrack shows a literal `\n` as the two characters.
+- When you add tags to an issue, add `Vibe-report` too.
+- kRPC and gRPC are protocols. Never call them transports in an issue or a comment.

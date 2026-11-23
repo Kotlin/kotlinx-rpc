@@ -1,163 +1,94 @@
-# CLAUDE.md
+# kotlinx-rpc
 
-The skill from https://mr3zee.github.io/code-doc-writer/ must be installed 
-and used in every session that adds/changes committed files.
+A Kotlin Multiplatform library for RPC services. It is a protocol-agnostic RPC toolkit that hosts two protocols:
 
-kotlinx-rpc is a Kotlin Multiplatform library for building RPC services.
-Version catalog: `versions-root/libs.versions.toml`
+| Protocol | Wire format | Service annotation |
+|---|---|---|
+| kRPC | Custom | `@Rpc` |
+| gRPC | HTTP/2 and Protocol Buffers | `@Grpc` |
 
-## Effort Level
-Always operate at maximum effort level. Do not ask about effort preferences.
+kRPC and gRPC are protocols. Never call them transports.
+Each protocol has its own client, its own server, and its own code generation.
 
-## Protocols
+## Rules
 
-EXTREMELY IMPORTANT.
-This library is a **protocol agnostic** library. It can be called a Kotlin RPC toolkit.
-It hosts different protocols:
-- kRPC (custom protocol)
-- gRPC (HTTP/2 + Protocol Buffers)
+- Work at maximum effort. Don't ask about effort preferences.
+- Install the skill from https://mr3zee.github.io/code-doc-writer/ and use it in every session that adds or changes committed files.
+- Run Gradle with the Gradle skills (`running_gradle_builds`, `running_gradle_tests`, `managing_gradle_dependencies`, `introspecting_gradle_projects`, `gradle_expert`), not with `./gradlew`.
+- Never edit a generated file by hand. Run its regeneration task and commit the output. Generated files include the `.api` and `.klib.api` ABI dumps, the conformance and WKT code, and the implicit import lists.
+- Put a Gradle change into `gradle-conventions/` or `gradle-conventions-settings/` when the change is large or applies to more than one subproject.
 
-They are not TRANSPORTS. Each protocol has its own client and server implementations, as well as code generation patterns.
+## Docs and comments
 
-## Build & Test
+Write all docs and comments with the `code-doc-writer` skill.
 
-**IMPORTANT: Always use Gradle skills** (`running_gradle_builds`, `running_gradle_tests`, `managing_gradle_dependencies`, `introspecting_gradle_projects`, `gradle_expert`, etc.) instead of running `./gradlew` directly. 
-Gradle skills provide structured feedback, failure diagnostics, and background orchestration that raw shell commands lack.
+| Code | Rule |
+|---|---|
+| Public API of a published module | KDoc is required. |
+| Internal API: `internal`, `private`, `@InternalRpcApi`, and all code of modules that aren't published | No KDoc and no comments. Make the code readable: exact names, types, and small functions. |
 
-### Testing
-Use the `running_gradle_tests` skill. Example tasks:
-- `<module>:jvmTest --tests "TestClass.testMethod"` -- Single test
-- `<module>:jvmTest` -- All JVM tests for a module
-
-### Building
-Use the `running_gradle_builds` skill. Example tasks:
-- `<module>:build` -- Build a module
-- `assemble` -- Assemble all modules
-
-### Validation
-Use the `running_gradle_builds` skill for these tasks:
-- `checkLegacyAbi` -- Binary compatibility (formerly BCV apiCheck)
-- `aggregateApiWatchdogReports` -- API watchdog report in `build/reports/api-watchdog/`. The watchdog runs during compilation of public modules and fails the build on violations, so run this task only for the report.
-- `detekt` -- Static analysis (does NOT fail build, check console)
-- `:jpms-check:compileJava` -- Java module system check
-- `kotlinUpgradeYarnLock` -- Fix JS dependency locks
-- `kotlinWasmUpgradeYarnLock` -- Fix WASM dependency locks
-
-Non-Gradle validation:
-```bash
-./scripts/validate_published_artifacts.sh -s # Artifact validation (-v verbose, --dump update)
-```
-
-### Other specialized commands
-
-```bash
-./scripts/publish_local.sh                  # Publish to build/repo/ for local testing
-```
-
-## Generated Code — Do Not Edit Manually
-
-Several checked-in files are machine-generated. 
-**Never modify them by hand** — always run the appropriate regeneration task and commit the output.
-This includes `.api` and `.klib.api` ABI dump files (use `updateLegacyAbi`),
-conformance test output, WKT generated code, implicit import lists, and other.
-Hand-editing these files produces incorrect results (e.g., klib dump sort order
-differs from what's intuitive).
-
-## Module Map
-
-The most important modules have brief READMEs in their directories, read when you need to work with the module.
-
-### Core (multiplatform)
-- `:core` -- RPC abstractions (`@Rpc`, `RpcClient`, `RpcServer`, `RpcCall`, descriptors)
-- `:utils` -- Shared utilities
-
-### kRPC transport (multiplatform)
-- `:krpc:krpc-core`, `:krpc:krpc-client`, `:krpc:krpc-server` -- Protocol, client, server
-- `:krpc:krpc-logging`, `:krpc:krpc-test` -- Logging, test utilities
-- `:krpc:krpc-serialization:krpc-serialization-{core,json,cbor,protobuf}` -- Serialization formats
-- `:krpc:krpc-ktor:krpc-ktor-{core,server,client}` -- Ktor integration
-
-### gRPC transport (experimental KMP)
-- `:grpc:grpc-{core,client,server,ktor-server,marshaller,marshaller-kotlinx-serialization}`
-
-### Protobuf (mainly used with gRPC)
-- `:protobuf:protobuf-{api,wkt,core}`
-
-### Native dependencies
-- `native-deps/kotlinx-rpc-grpc-swift/` -- Swift bridge package sources for gRPC on iOS (git submodule, CI checks it matches the published tag)
-
-### Included builds (separate Gradle projects)
-- `compiler-plugin/` -- Kotlin K2 compiler plugin (FIR diagnostics + IR codegen)
-- `gradle-plugin/` -- Gradle plugin (`org.jetbrains.kotlinx.rpc.plugin`)
-- `protoc-gen/` -- Protobuf code generator
-- `dokka-plugin/` -- Documentation plugin
-
-### Tests (not published)
-- `:tests:compiler-plugin-test-libs`: Declarations for the compiler plugin test data. The tests are in `compiler-plugin/`
-- `:tests:functional-test-repository`: Publishes the libraries for `:gradle-plugin:allVersionedFunctionalTests`
-- `:tests:krpc-compatibility-tests`, `:tests:krpc-protocol-compatibility-tests`: Protocol compat
-- `:tests:protobuf-conformance`: Protobuf spec conformance (not on Windows)
-- `:tests:protobuf-unittest`, `:tests:grpc-test-server`, `:tests:test-protos`, `:tests:test-grpc-protos`
-
-## Architecture
-
-### RPC Call Flow
-1. User defines `@Rpc` interface with `suspend` methods and/or `Flow` return types
-2. **Compiler plugin** generates stub class: each method creates `RpcCall(descriptor, methodName, args, serviceId)` and delegates to `RpcClient.call()` (unary) or `RpcClient.callServerStreaming()` (streaming)
-3. **Client** serializes the call and sends over wire
-4. **Server** deserializes, looks up `RpcServiceDescriptor`, invokes `RpcInvokator.call(serviceImpl, args)`
-5. Response flows back through the same layers
-6. Client and Server are bound to RPC protocols (kRPC or gRPC) 
-
-### Key abstractions (`core/src/commonMain/kotlin/kotlinx/rpc/`)
-- `@Rpc` annotation on interface -- triggers compiler plugin
-- `RpcServiceDescriptor<T>` -- generated per-service metadata + stub factory
-- `RpcCallable` -- per-method metadata + `RpcInvokator` (either `UnaryResponse` or `FlowResponse`)
-- `RpcCall` -- single invocation payload: descriptor + method name + args + service ID
-- `RpcClient` / `RpcServer` -- protocol-agnostic client and server interfaces
-
-### kRPC protocol
-Custom protocol.
-
-### gRPC protocol
-HTTP/2 + Protocol Buffers. Code generated from `.proto` files via `protoc-gen/`. Uses `@Grpc` annotation.
-
-## Compiler Plugin
-
-### Module structure
-`compiler-plugin/` is one module. The [Kotlin Compiler Plugin DevKit](https://github.com/Kotlin/compiler-plugin-dev-kit) builds it for all supported Kotlin versions in one build.
-- `src/commonMain`: Code for all Kotlin versions. FIR frontend (diagnostics, declaration generation) and IR backend (stub classes, descriptors)
-- `src/pre<version>DevMain`, `src/post<version>DevMain`: `actual` declarations for the compiler API that differs between versions
-- `src/commonTestFixtures`, `src/commonTest/data`, `src/generateTests`: Box and diagnostic tests. Run them from the root build with `:compiler-plugin:allTests`
+A comment is the last resort. Write one only when the code has a behavior that the reader doesn't expect, and no change of the code can show it.
 
 ## Conventions
 
-- Use library exception types for library failures, including invalid arguments and invalid state. Never introduce `IllegalStateException`, `error()`, `check()`, or `require()` for these failures.
-- All published modules require **explicit return types and visibility**
-- All public types require **KDoc**
-- Internal APIs shared across modules: annotate with `@InternalRpcApi`
-- Dependencies go in `versions-root/libs.versions.toml`, never inline
-- New modules: `includePublic()` in `settings.gradle.kts` for published, `include()` for internal
-- Published modules auto-prefixed with `kotlinx-rpc-`
-- Module families: common prefix + `core` for shared (e.g., `krpc-core`, `krpc-client`, `krpc-server`)
-- Filesystem paths: OS-agnostic only -- `Path.of("a", "b")` not `Path.of("a/b")`
-- Disable KMP targets per module: `kotlinx.rpc.exclude.<target>=true` in module's `gradle.properties`
-- Use [gradle-conventions](gradle-conventions) and [gradle-conventions-settings](gradle-conventions-settings) for all Gradle project changes when the change is either large or is intended for more than one subproject. Keep actual build files clean. 
+- For a library failure, an invalid argument, or an invalid state, throw a library exception type. Never add `IllegalStateException`, `error()`, `check()`, or `require()`.
+- Published modules require explicit return types and explicit visibility.
+- Annotate an internal API that other modules use with `@InternalRpcApi`.
+- Declare dependencies in `versions-root/libs.versions.toml`, never inline.
+- Add a published module with `includePublic()` in `settings.gradle.kts`, and an internal module with `include()`. Published modules get the `kotlinx-rpc-` prefix.
+- A module family has a common prefix, and `core` for the shared part: `krpc-core`, `krpc-client`, `krpc-server`.
+- Write filesystem paths for all operating systems: `Path.of("a", "b")`, not `Path.of("a/b")`.
+- To disable a KMP target for a module, set `kotlinx.rpc.exclude.<target>=true` in the `gradle.properties` of the module.
 
-## Testing
+## Build and checks
 
-- Framework: JUnit 5 + kotlin-test + coroutines-test
-- KMP source sets: `commonTest`, `jvmTest`, `jsTest`, `nativeTest`, etc.
+- After a code change, use the `run-local-verifications` skill. It gives the checks for each kind of change: ABI, detekt, JPMS, artifact list, generated files, compatibility tests.
+- Run one test with `<module>:jvmTest --tests "TestClass.testMethod"`.
+- The API watchdog fails the compilation of a public module on a violation. `aggregateApiWatchdogReports` only writes the report to `build/reports/api-watchdog/`.
+- `./scripts/publish_local.sh` publishes to `build/repo/` for local tests.
 
-## Documentation
+If a build fails for no clear reason:
 
-Uses Writerside, lives in `docs/pages/`.
+- Gradle: run `clean`, stop the daemons (`--stop`, with Bash), then run the task with `--rerun-tasks --no-configuration-cache --no-build-cache`.
+- JS or WASM: delete `package-lock.json` and `build/{js,wasm}`, then run the two yarn lock tasks.
 
-## Troubleshooting
+## Modules
 
-- **Gradle**: Use the `running_gradle_builds` skill with `clean`, then `--stop` via Bash, then re-run the task with `--rerun-tasks --no-configuration-cache --no-build-cache` flags via the skill
-- **JS/WASM**: delete `package-lock.json` + `build/{js,wasm}`, then use the `running_gradle_builds` skill to run `kotlinUpgradeYarnLock`/`kotlinWasmUpgradeYarnLock`
+Read the `README.md` of a module before you work in it.
 
-## References
+| Module | Content |
+|---|---|
+| `:core` | RPC abstractions |
+| `:utils` | Shared utilities |
+| `:krpc:krpc-{core,client,server,logging,test}` | kRPC protocol, client, server, logging, test utilities |
+| `:krpc:krpc-serialization:krpc-serialization-{core,json,cbor,protobuf}` | kRPC serialization formats |
+| `:krpc:krpc-ktor:krpc-ktor-{core,server,client}` | kRPC with Ktor |
+| `:grpc:grpc-{core,client,server,ktor-server,marshaller,marshaller-kotlinx-serialization}` | gRPC (experimental) |
+| `:protobuf:protobuf-lite`, `:protobuf:protobuf-wkt`, `:protobuf:protobuf` | Protobuf runtime, mainly for gRPC |
+| `native-deps/kotlinx-rpc-grpc-swift/` | Git submodule with the Swift bridge for gRPC on Apple platforms. CI checks that it matches the published tag. |
+| `tests/` | Test modules, not published. `tests/README.md` lists them. |
 
-- Documentation site: https://kotlin.github.io/kotlinx-rpc/
+Included builds, each a separate Gradle project:
+
+| Build | Content |
+|---|---|
+| `compiler-plugin/` | Kotlin K2 compiler plugin: FIR diagnostics and IR code generation. Run its tests from the root build: `:compiler-plugin:allTests`. |
+| `gradle-plugin/` | Gradle plugin `org.jetbrains.kotlinx.rpc.plugin` |
+| `protoc-gen/` | Protobuf code generators |
+| `dokka-plugin/` | Dokka plugin for the API docs |
+
+## Architecture
+
+The abstractions are in `core/src/commonMain/kotlin/kotlinx/rpc/`.
+
+1. The user declares an `@Rpc` interface with `suspend` functions or functions that return a `Flow`.
+2. The compiler plugin generates a stub class and an `RpcServiceDescriptor` with one `RpcCallable` for each function.
+3. A stub function makes an `RpcCall` (descriptor, function name, arguments, service ID). It passes the call to `RpcClient.call()` for a unary call or to `RpcClient.callServerStreaming()` for a stream.
+4. The `RpcClient` of the protocol serializes the call and sends it.
+5. The `RpcServer` of the protocol deserializes the call, finds the `RpcCallable`, and runs `RpcInvokator.call(serviceImpl, args)`.
+
+gRPC services use `@Grpc`. `protoc-gen/` generates their code from `.proto` files.
+
+## Docs
+
+The user docs are Writerside topics in `docs/pages/`, published at https://kotlin.github.io/kotlinx-rpc/. Use the `update-doc` skill.
