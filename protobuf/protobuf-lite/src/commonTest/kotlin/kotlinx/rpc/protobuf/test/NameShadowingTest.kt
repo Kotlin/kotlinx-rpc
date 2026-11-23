@@ -35,10 +35,8 @@ import name_shadowing.WktOneof
 import name_shadowing.WktOneofContentCase
 import name_shadowing.content
 import name_shadowing.copy
-import name_shadowing.invoke
 import name_shadowing.value
 import name_shadowing.whenValue
-import com.google.protobuf.kotlin.invoke
 import com.google.protobuf.kotlin.kind
 import kotlin.test.Test
 import kotlin.test.assertEquals

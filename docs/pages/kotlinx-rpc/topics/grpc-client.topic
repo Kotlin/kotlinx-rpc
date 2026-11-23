@@ -17,7 +17,6 @@
         import kotlinx.rpc.grpc.client.GrpcClient
         import kotlinx.rpc.withService
         import ImageRecognizer
-        import invoke
 
         val client = GrpcClient("localhost", 8080) {
             credentials = plaintext()

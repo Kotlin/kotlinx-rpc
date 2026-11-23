@@ -8,7 +8,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
-import kotlinx.rpc.grpc.test.invoke
 
 internal class EchoServiceImpl: EchoService {
     override suspend fun unaryEcho(message: EchoRequest): EchoResponse {

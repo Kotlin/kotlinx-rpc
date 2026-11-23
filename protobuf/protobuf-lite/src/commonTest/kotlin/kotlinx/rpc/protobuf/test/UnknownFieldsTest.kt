@@ -15,7 +15,6 @@ import kotlinx.rpc.protobuf.internal.encodeWire
 import test.submsg.Other
 import test.submsg.asInternal
 import test.submsg.encodeWith
-import test.submsg.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

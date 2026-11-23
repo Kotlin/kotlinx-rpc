@@ -7,18 +7,6 @@ import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
- * Constructs a new message.
- * ```
- * val message = Api {
- *    name = ...
- * }
- * ```
- */
-public operator fun Api.Companion.invoke(body: Api.Builder.() -> Unit): Api {
-    return ApiInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -41,18 +29,6 @@ public val Api.presence: ApiPresence get() = this.asInternal()._presence
 public val Api.sourceContextOrNull: SourceContext? get() = if (this.presence.hasSourceContext) this.sourceContext else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = Method {
- *    name = ...
- * }
- * ```
- */
-public operator fun Method.Companion.invoke(body: Method.Builder.() -> Unit): Method {
-    return MethodInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -62,18 +38,6 @@ public operator fun Method.Companion.invoke(body: Method.Builder.() -> Unit): Me
  */
 public fun Method.copy(body: Method.Builder.() -> Unit = {}): Method {
     return this.asInternal().copyInternal(body)
-}
-
-/**
- * Constructs a new message.
- * ```
- * val message = Mixin {
- *    name = ...
- * }
- * ```
- */
-public operator fun Mixin.Companion.invoke(body: Mixin.Builder.() -> Unit): Mixin {
-    return MixinInternal().apply(body)
 }
 
 /**

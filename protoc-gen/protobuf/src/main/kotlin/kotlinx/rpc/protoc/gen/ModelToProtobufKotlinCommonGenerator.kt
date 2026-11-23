@@ -126,7 +126,6 @@ class ModelToProtobufKotlinCommonGenerator(
     private fun CodeGenerator.generateExtensionMessageEntities(messages: List<MessageDeclaration>) {
         val allMessages = messages + messages.flatMap(MessageDeclaration::allNestedRecursively)
         allMessages.forEach {
-            generateMessageConstructor(it)
             generatePublicCopy(it)
             generatePublicPresenceGetter(it)
             if (config.generateOptionalFieldOrNullGetters) {
@@ -1369,48 +1368,6 @@ class ModelToProtobufKotlinCommonGenerator(
                 modifiers = "override",
                 type = FqName.Implicits.String.scoped(),
                 value = "\"${declaration.dec.fullName}\"".scoped()
-            )
-        }
-    }
-
-    private fun CodeGenerator.generateMessageConstructor(declaration: MessageDeclaration) {
-        if (!declaration.isUserFacing) return
-
-        val demoField = declaration.actualFields.firstOrNull()?.name
-        val invocation = if (demoField == null) "{ }" else """
-            |{
-            |    $demoField = ...    
-            |}
-        """.trimMargin()
-        function(
-            name = "invoke",
-            modifiers = "operator",
-            args = listOf("body: %T.() -> %T".scoped(declaration.builderClassName, FqName.Implicits.Unit)),
-            contextReceiver = declaration.companionName.scoped(),
-            returnType = declaration.name.scoped(),
-            comment = Comment.leading(
-                """
-                |Constructs a new message.
-                |```
-                |val message = ${declaration.name.simpleName} $invocation
-                |```
-            """.trimMargin()
-            )
-        ) {
-            val suffix = if (declaration.hasRequiredFieldsRecursively) {
-                ".apply(%T::checkRequiredFields)".scoped(
-                    declaration.internalClassName,
-                )
-            } else {
-                ScopedFormattedString.empty
-            }
-
-            code(
-                "return %T().apply(body)"
-                    .scoped(declaration.internalClassName)
-                    .merge(suffix) { result, suffix ->
-                        "$result$suffix"
-                    }
             )
         }
     }

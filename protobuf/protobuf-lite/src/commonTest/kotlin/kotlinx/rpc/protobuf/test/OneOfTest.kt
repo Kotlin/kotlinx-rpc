@@ -15,7 +15,6 @@ import OneOfRefsRefCase
 import copy
 import field
 import fixedOrNull
-import invoke
 import kotlinx.io.Buffer
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
@@ -28,7 +27,6 @@ import presence
 import ref
 import sintOrNull
 import test.submsg.Other
-import test.submsg.invoke
 import whenField
 import whenNum
 import kotlin.test.Test

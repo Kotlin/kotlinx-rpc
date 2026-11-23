@@ -11,7 +11,6 @@ import OneOfNumeric64Internal
 import PlainNumeric
 import PlainNumericInternal
 import decodeWith
-import invoke
 import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.marshaller.encodeToByteArray
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf

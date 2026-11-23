@@ -6,7 +6,6 @@ package kotlinx.rpc.protobuf.core.test
 
 import Content
 import WithWkt
-import invoke
 import com.google.protobuf.kotlin.Any
 import com.google.protobuf.kotlin.pack
 import com.google.protobuf.kotlin.unpack

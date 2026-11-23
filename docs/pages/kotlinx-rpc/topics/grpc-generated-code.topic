@@ -25,7 +25,6 @@
         </p>
         <code-block lang="Kotlin">
             import com.example.HelloRequest
-            import com.example.invoke
 
             val request = HelloRequest {
                 name = "kotlinx.rpc"
@@ -71,7 +70,6 @@
         <code-block lang="Kotlin">
             import com.example.User
             import com.example.copy
-            import com.example.invoke
 
             val original = User {
                 nickname = "neo"
@@ -117,7 +115,6 @@
         <code-block lang="Kotlin">
             import com.example.Priority
             import com.example.Task
-            import com.example.invoke
 
             val task = Task {
                 priority = Priority.HIGH
@@ -139,7 +136,6 @@
         </code-block>
         <code-block lang="Kotlin">
             import com.example.Numbers
-            import com.example.invoke
             import com.example.copy
 
             val numbers = Numbers {
@@ -166,7 +162,6 @@
         </code-block>
         <code-block lang="Kotlin">
             import com.example.Config
-            import com.example.invoke
             import com.example.copy
 
             val config = Config {
@@ -200,7 +195,6 @@
         <code-block lang="Kotlin">
             import com.example.Event
             import com.example.EventPayloadCase
-            import com.example.invoke
             import com.example.payload
             import com.example.presence
             import com.example.whenPayload
@@ -265,7 +259,6 @@
         </code-block>
         <code-block lang="Kotlin">
             import com.example.Outer
-            import com.example.invoke
 
             val outer = Outer {
                 inner = Outer.Inner {

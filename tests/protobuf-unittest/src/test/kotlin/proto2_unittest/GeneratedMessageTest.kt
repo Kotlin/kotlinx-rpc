@@ -22,7 +22,6 @@ import kotlinx.rpc.grpc.marshaller.encodeToBuffer
 import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import com.google.protobuf.test.ImportEnum
 import com.google.protobuf.test.ImportMessage
-import com.google.protobuf.test.invoke
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import proto2_unittest.TestAllTypes.NestedEnum
 import kotlinx.rpc.protobuf.ProtoConfig

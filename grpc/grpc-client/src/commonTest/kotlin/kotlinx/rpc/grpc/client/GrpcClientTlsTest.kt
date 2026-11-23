@@ -5,7 +5,6 @@
 package kotlinx.rpc.grpc.client
 
 import com.google.protobuf.kotlin.Empty
-import com.google.protobuf.kotlin.invoke
 import io.grpc.testing.integration.TestService
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.withService

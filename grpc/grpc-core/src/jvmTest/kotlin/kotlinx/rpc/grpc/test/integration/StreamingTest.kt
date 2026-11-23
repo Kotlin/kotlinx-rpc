@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.test.Other
 import kotlinx.rpc.grpc.test.References
-import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlin.test.Test

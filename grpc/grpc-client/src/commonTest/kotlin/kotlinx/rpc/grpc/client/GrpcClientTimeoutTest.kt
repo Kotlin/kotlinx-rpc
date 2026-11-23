@@ -5,12 +5,10 @@
 package kotlinx.rpc.grpc.client
 
 import com.google.protobuf.kotlin.Empty
-import com.google.protobuf.kotlin.invoke
 import io.grpc.testing.integration.PayloadType
 import io.grpc.testing.integration.ResponseParameters
 import io.grpc.testing.integration.StreamingInputCallRequest
 import io.grpc.testing.integration.StreamingOutputCallRequest
-import io.grpc.testing.integration.invoke
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow

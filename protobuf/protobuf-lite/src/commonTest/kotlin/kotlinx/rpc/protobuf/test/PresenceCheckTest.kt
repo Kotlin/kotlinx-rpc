@@ -9,13 +9,11 @@ import doubleOrNull
 import enum1OrNull
 import enum2OrNull
 import floatOrNull
-import invoke
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import presence
 import stringOrNull
 import test.nested.NestedOuter
 import test.nested.deepOrNull
-import test.nested.invoke
 import test.nested.innerOrNull
 import test.nested.notinsideOrNull
 import test.nested.presence

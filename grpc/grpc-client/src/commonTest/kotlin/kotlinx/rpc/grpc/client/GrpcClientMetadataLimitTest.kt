@@ -5,7 +5,6 @@
 package kotlinx.rpc.grpc.client
 
 import com.google.protobuf.kotlin.Empty
-import com.google.protobuf.kotlin.invoke
 import kotlinx.coroutines.flow.Flow
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.grpc.GrpcMetadata
@@ -15,7 +14,6 @@ import kotlinx.rpc.grpc.client.testing.successfulUnaryEvents
 import kotlinx.rpc.grpc.getAll
 import kxrpc.testing.EventType
 import kxrpc.testing.MetadataEntry
-import kxrpc.testing.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

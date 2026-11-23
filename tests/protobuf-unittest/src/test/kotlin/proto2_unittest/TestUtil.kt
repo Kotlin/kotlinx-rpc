@@ -15,7 +15,6 @@ import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import com.google.protobuf.test.ImportEnum
 import com.google.protobuf.test.ImportMessage
 import com.google.protobuf.test.PublicImportMessage
-import com.google.protobuf.test.invoke
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.protobuf.ProtoExtensionRegistry
 import proto2_unittest.TestAllTypes.NestedEnum

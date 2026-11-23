@@ -24,7 +24,6 @@ import kotlinx.rpc.grpc.test.HelloReply
 import kotlinx.rpc.grpc.test.HelloReplyInternal
 import kotlinx.rpc.grpc.test.HelloRequest
 import kotlinx.rpc.grpc.test.HelloRequestInternal
-import kotlinx.rpc.grpc.test.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

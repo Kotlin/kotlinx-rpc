@@ -5,7 +5,6 @@
 package kotlinx.rpc.grpc.client
 
 import com.google.protobuf.kotlin.Empty
-import com.google.protobuf.kotlin.invoke
 import kotlinx.coroutines.flow.Flow
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.grpc.GrpcStatusCode
@@ -20,7 +19,6 @@ import kxrpc.testing.GrpcStatus as ScenarioGrpcStatus
 import kxrpc.testing.MetadataEntry
 import kxrpc.testing.TerminalBehavior
 import kxrpc.testing.TerminalStage
-import kxrpc.testing.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
