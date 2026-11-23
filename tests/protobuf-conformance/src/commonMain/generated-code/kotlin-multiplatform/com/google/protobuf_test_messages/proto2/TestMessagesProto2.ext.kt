@@ -11,20 +11,6 @@ import kotlinx.rpc.protobuf.internal.GeneratedProtoDeclaration
 import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 
 /**
- * Constructs a new message.
- * ```
- * val message = TestAllTypesProto2 {
- *    optionalInt32 = ...
- * }
- * ```
- */
-operator fun TestAllTypesProto2.Companion.invoke(
-    body: TestAllTypesProto2.Builder.() -> Unit,
-): TestAllTypesProto2 {
-    return TestAllTypesProto2Internal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -412,20 +398,6 @@ inline fun <R> TestAllTypesProto2.whenOneofField(
 }
 
 /**
- * Constructs a new message.
- * ```
- * val message = ForeignMessageProto2 {
- *    c = ...
- * }
- * ```
- */
-operator fun ForeignMessageProto2.Companion.invoke(
-    body: ForeignMessageProto2.Builder.() -> Unit,
-): ForeignMessageProto2 {
-    return ForeignMessageProto2Internal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -448,18 +420,6 @@ val ForeignMessageProto2.presence: ForeignMessageProto2Presence get() = this.asI
  * Returns the value of the `c` field if present, otherwise null.
  */
 val ForeignMessageProto2.cOrNull: Int? get() = if (this.presence.hasC) this.c else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = GroupField {
- *    groupInt32 = ...
- * }
- * ```
- */
-operator fun GroupField.Companion.invoke(body: GroupField.Builder.() -> Unit): GroupField {
-    return GroupFieldInternal().apply(body)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -487,20 +447,6 @@ val GroupField.groupInt32OrNull: Int? get() = if (this.presence.hasGroupInt32) t
  * Returns the value of the `groupUint32` field if present, otherwise null.
  */
 val GroupField.groupUint32OrNull: UInt? get() = if (this.presence.hasGroupUint32) this.groupUint32 else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = UnknownToTestAllTypes {
- *    optionalInt32 = ...
- * }
- * ```
- */
-operator fun UnknownToTestAllTypes.Companion.invoke(
-    body: UnknownToTestAllTypes.Builder.() -> Unit,
-): UnknownToTestAllTypes {
-    return UnknownToTestAllTypesInternal().apply(body)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -547,18 +493,6 @@ val UnknownToTestAllTypes.optionalgroupOrNull: UnknownToTestAllTypes.OptionalGro
 val UnknownToTestAllTypes.optionalBoolOrNull: Boolean? get() = if (this.presence.hasOptionalBool) this.optionalBool else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = NullHypothesisProto2 { }
- * ```
- */
-operator fun NullHypothesisProto2.Companion.invoke(
-    body: NullHypothesisProto2.Builder.() -> Unit,
-): NullHypothesisProto2 {
-    return NullHypothesisProto2Internal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy()
@@ -571,18 +505,6 @@ fun NullHypothesisProto2.copy(
 }
 
 /**
- * Constructs a new message.
- * ```
- * val message = EnumOnlyProto2 { }
- * ```
- */
-operator fun EnumOnlyProto2.Companion.invoke(
-    body: EnumOnlyProto2.Builder.() -> Unit,
-): EnumOnlyProto2 {
-    return EnumOnlyProto2Internal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy()
@@ -590,20 +512,6 @@ operator fun EnumOnlyProto2.Companion.invoke(
  */
 fun EnumOnlyProto2.copy(body: EnumOnlyProto2.Builder.() -> Unit = {}): EnumOnlyProto2 {
     return this.asInternal().copyInternal(body)
-}
-
-/**
- * Constructs a new message.
- * ```
- * val message = OneStringProto2 {
- *    data = ...
- * }
- * ```
- */
-operator fun OneStringProto2.Companion.invoke(
-    body: OneStringProto2.Builder.() -> Unit,
-): OneStringProto2 {
-    return OneStringProto2Internal().apply(body)
 }
 
 /**
@@ -627,20 +535,6 @@ val OneStringProto2.presence: OneStringProto2Presence get() = this.asInternal().
  * Returns the value of the `data` field if present, otherwise null.
  */
 val OneStringProto2.dataOrNull: String? get() = if (this.presence.hasData) this.data else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = ProtoWithKeywords {
- *    inline = ...
- * }
- * ```
- */
-operator fun ProtoWithKeywords.Companion.invoke(
-    body: ProtoWithKeywords.Builder.() -> Unit,
-): ProtoWithKeywords {
-    return ProtoWithKeywordsInternal().apply(body)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -670,20 +564,6 @@ val ProtoWithKeywords.inlineOrNull: Int? get() = if (this.presence.hasInline) th
 val ProtoWithKeywords.conceptOrNull: String? get() = if (this.presence.hasConcept) this.concept else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = TestAllRequiredTypesProto2 {
- *    requiredInt32 = ...
- * }
- * ```
- */
-operator fun TestAllRequiredTypesProto2.Companion.invoke(
-    body: TestAllRequiredTypesProto2.Builder.() -> Unit,
-): TestAllRequiredTypesProto2 {
-    return TestAllRequiredTypesProto2Internal().apply(body).apply(TestAllRequiredTypesProto2Internal::checkRequiredFields)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -706,20 +586,6 @@ val TestAllRequiredTypesProto2.presence: TestAllRequiredTypesProto2Presence get(
  * Returns the value of the `optionalRecursiveMessage` field if present, otherwise null.
  */
 val TestAllRequiredTypesProto2.optionalRecursiveMessageOrNull: TestAllRequiredTypesProto2? get() = if (this.presence.hasOptionalRecursiveMessage) this.optionalRecursiveMessage else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = TestLargeOneof {
- *    a1 = ...
- * }
- * ```
- */
-operator fun TestLargeOneof.Companion.invoke(
-    body: TestLargeOneof.Builder.() -> Unit,
-): TestLargeOneof {
-    return TestLargeOneofInternal().apply(body)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -791,20 +657,6 @@ inline fun <R> TestLargeOneof.whenLargeOneof(
 }
 
 /**
- * Constructs a new message.
- * ```
- * val message = NestedMessage {
- *    a = ...
- * }
- * ```
- */
-operator fun TestAllTypesProto2.NestedMessage.Companion.invoke(
-    body: TestAllTypesProto2.NestedMessage.Builder.() -> Unit,
-): TestAllTypesProto2.NestedMessage {
-    return TestAllTypesProto2Internal.NestedMessageInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -832,20 +684,6 @@ val TestAllTypesProto2.NestedMessage.aOrNull: Int? get() = if (this.presence.has
  * Returns the value of the `corecursive` field if present, otherwise null.
  */
 val TestAllTypesProto2.NestedMessage.corecursiveOrNull: TestAllTypesProto2? get() = if (this.presence.hasCorecursive) this.corecursive else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = Data {
- *    groupInt32 = ...
- * }
- * ```
- */
-operator fun TestAllTypesProto2.Data.Companion.invoke(
-    body: TestAllTypesProto2.Data.Builder.() -> Unit,
-): TestAllTypesProto2.Data {
-    return TestAllTypesProto2Internal.DataInternal().apply(body)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -877,20 +715,6 @@ val TestAllTypesProto2.Data.groupInt32OrNull: Int? get() = if (this.presence.has
 val TestAllTypesProto2.Data.groupUint32OrNull: UInt? get() = if (this.presence.hasGroupUint32) this.groupUint32 else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = MultiWordGroupField {
- *    groupInt32 = ...
- * }
- * ```
- */
-operator fun TestAllTypesProto2.MultiWordGroupField.Companion.invoke(
-    body: TestAllTypesProto2.MultiWordGroupField.Builder.() -> Unit,
-): TestAllTypesProto2.MultiWordGroupField {
-    return TestAllTypesProto2Internal.MultiWordGroupFieldInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -920,18 +744,6 @@ val TestAllTypesProto2.MultiWordGroupField.groupInt32OrNull: Int? get() = if (th
 val TestAllTypesProto2.MultiWordGroupField.groupUint32OrNull: UInt? get() = if (this.presence.hasGroupUint32) this.groupUint32 else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = MessageSetCorrect { }
- * ```
- */
-operator fun TestAllTypesProto2.MessageSetCorrect.Companion.invoke(
-    body: TestAllTypesProto2.MessageSetCorrect.Builder.() -> Unit,
-): TestAllTypesProto2.MessageSetCorrect {
-    return TestAllTypesProto2Internal.MessageSetCorrectInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy()
@@ -947,20 +759,6 @@ fun TestAllTypesProto2.MessageSetCorrect.copy(
  * Returns the field-presence view for this [TestAllTypesProto2.MessageSetCorrect] instance.
  */
 val TestAllTypesProto2.MessageSetCorrect.presence: TestAllTypesProto2Presence.MessageSetCorrect get() = this.asInternal()._presence
-
-/**
- * Constructs a new message.
- * ```
- * val message = MessageSetCorrectExtension1 {
- *    str = ...
- * }
- * ```
- */
-operator fun TestAllTypesProto2.MessageSetCorrectExtension1.Companion.invoke(
-    body: TestAllTypesProto2.MessageSetCorrectExtension1.Builder.() -> Unit,
-): TestAllTypesProto2.MessageSetCorrectExtension1 {
-    return TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal().apply(body)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -985,20 +783,6 @@ val TestAllTypesProto2.MessageSetCorrectExtension1.presence: TestAllTypesProto2P
  * Returns the value of the `str` field if present, otherwise null.
  */
 val TestAllTypesProto2.MessageSetCorrectExtension1.strOrNull: String? get() = if (this.presence.hasStr) this.str else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = MessageSetCorrectExtension2 {
- *    i = ...
- * }
- * ```
- */
-operator fun TestAllTypesProto2.MessageSetCorrectExtension2.Companion.invoke(
-    body: TestAllTypesProto2.MessageSetCorrectExtension2.Builder.() -> Unit,
-): TestAllTypesProto2.MessageSetCorrectExtension2 {
-    return TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal().apply(body)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -1028,20 +812,6 @@ val TestAllTypesProto2.MessageSetCorrectExtension2.iOrNull: Int? get() = if (thi
  * Returns the value of the `subMsg` field if present, otherwise null.
  */
 val TestAllTypesProto2.MessageSetCorrectExtension2.subMsgOrNull: TestAllTypesProto2.MessageSetCorrect? get() = if (this.presence.hasSubMsg) this.subMsg else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = ExtensionWithOneof {
- *    a = ...
- * }
- * ```
- */
-operator fun TestAllTypesProto2.ExtensionWithOneof.Companion.invoke(
-    body: TestAllTypesProto2.ExtensionWithOneof.Builder.() -> Unit,
-): TestAllTypesProto2.ExtensionWithOneof {
-    return TestAllTypesProto2Internal.ExtensionWithOneofInternal().apply(body)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -1094,20 +864,6 @@ inline fun <R> TestAllTypesProto2.ExtensionWithOneof.whenOneofField(
 }
 
 /**
- * Constructs a new message.
- * ```
- * val message = OptionalGroup {
- *    a = ...
- * }
- * ```
- */
-operator fun UnknownToTestAllTypes.OptionalGroup.Companion.invoke(
-    body: UnknownToTestAllTypes.OptionalGroup.Builder.() -> Unit,
-): UnknownToTestAllTypes.OptionalGroup {
-    return UnknownToTestAllTypesInternal.OptionalGroupInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -1130,20 +886,6 @@ val UnknownToTestAllTypes.OptionalGroup.presence: UnknownToTestAllTypesPresence.
  * Returns the value of the `a` field if present, otherwise null.
  */
 val UnknownToTestAllTypes.OptionalGroup.aOrNull: Int? get() = if (this.presence.hasA) this.a else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = NestedMessage {
- *    a = ...
- * }
- * ```
- */
-operator fun TestAllRequiredTypesProto2.NestedMessage.Companion.invoke(
-    body: TestAllRequiredTypesProto2.NestedMessage.Builder.() -> Unit,
-): TestAllRequiredTypesProto2.NestedMessage {
-    return TestAllRequiredTypesProto2Internal.NestedMessageInternal().apply(body).apply(TestAllRequiredTypesProto2Internal.NestedMessageInternal::checkRequiredFields)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -1170,20 +912,6 @@ val TestAllRequiredTypesProto2.NestedMessage.presence: TestAllRequiredTypesProto
 val TestAllRequiredTypesProto2.NestedMessage.optionalCorecursiveOrNull: TestAllRequiredTypesProto2? get() = if (this.presence.hasOptionalCorecursive) this.optionalCorecursive else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = Data {
- *    groupInt32 = ...
- * }
- * ```
- */
-operator fun TestAllRequiredTypesProto2.Data.Companion.invoke(
-    body: TestAllRequiredTypesProto2.Data.Builder.() -> Unit,
-): TestAllRequiredTypesProto2.Data {
-    return TestAllRequiredTypesProto2Internal.DataInternal().apply(body).apply(TestAllRequiredTypesProto2Internal.DataInternal::checkRequiredFields)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -1203,18 +931,6 @@ fun TestAllRequiredTypesProto2.Data.copy(
 val TestAllRequiredTypesProto2.Data.presence: TestAllRequiredTypesProto2Presence.Data get() = this.asInternal()._presence
 
 /**
- * Constructs a new message.
- * ```
- * val message = MessageSetCorrect { }
- * ```
- */
-operator fun TestAllRequiredTypesProto2.MessageSetCorrect.Companion.invoke(
-    body: TestAllRequiredTypesProto2.MessageSetCorrect.Builder.() -> Unit,
-): TestAllRequiredTypesProto2.MessageSetCorrect {
-    return TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy()
@@ -1230,20 +946,6 @@ fun TestAllRequiredTypesProto2.MessageSetCorrect.copy(
  * Returns the field-presence view for this [TestAllRequiredTypesProto2.MessageSetCorrect] instance.
  */
 val TestAllRequiredTypesProto2.MessageSetCorrect.presence: TestAllRequiredTypesProto2Presence.MessageSetCorrect get() = this.asInternal()._presence
-
-/**
- * Constructs a new message.
- * ```
- * val message = MessageSetCorrectExtension1 {
- *    str = ...
- * }
- * ```
- */
-operator fun TestAllRequiredTypesProto2.MessageSetCorrectExtension1.Companion.invoke(
-    body: TestAllRequiredTypesProto2.MessageSetCorrectExtension1.Builder.() -> Unit,
-): TestAllRequiredTypesProto2.MessageSetCorrectExtension1 {
-    return TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal().apply(body).apply(TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal::checkRequiredFields)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -1265,20 +967,6 @@ fun TestAllRequiredTypesProto2.MessageSetCorrectExtension1.copy(
 val TestAllRequiredTypesProto2.MessageSetCorrectExtension1.presence: TestAllRequiredTypesProto2Presence.MessageSetCorrectExtension1 get() = this.asInternal()._presence
 
 /**
- * Constructs a new message.
- * ```
- * val message = MessageSetCorrectExtension2 {
- *    i = ...
- * }
- * ```
- */
-operator fun TestAllRequiredTypesProto2.MessageSetCorrectExtension2.Companion.invoke(
-    body: TestAllRequiredTypesProto2.MessageSetCorrectExtension2.Builder.() -> Unit,
-): TestAllRequiredTypesProto2.MessageSetCorrectExtension2 {
-    return TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal().apply(body).apply(TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal::checkRequiredFields)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -1298,18 +986,6 @@ fun TestAllRequiredTypesProto2.MessageSetCorrectExtension2.copy(
 val TestAllRequiredTypesProto2.MessageSetCorrectExtension2.presence: TestAllRequiredTypesProto2Presence.MessageSetCorrectExtension2 get() = this.asInternal()._presence
 
 /**
- * Constructs a new message.
- * ```
- * val message = A1 { }
- * ```
- */
-operator fun TestLargeOneof.A1.Companion.invoke(
-    body: TestLargeOneof.A1.Builder.() -> Unit,
-): TestLargeOneof.A1 {
-    return TestLargeOneofInternal.A1Internal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy()
@@ -1317,18 +993,6 @@ operator fun TestLargeOneof.A1.Companion.invoke(
  */
 fun TestLargeOneof.A1.copy(body: TestLargeOneof.A1.Builder.() -> Unit = {}): TestLargeOneof.A1 {
     return this.asInternal().copyInternal(body)
-}
-
-/**
- * Constructs a new message.
- * ```
- * val message = A2 { }
- * ```
- */
-operator fun TestLargeOneof.A2.Companion.invoke(
-    body: TestLargeOneof.A2.Builder.() -> Unit,
-): TestLargeOneof.A2 {
-    return TestLargeOneofInternal.A2Internal().apply(body)
 }
 
 /**
@@ -1342,18 +1006,6 @@ fun TestLargeOneof.A2.copy(body: TestLargeOneof.A2.Builder.() -> Unit = {}): Tes
 }
 
 /**
- * Constructs a new message.
- * ```
- * val message = A3 { }
- * ```
- */
-operator fun TestLargeOneof.A3.Companion.invoke(
-    body: TestLargeOneof.A3.Builder.() -> Unit,
-): TestLargeOneof.A3 {
-    return TestLargeOneofInternal.A3Internal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy()
@@ -1364,18 +1016,6 @@ fun TestLargeOneof.A3.copy(body: TestLargeOneof.A3.Builder.() -> Unit = {}): Tes
 }
 
 /**
- * Constructs a new message.
- * ```
- * val message = A4 { }
- * ```
- */
-operator fun TestLargeOneof.A4.Companion.invoke(
-    body: TestLargeOneof.A4.Builder.() -> Unit,
-): TestLargeOneof.A4 {
-    return TestLargeOneofInternal.A4Internal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy()
@@ -1383,18 +1023,6 @@ operator fun TestLargeOneof.A4.Companion.invoke(
  */
 fun TestLargeOneof.A4.copy(body: TestLargeOneof.A4.Builder.() -> Unit = {}): TestLargeOneof.A4 {
     return this.asInternal().copyInternal(body)
-}
-
-/**
- * Constructs a new message.
- * ```
- * val message = A5 { }
- * ```
- */
-operator fun TestLargeOneof.A5.Companion.invoke(
-    body: TestLargeOneof.A5.Builder.() -> Unit,
-): TestLargeOneof.A5 {
-    return TestLargeOneofInternal.A5Internal().apply(body)
 }
 
 /**
