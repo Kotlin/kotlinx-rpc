@@ -15,7 +15,7 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
  */
 public expect abstract class GrpcServerCredentials
 
-public expect class GrpcInsecureServerCredentials public constructor(): GrpcServerCredentials
+public expect class GrpcInsecureServerCredentials : GrpcServerCredentials
 
 // we need a wrapper for InsecureChannelCredentials as our constructor would conflict with the private
 internal expect fun createInsecureServerCredentials(): GrpcServerCredentials

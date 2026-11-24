@@ -7,7 +7,6 @@
 package kotlinx.rpc.grpc.server.internal
 
 import kotlinx.rpc.grpc.server.GrpcHandlerRegistry
-import kotlinx.rpc.grpc.server.GrpcInsecureServerCredentials
 import kotlinx.rpc.grpc.server.GrpcServerConfiguration
 import kotlinx.rpc.grpc.server.GrpcServerCredentials
 import kotlinx.rpc.grpc.server.GrpcServerServiceDefinition
@@ -50,7 +49,7 @@ public expect abstract class ServerBuilder<T : ServerBuilder<T>> {
 }
 
 @InternalRpcApi
-public expect fun ServerBuilder(port: Int, credentials: GrpcServerCredentials = GrpcInsecureServerCredentials()): ServerBuilder<*>
+public expect fun ServerBuilder(port: Int, credentials: GrpcServerCredentials? = null): ServerBuilder<*>
 
 @InternalRpcApi
 public expect fun PlatformServer(builder: ServerBuilder<*>): PlatformServer

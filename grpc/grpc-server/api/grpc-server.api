@@ -75,6 +75,7 @@ public final class kotlinx/rpc/grpc/server/GrpcServerCallScope$DefaultImpls {
 
 public final class kotlinx/rpc/grpc/server/GrpcServerConfiguration : kotlinx/rpc/grpc/server/GrpcServerBaseConfiguration {
 	public final fun getCredentials ()Lio/grpc/ServerCredentials;
+	public final fun plaintext ()Lio/grpc/ServerCredentials;
 	public final fun setCredentials (Lio/grpc/ServerCredentials;)V
 	public final fun tls (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lio/grpc/ServerCredentials;
 }

@@ -15,6 +15,8 @@ import io.grpc.ForwardingServerBuilder
 import io.grpc.Grpc
 import io.grpc.InsecureChannelCredentials
 import io.grpc.ManagedChannelBuilder
+import io.grpc.ManagedChannelProvider
+import io.grpc.ManagedChannelRegistry
 import io.grpc.Metadata
 import io.grpc.MethodDescriptor
 import io.grpc.Server
@@ -60,6 +62,7 @@ import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import java.io.InputStream
 import java.net.InetSocketAddress
+import java.net.SocketAddress
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
@@ -242,6 +245,43 @@ class GrpcJavaBuilderTest {
             }
             assertIs<GrpcUnsupportedSettingException>(error)
             assertContains(error.message.orEmpty(), "Remove `maxConnectionIdle`")
+        }
+    }
+
+    @Test
+    fun `port factory with credentials - should skip a server provider without credentials support`() = runBlocking {
+        withInProcessServerProvider("unused") {
+            val server = GrpcServer(0) { credentials = plaintext() }.start()
+
+            try {
+                assertIs<InetSocketAddress>(server.listenAddresses.single())
+            } finally {
+                server.shutdownNow()
+                server.awaitTermination(30.seconds)
+            }
+        }
+    }
+
+    @Test
+    fun `address factory without transport credentials - should use a channel provider without credentials support`() {
+        val name = InProcessServerBuilder.generateName()
+        runAddressFactoryTest(InProcessServerBuilder.forName(name), providerChannelName = name) {
+            GrpcClient("unused", 1)
+        }
+    }
+
+    @Test
+    fun `address factory with call credentials only - should use a channel provider without credentials support`() {
+        val name = InProcessServerBuilder.generateName()
+        runAddressFactoryTest(InProcessServerBuilder.forName(name), providerChannelName = name) {
+            GrpcClient("unused", 1) { credentials = NoTLSBearerTokenCredentials() }
+        }
+    }
+
+    @Test
+    fun `address factory with transport credentials - should skip a channel provider without credentials support`() {
+        runAddressFactoryTest(NettyServerBuilder.forPort(0), providerChannelName = "unused") { server ->
+            GrpcClient("localhost", server.port) { credentials = plaintext() }
         }
     }
 
@@ -435,6 +475,29 @@ class GrpcJavaBuilderTest {
         }
     }
 
+    private fun runAddressFactoryTest(
+        serverBuilder: ServerBuilder<*>,
+        providerChannelName: String,
+        createClient: (GrpcServer) -> GrpcClient,
+    ) = runBlocking {
+        val server = GrpcServer(serverBuilder) {
+            services { registerService<EchoService> { EchoServiceImpl() } }
+        }.start()
+        var client: GrpcClient? = null
+
+        try {
+            withInProcessChannelProvider(providerChannelName) {
+                client = createClient(server)
+            }
+            assertEquals("Echo", client?.echo("Echo"))
+        } finally {
+            client?.shutdownNow()
+            server.shutdownNow()
+            server.awaitTermination(30.seconds)
+            client?.awaitTermination(30.seconds)
+        }
+    }
+
     private suspend fun GrpcClient.echo(message: String): String =
         withService<EchoService>().unaryEcho(EchoRequest { this.message = message }).message
 
@@ -451,6 +514,32 @@ class GrpcJavaBuilderTest {
             override fun builderForPort(port: Int): ServerBuilder<*> = InProcessServerBuilder.forName(name)
         }
         val registry = ServerRegistry.getDefaultRegistry()
+        registry.register(provider)
+
+        try {
+            block()
+        } finally {
+            registry.deregister(provider)
+        }
+    }
+
+    private inline fun withInProcessChannelProvider(name: String, block: () -> Unit) {
+        val provider = object : ManagedChannelProvider() {
+            override fun isAvailable(): Boolean = true
+
+            // Above the priority of the Netty provider.
+            override fun priority(): Int = 10
+
+            override fun builderForAddress(host: String, port: Int): ManagedChannelBuilder<*> =
+                InProcessChannelBuilder.forName(name)
+
+            override fun builderForTarget(target: String): ManagedChannelBuilder<*> =
+                InProcessChannelBuilder.forName(name)
+
+            override fun getSupportedSocketAddressTypes(): Collection<Class<out SocketAddress>> =
+                listOf(InProcessSocketAddress::class.java)
+        }
+        val registry = ManagedChannelRegistry.getDefaultRegistry()
         registry.register(provider)
 
         try {
