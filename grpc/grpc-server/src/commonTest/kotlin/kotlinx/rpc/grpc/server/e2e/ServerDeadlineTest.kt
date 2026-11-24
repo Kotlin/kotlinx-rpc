@@ -5,10 +5,8 @@
 package kotlinx.rpc.grpc.server.e2e
 
 import com.google.protobuf.kotlin.Empty
-import com.google.protobuf.kotlin.invoke
 import io.grpc.testing.integration.SimpleRequest
 import io.grpc.testing.integration.SimpleResponse
-import io.grpc.testing.integration.invoke
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async

@@ -5,7 +5,6 @@
 package kotlinx.rpc.grpc.server.e2e
 
 import io.grpc.testing.integration.StreamingOutputCallResponse
-import io.grpc.testing.integration.invoke
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.rpc.grpc.GrpcStatusCode

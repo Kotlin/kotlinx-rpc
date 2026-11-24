@@ -5,7 +5,6 @@
 package kotlinx.rpc.grpc.server.e2e
 
 import com.google.protobuf.kotlin.Empty
-import com.google.protobuf.kotlin.invoke
 import kotlinx.coroutines.withTimeout
 import kotlinx.rpc.grpc.server.testing.AWAIT_TIMEOUT
 import kotlinx.rpc.grpc.server.testing.grpcServerTest

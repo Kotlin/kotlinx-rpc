@@ -6,7 +6,6 @@ package kotlinx.rpc.grpc.server.e2e
 
 import io.grpc.testing.integration.SimpleRequest
 import io.grpc.testing.integration.SimpleResponse
-import io.grpc.testing.integration.invoke
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

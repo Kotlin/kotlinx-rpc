@@ -6,7 +6,6 @@ package kotlinx.rpc.grpc.server.e2e
 
 import io.grpc.testing.integration.SimpleRequest
 import io.grpc.testing.integration.SimpleResponse
-import io.grpc.testing.integration.invoke
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals

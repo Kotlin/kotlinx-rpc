@@ -7,7 +7,6 @@ package kotlinx.rpc.grpc.server.e2e
 import io.grpc.Context
 import io.grpc.testing.integration.SimpleRequest
 import io.grpc.testing.integration.SimpleResponse
-import io.grpc.testing.integration.invoke
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.Test
 import kotlin.test.assertEquals

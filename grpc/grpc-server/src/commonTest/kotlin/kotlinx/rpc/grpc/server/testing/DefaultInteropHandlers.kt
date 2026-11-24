@@ -5,7 +5,6 @@
 package kotlinx.rpc.grpc.server.testing
 
 import com.google.protobuf.kotlin.Empty
-import com.google.protobuf.kotlin.invoke
 import io.grpc.testing.integration.EchoStatus
 import io.grpc.testing.integration.Payload
 import io.grpc.testing.integration.SimpleRequest
@@ -14,7 +13,6 @@ import io.grpc.testing.integration.StreamingInputCallRequest
 import io.grpc.testing.integration.StreamingInputCallResponse
 import io.grpc.testing.integration.StreamingOutputCallRequest
 import io.grpc.testing.integration.StreamingOutputCallResponse
-import io.grpc.testing.integration.invoke
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow

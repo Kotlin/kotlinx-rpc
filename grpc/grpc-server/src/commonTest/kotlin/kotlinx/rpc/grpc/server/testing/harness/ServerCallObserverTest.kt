@@ -5,7 +5,6 @@
 package kotlinx.rpc.grpc.server.testing.harness
 
 import io.grpc.testing.integration.SimpleRequest
-import io.grpc.testing.integration.invoke
 import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.grpc.GrpcStatus
 import kotlinx.rpc.grpc.GrpcStatusCode

@@ -10,7 +10,6 @@ import io.grpc.testing.integration.StreamingInputCallRequest
 import io.grpc.testing.integration.StreamingInputCallResponse
 import io.grpc.testing.integration.StreamingOutputCallRequest
 import io.grpc.testing.integration.StreamingOutputCallResponse
-import io.grpc.testing.integration.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.CompletableDeferred

@@ -5,7 +5,6 @@
 package kotlinx.rpc.grpc.server.e2e
 
 import com.google.protobuf.kotlin.Empty
-import com.google.protobuf.kotlin.invoke
 import io.grpc.testing.integration.TestService
 import io.grpc.testing.integration.UnimplementedService
 import kotlinx.coroutines.coroutineScope
