@@ -35,6 +35,7 @@ object ProtoClassId {
     val protoMessageAnnotation = ClassId(FqName("kotlinx.rpc.protobuf.internal"), Name.identifier("GeneratedProtoMessage"))
     val protoOneOfsAnnotation = ClassId(FqName("kotlinx.rpc.protobuf.internal"), Name.identifier("GeneratedProtoOneOfs"))
     val protoDescriptor = ClassId(FqName("kotlinx.rpc.protobuf.internal"), Name.identifier("ProtoDescriptor"))
+    val ClassId.builderClassId: ClassId get() = createNestedClassId(ProtoNames.MESSAGE_BUILDER_NAME)
 }
 
 object ProtoNames {
@@ -57,4 +58,7 @@ object ProtoNames {
 
     val DESCRIPTOR_NAME = Name.identifier("DESCRIPTOR")
     val MARSHALLER_NAME = Name.identifier("MARSHALLER")
+    val INVOKE_NAME = Name.identifier("invoke")
+    val INVOKE_ARG_NAME = Name.identifier("body")
+    val INTERNAL_CHECK_REQUIRED_FIELDS_NAME = Name.identifier("checkRequiredFields")
 }

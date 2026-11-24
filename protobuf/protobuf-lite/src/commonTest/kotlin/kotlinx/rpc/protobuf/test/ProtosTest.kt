@@ -13,7 +13,6 @@ import Outer
 import asInternal
 import encodeWith
 import field
-import invoke
 import presence
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
@@ -28,19 +27,15 @@ import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.encodeWire
 import test.groups.WithGroups
 import test.groups.WithGroupsOneOfWithGroupCase
-import test.groups.invoke
 import test.groups.oneOfWithGroup
 import test.nested.NestedOuter
 import test.nested.NotInside
-import test.nested.invoke
 import test.recursive.Recursive
 import test.recursive.RecursiveReq
-import test.recursive.invoke
 import test.submsg.Other
 import test.submsg.OtherInternal
 import test.submsg.Reference
 import test.submsg.encodeWith
-import test.submsg.invoke
 import test.submsg.presence
 import kotlin.test.Test
 import kotlin.test.assertContentEquals

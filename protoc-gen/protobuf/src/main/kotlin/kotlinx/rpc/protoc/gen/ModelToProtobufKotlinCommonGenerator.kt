@@ -116,9 +116,6 @@ class ModelToProtobufKotlinCommonGenerator(
             generateMessageTagConstants(message, tagObjectNames.getValue(message.name), tagNames)
         }
         allMessages.forEach { message ->
-            if (message.hasRequiredFieldsRecursively) {
-                generateRequiredCheck(message)
-            }
             generateMessageEncoder(message)
             generateMessageDecoder(message, tagNames.getValue(message.name))
             generateInternalComputeSize(message)
@@ -129,7 +126,6 @@ class ModelToProtobufKotlinCommonGenerator(
     private fun CodeGenerator.generateExtensionMessageEntities(messages: List<MessageDeclaration>) {
         val allMessages = messages + messages.flatMap(MessageDeclaration::allNestedRecursively)
         allMessages.forEach {
-            generateMessageConstructor(it)
             generatePublicCopy(it)
             generatePublicPresenceGetter(it)
             if (config.generateOptionalFieldOrNullGetters) {
@@ -256,6 +252,9 @@ class ModelToProtobufKotlinCommonGenerator(
             generateEquals(declaration)
             generateToString(declaration)
             generateInternalCopy(declaration)
+            if (declaration.hasRequiredFieldsRecursively) {
+                generateRequiredCheck(declaration)
+            }
 
             declaration.nestedDeclarations.forEach { nested ->
                 generateInternalMessage(nested)
@@ -601,7 +600,7 @@ class ModelToProtobufKotlinCommonGenerator(
             returnType = FqName.Implicits.Int.scoped(),
         ) {
             if (declaration.hasRequiredFieldsRecursively) {
-                code("%F()".scoped(declaration.name.topLevelFP("checkRequiredFields")))
+                code("checkRequiredFields()".scoped())
             }
 
             var isFirst = true
@@ -671,13 +670,13 @@ class ModelToProtobufKotlinCommonGenerator(
             returnType = FqName.Implicits.Boolean.scoped(),
         ) {
             if (declaration.hasRequiredFieldsRecursively) {
-                code("%F()".scoped(declaration.name.topLevelFP("checkRequiredFields")))
+                code("checkRequiredFields()".scoped())
             }
             code("if (this === other) return true".scoped())
             code("if (other == null || this::class != other::class) return false".scoped())
             code("other as %T".scoped(declaration.internalClassName))
             if (declaration.hasRequiredFieldsRecursively) {
-                code("other.%F()".scoped(declaration.name.topLevelFP("checkRequiredFields")))
+                code("other.checkRequiredFields()".scoped())
             }
             var generatedFinalReturn = false
 
@@ -1348,7 +1347,7 @@ class ModelToProtobufKotlinCommonGenerator(
                     )
                 )
                 if (declaration.hasRequiredFieldsRecursively) {
-                    code("message.%F()".scoped(declaration.name.topLevelFP("checkRequiredFields")))
+                    code("message.checkRequiredFields()".scoped())
                 }
             }
 
@@ -1369,49 +1368,6 @@ class ModelToProtobufKotlinCommonGenerator(
                 modifiers = "override",
                 type = FqName.Implicits.String.scoped(),
                 value = "\"${declaration.dec.fullName}\"".scoped()
-            )
-        }
-    }
-
-    private fun CodeGenerator.generateMessageConstructor(declaration: MessageDeclaration) {
-        if (!declaration.isUserFacing) return
-
-        val demoField = declaration.actualFields.firstOrNull()?.name
-        val invocation = if (demoField == null) "{ }" else """
-            |{
-            |    $demoField = ...    
-            |}
-        """.trimMargin()
-        function(
-            name = "invoke",
-            modifiers = "operator",
-            args = listOf("body: %T.() -> %T".scoped(declaration.builderClassName, FqName.Implicits.Unit)),
-            contextReceiver = declaration.companionName.scoped(),
-            returnType = declaration.name.scoped(),
-            comment = Comment.leading(
-                """
-                |Constructs a new message.
-                |```
-                |val message = ${declaration.name.simpleName} $invocation
-                |```
-            """.trimMargin()
-            )
-        ) {
-            val suffix = if (declaration.hasRequiredFieldsRecursively) {
-                ".apply(%T::%F)".scoped(
-                    declaration.internalClassName,
-                    declaration.name.topLevelFP("checkRequiredFields")
-                )
-            } else {
-                ScopedFormattedString.empty
-            }
-
-            code(
-                "return %T().apply(body)"
-                    .scoped(declaration.internalClassName)
-                    .merge(suffix) { result, suffix ->
-                        "$result$suffix"
-                    }
             )
         }
     }
@@ -1977,7 +1933,6 @@ class ModelToProtobufKotlinCommonGenerator(
     private fun CodeGenerator.generateRequiredCheck(declaration: MessageDeclaration) = function(
         name = "checkRequiredFields",
         annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
-        contextReceiver = declaration.internalClassName.scoped(),
         returnType = FqName.Implicits.Unit.scoped(),
     ) {
         declaration.requiredFields.forEach { field ->
@@ -1995,10 +1950,9 @@ class ModelToProtobufKotlinCommonGenerator(
                 ifBranch(condition = "presenceMask[${field.presenceIdx}]".scoped(), ifBlock = {
                     val fieldMessageName = (field.type as FieldType.Message).dec.value.name
                     code(
-                        "this.${field.name}.%F().%F()"
+                        "this.${field.name}.%F().checkRequiredFields()"
                             .scoped(
                                 fieldMessageName.topLevelFP("asInternal"),
-                                fieldMessageName.topLevelFP("checkRequiredFields"),
                             )
                     )
                 })
@@ -2014,10 +1968,9 @@ class ModelToProtobufKotlinCommonGenerator(
                 scope("this.${field.name}.forEach".scoped()) {
                     val listTypeName = (listType.value as FieldType.Message).dec.value.name
                     code(
-                        "it.%F().%F()"
+                        "it.%F().checkRequiredFields()"
                             .scoped(
                                 listTypeName.topLevelFP("asInternal"),
-                                listTypeName.topLevelFP("checkRequiredFields"),
                             )
                     )
                 }
@@ -2035,10 +1988,9 @@ class ModelToProtobufKotlinCommonGenerator(
                     val mapEntryTypeName = (mapType.entry.value as FieldType.Message).dec.value.name
 
                     code(
-                        "it.%F().%F()"
+                        "it.%F().checkRequiredFields()"
                             .scoped(
                                 mapEntryTypeName.topLevelFP("asInternal"),
-                                mapEntryTypeName.topLevelFP("checkRequiredFields"),
                             )
                     )
                 }

@@ -5,11 +5,9 @@
 package kotlinx.rpc.grpc.client
 
 import com.google.protobuf.kotlin.Empty
-import com.google.protobuf.kotlin.invoke
 import io.grpc.testing.integration.ResponseParameters
 import io.grpc.testing.integration.StreamingInputCallRequest
 import io.grpc.testing.integration.StreamingOutputCallRequest
-import io.grpc.testing.integration.invoke
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers

@@ -20,9 +20,7 @@ import kotlinx.rpc.grpc.marshaller.internal.BufferMessageWriter
 import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageReader
 import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageWriter
 import test.groups.WithGroups
-import test.groups.invoke
 import test.nested.NestedOuter
-import test.nested.invoke
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals

@@ -15,7 +15,6 @@ import kotlinx.rpc.grpc.test.UnknownFieldsAll
 import kotlinx.rpc.grpc.test.UnknownFieldsAllTestOneofCase
 import kotlinx.rpc.grpc.test.UnknownFieldsSubset
 import kotlinx.rpc.grpc.test.asInternal
-import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.grpc.test.presence
 import kotlinx.rpc.grpc.test.testOneof
 import kotlinx.rpc.protobuf.ProtoConfig

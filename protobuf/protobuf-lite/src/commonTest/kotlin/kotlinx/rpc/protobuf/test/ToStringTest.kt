@@ -5,7 +5,6 @@
 package kotlinx.rpc.protobuf.test
 
 import ToString
-import invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

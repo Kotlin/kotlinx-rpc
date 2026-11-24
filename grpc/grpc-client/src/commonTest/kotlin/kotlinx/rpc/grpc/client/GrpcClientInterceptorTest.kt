@@ -5,7 +5,6 @@
 package kotlinx.rpc.grpc.client
 
 import com.google.protobuf.kotlin.Empty
-import com.google.protobuf.kotlin.invoke
 import io.grpc.testing.integration.Payload
 import io.grpc.testing.integration.PayloadType
 import io.grpc.testing.integration.ResponseParameters
@@ -14,7 +13,6 @@ import io.grpc.testing.integration.SimpleResponse
 import io.grpc.testing.integration.StreamingInputCallRequest
 import io.grpc.testing.integration.StreamingOutputCallRequest
 import io.grpc.testing.integration.StreamingOutputCallResponse
-import io.grpc.testing.integration.invoke
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -45,7 +43,6 @@ import kxrpc.testing.GrpcStatus as ScenarioGrpcStatus
 import kxrpc.testing.MetadataEntry
 import kxrpc.testing.TerminalBehavior
 import kxrpc.testing.TerminalStage
-import kxrpc.testing.invoke
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals

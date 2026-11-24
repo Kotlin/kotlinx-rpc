@@ -7,18 +7,6 @@ import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
- * Constructs a new message.
- * ```
- * val message = Type {
- *    name = ...
- * }
- * ```
- */
-public operator fun Type.Companion.invoke(body: Type.Builder.() -> Unit): Type {
-    return TypeInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -41,18 +29,6 @@ public val Type.presence: TypePresence get() = this.asInternal()._presence
 public val Type.sourceContextOrNull: SourceContext? get() = if (this.presence.hasSourceContext) this.sourceContext else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = Field {
- *    kind = ...
- * }
- * ```
- */
-public operator fun Field.Companion.invoke(body: Field.Builder.() -> Unit): Field {
-    return FieldInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -62,18 +38,6 @@ public operator fun Field.Companion.invoke(body: Field.Builder.() -> Unit): Fiel
  */
 public fun Field.copy(body: Field.Builder.() -> Unit = {}): Field {
     return this.asInternal().copyInternal(body)
-}
-
-/**
- * Constructs a new message.
- * ```
- * val message = Enum {
- *    name = ...
- * }
- * ```
- */
-public operator fun Enum.Companion.invoke(body: Enum.Builder.() -> Unit): Enum {
-    return EnumInternal().apply(body)
 }
 
 /**
@@ -99,18 +63,6 @@ public val Enum.presence: EnumPresence get() = this.asInternal()._presence
 public val Enum.sourceContextOrNull: SourceContext? get() = if (this.presence.hasSourceContext) this.sourceContext else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = EnumValue {
- *    name = ...
- * }
- * ```
- */
-public operator fun EnumValue.Companion.invoke(body: EnumValue.Builder.() -> Unit): EnumValue {
-    return EnumValueInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -120,18 +72,6 @@ public operator fun EnumValue.Companion.invoke(body: EnumValue.Builder.() -> Uni
  */
 public fun EnumValue.copy(body: EnumValue.Builder.() -> Unit = {}): EnumValue {
     return this.asInternal().copyInternal(body)
-}
-
-/**
- * Constructs a new message.
- * ```
- * val message = Option {
- *    name = ...
- * }
- * ```
- */
-public operator fun Option.Companion.invoke(body: Option.Builder.() -> Unit): Option {
-    return OptionInternal().apply(body)
 }
 
 /**

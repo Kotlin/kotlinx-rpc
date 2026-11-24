@@ -25,20 +25,6 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoDeclaration
 
 /**
- * Constructs a new message.
- * ```
- * val message = TestAllTypesProto3 {
- *    optionalInt32 = ...
- * }
- * ```
- */
-operator fun TestAllTypesProto3.Companion.invoke(
-    body: TestAllTypesProto3.Builder.() -> Unit,
-): TestAllTypesProto3 {
-    return TestAllTypesProto3Internal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -238,20 +224,6 @@ inline fun <R> TestAllTypesProto3.whenOneofField(
 }
 
 /**
- * Constructs a new message.
- * ```
- * val message = ForeignMessage {
- *    c = ...
- * }
- * ```
- */
-operator fun ForeignMessage.Companion.invoke(
-    body: ForeignMessage.Builder.() -> Unit,
-): ForeignMessage {
-    return ForeignMessageInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -261,18 +233,6 @@ operator fun ForeignMessage.Companion.invoke(
  */
 fun ForeignMessage.copy(body: ForeignMessage.Builder.() -> Unit = {}): ForeignMessage {
     return this.asInternal().copyInternal(body)
-}
-
-/**
- * Constructs a new message.
- * ```
- * val message = NullHypothesisProto3 { }
- * ```
- */
-operator fun NullHypothesisProto3.Companion.invoke(
-    body: NullHypothesisProto3.Builder.() -> Unit,
-): NullHypothesisProto3 {
-    return NullHypothesisProto3Internal().apply(body)
 }
 
 /**
@@ -288,18 +248,6 @@ fun NullHypothesisProto3.copy(
 }
 
 /**
- * Constructs a new message.
- * ```
- * val message = EnumOnlyProto3 { }
- * ```
- */
-operator fun EnumOnlyProto3.Companion.invoke(
-    body: EnumOnlyProto3.Builder.() -> Unit,
-): EnumOnlyProto3 {
-    return EnumOnlyProto3Internal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy()
@@ -307,20 +255,6 @@ operator fun EnumOnlyProto3.Companion.invoke(
  */
 fun EnumOnlyProto3.copy(body: EnumOnlyProto3.Builder.() -> Unit = {}): EnumOnlyProto3 {
     return this.asInternal().copyInternal(body)
-}
-
-/**
- * Constructs a new message.
- * ```
- * val message = NestedMessage {
- *    a = ...
- * }
- * ```
- */
-operator fun TestAllTypesProto3.NestedMessage.Companion.invoke(
-    body: TestAllTypesProto3.NestedMessage.Builder.() -> Unit,
-): TestAllTypesProto3.NestedMessage {
-    return TestAllTypesProto3Internal.NestedMessageInternal().apply(body)
 }
 
 /**

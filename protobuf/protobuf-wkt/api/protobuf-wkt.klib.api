@@ -37,7 +37,9 @@ abstract interface com.google.protobuf.kotlin/Any { // com.google.protobuf.kotli
             abstract fun <set-value>(kotlinx.io.bytestring/ByteString) // com.google.protobuf.kotlin/Any.Builder.value.<set-value>|<set-value>(kotlinx.io.bytestring.ByteString){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/Any.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/Any.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/Any.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Any // com.google.protobuf.kotlin/Any.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.Any.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/Api { // com.google.protobuf.kotlin/Api|null[0]
@@ -87,7 +89,9 @@ abstract interface com.google.protobuf.kotlin/Api { // com.google.protobuf.kotli
         abstract fun clearSourceContext() // com.google.protobuf.kotlin/Api.Builder.clearSourceContext|clearSourceContext(){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/Api.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/Api.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/Api.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Api // com.google.protobuf.kotlin/Api.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.Api.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/ApiPresence { // com.google.protobuf.kotlin/ApiPresence|null[0]
@@ -105,7 +109,9 @@ abstract interface com.google.protobuf.kotlin/BoolValue { // com.google.protobuf
             abstract fun <set-value>(kotlin/Boolean) // com.google.protobuf.kotlin/BoolValue.Builder.value.<set-value>|<set-value>(kotlin.Boolean){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/BoolValue.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/BoolValue.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/BoolValue.Builder, kotlin/Unit>): com.google.protobuf.kotlin/BoolValue // com.google.protobuf.kotlin/BoolValue.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.BoolValue.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/BytesValue { // com.google.protobuf.kotlin/BytesValue|null[0]
@@ -118,7 +124,9 @@ abstract interface com.google.protobuf.kotlin/BytesValue { // com.google.protobu
             abstract fun <set-value>(kotlinx.io.bytestring/ByteString) // com.google.protobuf.kotlin/BytesValue.Builder.value.<set-value>|<set-value>(kotlinx.io.bytestring.ByteString){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/BytesValue.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/BytesValue.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/BytesValue.Builder, kotlin/Unit>): com.google.protobuf.kotlin/BytesValue // com.google.protobuf.kotlin/BytesValue.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.BytesValue.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/DescriptorProto { // com.google.protobuf.kotlin/DescriptorProto|null[0]
@@ -209,7 +217,9 @@ abstract interface com.google.protobuf.kotlin/DescriptorProto { // com.google.pr
             abstract fun clearStart() // com.google.protobuf.kotlin/DescriptorProto.ExtensionRange.Builder.clearStart|clearStart(){}[0]
         }
 
-        final object Companion // com.google.protobuf.kotlin/DescriptorProto.ExtensionRange.Companion|null[0]
+        final object Companion { // com.google.protobuf.kotlin/DescriptorProto.ExtensionRange.Companion|null[0]
+            final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/DescriptorProto.ExtensionRange.Builder, kotlin/Unit>): com.google.protobuf.kotlin/DescriptorProto.ExtensionRange // com.google.protobuf.kotlin/DescriptorProto.ExtensionRange.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.DescriptorProto.ExtensionRange.Builder,kotlin.Unit>){}[0]
+        }
     }
 
     abstract interface ReservedRange { // com.google.protobuf.kotlin/DescriptorProto.ReservedRange|null[0]
@@ -230,10 +240,14 @@ abstract interface com.google.protobuf.kotlin/DescriptorProto { // com.google.pr
             abstract fun clearStart() // com.google.protobuf.kotlin/DescriptorProto.ReservedRange.Builder.clearStart|clearStart(){}[0]
         }
 
-        final object Companion // com.google.protobuf.kotlin/DescriptorProto.ReservedRange.Companion|null[0]
+        final object Companion { // com.google.protobuf.kotlin/DescriptorProto.ReservedRange.Companion|null[0]
+            final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/DescriptorProto.ReservedRange.Builder, kotlin/Unit>): com.google.protobuf.kotlin/DescriptorProto.ReservedRange // com.google.protobuf.kotlin/DescriptorProto.ReservedRange.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.DescriptorProto.ReservedRange.Builder,kotlin.Unit>){}[0]
+        }
     }
 
-    final object Companion // com.google.protobuf.kotlin/DescriptorProto.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/DescriptorProto.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/DescriptorProto.Builder, kotlin/Unit>): com.google.protobuf.kotlin/DescriptorProto // com.google.protobuf.kotlin/DescriptorProto.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.DescriptorProto.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/DescriptorProtoPresence { // com.google.protobuf.kotlin/DescriptorProtoPresence|null[0]
@@ -271,7 +285,9 @@ abstract interface com.google.protobuf.kotlin/DoubleValue { // com.google.protob
             abstract fun <set-value>(kotlin/Double) // com.google.protobuf.kotlin/DoubleValue.Builder.value.<set-value>|<set-value>(kotlin.Double){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/DoubleValue.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/DoubleValue.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/DoubleValue.Builder, kotlin/Unit>): com.google.protobuf.kotlin/DoubleValue // com.google.protobuf.kotlin/DoubleValue.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.DoubleValue.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/Duration { // com.google.protobuf.kotlin/Duration|null[0]
@@ -289,13 +305,17 @@ abstract interface com.google.protobuf.kotlin/Duration { // com.google.protobuf.
             abstract fun <set-seconds>(kotlin/Long) // com.google.protobuf.kotlin/Duration.Builder.seconds.<set-seconds>|<set-seconds>(kotlin.Long){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/Duration.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/Duration.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/Duration.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Duration // com.google.protobuf.kotlin/Duration.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.Duration.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/Empty { // com.google.protobuf.kotlin/Empty|null[0]
     abstract interface Builder : com.google.protobuf.kotlin/Empty // com.google.protobuf.kotlin/Empty.Builder|null[0]
 
-    final object Companion // com.google.protobuf.kotlin/Empty.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/Empty.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/Empty.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Empty // com.google.protobuf.kotlin/Empty.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.Empty.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/Enum { // com.google.protobuf.kotlin/Enum|null[0]
@@ -335,7 +355,9 @@ abstract interface com.google.protobuf.kotlin/Enum { // com.google.protobuf.kotl
         abstract fun clearSourceContext() // com.google.protobuf.kotlin/Enum.Builder.clearSourceContext|clearSourceContext(){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/Enum.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/Enum.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/Enum.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Enum // com.google.protobuf.kotlin/Enum.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.Enum.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/EnumDescriptorProto { // com.google.protobuf.kotlin/EnumDescriptorProto|null[0]
@@ -395,10 +417,14 @@ abstract interface com.google.protobuf.kotlin/EnumDescriptorProto { // com.googl
             abstract fun clearStart() // com.google.protobuf.kotlin/EnumDescriptorProto.EnumReservedRange.Builder.clearStart|clearStart(){}[0]
         }
 
-        final object Companion // com.google.protobuf.kotlin/EnumDescriptorProto.EnumReservedRange.Companion|null[0]
+        final object Companion { // com.google.protobuf.kotlin/EnumDescriptorProto.EnumReservedRange.Companion|null[0]
+            final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/EnumDescriptorProto.EnumReservedRange.Builder, kotlin/Unit>): com.google.protobuf.kotlin/EnumDescriptorProto.EnumReservedRange // com.google.protobuf.kotlin/EnumDescriptorProto.EnumReservedRange.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.EnumDescriptorProto.EnumReservedRange.Builder,kotlin.Unit>){}[0]
+        }
     }
 
-    final object Companion // com.google.protobuf.kotlin/EnumDescriptorProto.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/EnumDescriptorProto.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/EnumDescriptorProto.Builder, kotlin/Unit>): com.google.protobuf.kotlin/EnumDescriptorProto // com.google.protobuf.kotlin/EnumDescriptorProto.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.EnumDescriptorProto.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/EnumDescriptorProtoPresence { // com.google.protobuf.kotlin/EnumDescriptorProtoPresence|null[0]
@@ -452,7 +478,9 @@ abstract interface com.google.protobuf.kotlin/EnumOptions { // com.google.protob
         abstract fun clearFeatures() // com.google.protobuf.kotlin/EnumOptions.Builder.clearFeatures|clearFeatures(){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/EnumOptions.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/EnumOptions.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/EnumOptions.Builder, kotlin/Unit>): com.google.protobuf.kotlin/EnumOptions // com.google.protobuf.kotlin/EnumOptions.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.EnumOptions.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/EnumOptionsPresence { // com.google.protobuf.kotlin/EnumOptionsPresence|null[0]
@@ -491,7 +519,9 @@ abstract interface com.google.protobuf.kotlin/EnumValue { // com.google.protobuf
             abstract fun <set-options>(kotlin.collections/List<com.google.protobuf.kotlin/Option>) // com.google.protobuf.kotlin/EnumValue.Builder.options.<set-options>|<set-options>(kotlin.collections.List<com.google.protobuf.kotlin.Option>){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/EnumValue.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/EnumValue.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/EnumValue.Builder, kotlin/Unit>): com.google.protobuf.kotlin/EnumValue // com.google.protobuf.kotlin/EnumValue.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.EnumValue.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/EnumValueDescriptorProto { // com.google.protobuf.kotlin/EnumValueDescriptorProto|null[0]
@@ -518,7 +548,9 @@ abstract interface com.google.protobuf.kotlin/EnumValueDescriptorProto { // com.
         abstract fun clearOptions() // com.google.protobuf.kotlin/EnumValueDescriptorProto.Builder.clearOptions|clearOptions(){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/EnumValueDescriptorProto.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/EnumValueDescriptorProto.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/EnumValueDescriptorProto.Builder, kotlin/Unit>): com.google.protobuf.kotlin/EnumValueDescriptorProto // com.google.protobuf.kotlin/EnumValueDescriptorProto.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.EnumValueDescriptorProto.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/EnumValueDescriptorProtoPresence { // com.google.protobuf.kotlin/EnumValueDescriptorProtoPresence|null[0]
@@ -565,7 +597,9 @@ abstract interface com.google.protobuf.kotlin/EnumValueOptions { // com.google.p
         abstract fun clearFeatures() // com.google.protobuf.kotlin/EnumValueOptions.Builder.clearFeatures|clearFeatures(){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/EnumValueOptions.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/EnumValueOptions.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/EnumValueOptions.Builder, kotlin/Unit>): com.google.protobuf.kotlin/EnumValueOptions // com.google.protobuf.kotlin/EnumValueOptions.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.EnumValueOptions.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/EnumValueOptionsPresence { // com.google.protobuf.kotlin/EnumValueOptionsPresence|null[0]
@@ -643,7 +677,9 @@ abstract interface com.google.protobuf.kotlin/ExtensionRangeOptions { // com.goo
             abstract fun clearType() // com.google.protobuf.kotlin/ExtensionRangeOptions.Declaration.Builder.clearType|clearType(){}[0]
         }
 
-        final object Companion // com.google.protobuf.kotlin/ExtensionRangeOptions.Declaration.Companion|null[0]
+        final object Companion { // com.google.protobuf.kotlin/ExtensionRangeOptions.Declaration.Companion|null[0]
+            final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/ExtensionRangeOptions.Declaration.Builder, kotlin/Unit>): com.google.protobuf.kotlin/ExtensionRangeOptions.Declaration // com.google.protobuf.kotlin/ExtensionRangeOptions.Declaration.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.ExtensionRangeOptions.Declaration.Builder,kotlin.Unit>){}[0]
+        }
     }
 
     sealed class VerificationState { // com.google.protobuf.kotlin/ExtensionRangeOptions.VerificationState|null[0]
@@ -681,7 +717,9 @@ abstract interface com.google.protobuf.kotlin/ExtensionRangeOptions { // com.goo
         }
     }
 
-    final object Companion // com.google.protobuf.kotlin/ExtensionRangeOptions.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/ExtensionRangeOptions.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/ExtensionRangeOptions.Builder, kotlin/Unit>): com.google.protobuf.kotlin/ExtensionRangeOptions // com.google.protobuf.kotlin/ExtensionRangeOptions.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.ExtensionRangeOptions.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/ExtensionRangeOptionsPresence { // com.google.protobuf.kotlin/ExtensionRangeOptionsPresence|null[0]
@@ -808,7 +846,9 @@ abstract interface com.google.protobuf.kotlin/FeatureSet { // com.google.protobu
             }
         }
 
-        final object Companion // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.Companion|null[0]
+        final object Companion { // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.Companion|null[0]
+            final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.FeatureSet.ProtoLimitsFeature.Builder,kotlin.Unit>){}[0]
+        }
     }
 
     abstract interface VisibilityFeature { // com.google.protobuf.kotlin/FeatureSet.VisibilityFeature|null[0]
@@ -867,7 +907,9 @@ abstract interface com.google.protobuf.kotlin/FeatureSet { // com.google.protobu
             }
         }
 
-        final object Companion // com.google.protobuf.kotlin/FeatureSet.VisibilityFeature.Companion|null[0]
+        final object Companion { // com.google.protobuf.kotlin/FeatureSet.VisibilityFeature.Companion|null[0]
+            final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/FeatureSet.VisibilityFeature.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FeatureSet.VisibilityFeature // com.google.protobuf.kotlin/FeatureSet.VisibilityFeature.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.FeatureSet.VisibilityFeature.Builder,kotlin.Unit>){}[0]
+        }
     }
 
     sealed class EnforceNamingStyle { // com.google.protobuf.kotlin/FeatureSet.EnforceNamingStyle|null[0]
@@ -1169,7 +1211,9 @@ abstract interface com.google.protobuf.kotlin/FeatureSet { // com.google.protobu
         }
     }
 
-    final object Companion // com.google.protobuf.kotlin/FeatureSet.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/FeatureSet.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/FeatureSet.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FeatureSet // com.google.protobuf.kotlin/FeatureSet.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.FeatureSet.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/FeatureSetDefaults { // com.google.protobuf.kotlin/FeatureSetDefaults|null[0]
@@ -1219,10 +1263,14 @@ abstract interface com.google.protobuf.kotlin/FeatureSetDefaults { // com.google
             abstract fun clearOverridableFeatures() // com.google.protobuf.kotlin/FeatureSetDefaults.FeatureSetEditionDefault.Builder.clearOverridableFeatures|clearOverridableFeatures(){}[0]
         }
 
-        final object Companion // com.google.protobuf.kotlin/FeatureSetDefaults.FeatureSetEditionDefault.Companion|null[0]
+        final object Companion { // com.google.protobuf.kotlin/FeatureSetDefaults.FeatureSetEditionDefault.Companion|null[0]
+            final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/FeatureSetDefaults.FeatureSetEditionDefault.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FeatureSetDefaults.FeatureSetEditionDefault // com.google.protobuf.kotlin/FeatureSetDefaults.FeatureSetEditionDefault.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.FeatureSetDefaults.FeatureSetEditionDefault.Builder,kotlin.Unit>){}[0]
+        }
     }
 
-    final object Companion // com.google.protobuf.kotlin/FeatureSetDefaults.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/FeatureSetDefaults.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/FeatureSetDefaults.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FeatureSetDefaults // com.google.protobuf.kotlin/FeatureSetDefaults.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.FeatureSetDefaults.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/FeatureSetDefaultsPresence { // com.google.protobuf.kotlin/FeatureSetDefaultsPresence|null[0]
@@ -1501,7 +1549,9 @@ abstract interface com.google.protobuf.kotlin/Field { // com.google.protobuf.kot
         }
     }
 
-    final object Companion // com.google.protobuf.kotlin/Field.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/Field.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/Field.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Field // com.google.protobuf.kotlin/Field.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.Field.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/FieldDescriptorProto { // com.google.protobuf.kotlin/FieldDescriptorProto|null[0]
@@ -1748,7 +1798,9 @@ abstract interface com.google.protobuf.kotlin/FieldDescriptorProto { // com.goog
         }
     }
 
-    final object Companion // com.google.protobuf.kotlin/FieldDescriptorProto.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/FieldDescriptorProto.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/FieldDescriptorProto.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FieldDescriptorProto // com.google.protobuf.kotlin/FieldDescriptorProto.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.FieldDescriptorProto.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/FieldDescriptorProtoPresence { // com.google.protobuf.kotlin/FieldDescriptorProtoPresence|null[0]
@@ -1786,7 +1838,9 @@ abstract interface com.google.protobuf.kotlin/FieldMask { // com.google.protobuf
             abstract fun <set-paths>(kotlin.collections/List<kotlin/String>) // com.google.protobuf.kotlin/FieldMask.Builder.paths.<set-paths>|<set-paths>(kotlin.collections.List<kotlin.String>){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/FieldMask.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/FieldMask.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/FieldMask.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FieldMask // com.google.protobuf.kotlin/FieldMask.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.FieldMask.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/FieldOptions { // com.google.protobuf.kotlin/FieldOptions|null[0]
@@ -1894,7 +1948,9 @@ abstract interface com.google.protobuf.kotlin/FieldOptions { // com.google.proto
             abstract fun clearValue() // com.google.protobuf.kotlin/FieldOptions.EditionDefault.Builder.clearValue|clearValue(){}[0]
         }
 
-        final object Companion // com.google.protobuf.kotlin/FieldOptions.EditionDefault.Companion|null[0]
+        final object Companion { // com.google.protobuf.kotlin/FieldOptions.EditionDefault.Companion|null[0]
+            final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/FieldOptions.EditionDefault.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FieldOptions.EditionDefault // com.google.protobuf.kotlin/FieldOptions.EditionDefault.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.FieldOptions.EditionDefault.Builder,kotlin.Unit>){}[0]
+        }
     }
 
     abstract interface FeatureSupport { // com.google.protobuf.kotlin/FieldOptions.FeatureSupport|null[0]
@@ -1933,7 +1989,9 @@ abstract interface com.google.protobuf.kotlin/FieldOptions { // com.google.proto
             abstract fun clearRemovalError() // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Builder.clearRemovalError|clearRemovalError(){}[0]
         }
 
-        final object Companion // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Companion|null[0]
+        final object Companion { // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Companion|null[0]
+            final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FieldOptions.FeatureSupport // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.FieldOptions.FeatureSupport.Builder,kotlin.Unit>){}[0]
+        }
     }
 
     sealed class CType { // com.google.protobuf.kotlin/FieldOptions.CType|null[0]
@@ -2142,7 +2200,9 @@ abstract interface com.google.protobuf.kotlin/FieldOptions { // com.google.proto
         }
     }
 
-    final object Companion // com.google.protobuf.kotlin/FieldOptions.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/FieldOptions.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/FieldOptions.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FieldOptions // com.google.protobuf.kotlin/FieldOptions.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.FieldOptions.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/FieldOptionsPresence { // com.google.protobuf.kotlin/FieldOptionsPresence|null[0]
@@ -2272,7 +2332,9 @@ abstract interface com.google.protobuf.kotlin/FileDescriptorProto { // com.googl
         abstract fun clearSyntax() // com.google.protobuf.kotlin/FileDescriptorProto.Builder.clearSyntax|clearSyntax(){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/FileDescriptorProto.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/FileDescriptorProto.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/FileDescriptorProto.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FileDescriptorProto // com.google.protobuf.kotlin/FileDescriptorProto.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.FileDescriptorProto.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/FileDescriptorProtoPresence { // com.google.protobuf.kotlin/FileDescriptorProtoPresence|null[0]
@@ -2300,7 +2362,9 @@ abstract interface com.google.protobuf.kotlin/FileDescriptorSet { // com.google.
             abstract fun <set-file>(kotlin.collections/List<com.google.protobuf.kotlin/FileDescriptorProto>) // com.google.protobuf.kotlin/FileDescriptorSet.Builder.file.<set-file>|<set-file>(kotlin.collections.List<com.google.protobuf.kotlin.FileDescriptorProto>){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/FileDescriptorSet.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/FileDescriptorSet.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/FileDescriptorSet.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FileDescriptorSet // com.google.protobuf.kotlin/FileDescriptorSet.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.FileDescriptorSet.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/FileDescriptorSetPresence // com.google.protobuf.kotlin/FileDescriptorSetPresence|null[0]
@@ -2477,7 +2541,9 @@ abstract interface com.google.protobuf.kotlin/FileOptions { // com.google.protob
         }
     }
 
-    final object Companion // com.google.protobuf.kotlin/FileOptions.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/FileOptions.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/FileOptions.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FileOptions // com.google.protobuf.kotlin/FileOptions.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.FileOptions.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/FileOptionsPresence { // com.google.protobuf.kotlin/FileOptionsPresence|null[0]
@@ -2533,7 +2599,9 @@ abstract interface com.google.protobuf.kotlin/FloatValue { // com.google.protobu
             abstract fun <set-value>(kotlin/Float) // com.google.protobuf.kotlin/FloatValue.Builder.value.<set-value>|<set-value>(kotlin.Float){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/FloatValue.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/FloatValue.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/FloatValue.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FloatValue // com.google.protobuf.kotlin/FloatValue.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.FloatValue.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/GeneratedCodeInfo { // com.google.protobuf.kotlin/GeneratedCodeInfo|null[0]
@@ -2616,7 +2684,9 @@ abstract interface com.google.protobuf.kotlin/GeneratedCodeInfo { // com.google.
             }
         }
 
-        final object Companion // com.google.protobuf.kotlin/GeneratedCodeInfo.Annotation.Companion|null[0]
+        final object Companion { // com.google.protobuf.kotlin/GeneratedCodeInfo.Annotation.Companion|null[0]
+            final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/GeneratedCodeInfo.Annotation.Builder, kotlin/Unit>): com.google.protobuf.kotlin/GeneratedCodeInfo.Annotation // com.google.protobuf.kotlin/GeneratedCodeInfo.Annotation.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.GeneratedCodeInfo.Annotation.Builder,kotlin.Unit>){}[0]
+        }
     }
 
     abstract interface Builder : com.google.protobuf.kotlin/GeneratedCodeInfo { // com.google.protobuf.kotlin/GeneratedCodeInfo.Builder|null[0]
@@ -2625,7 +2695,9 @@ abstract interface com.google.protobuf.kotlin/GeneratedCodeInfo { // com.google.
             abstract fun <set-annotation>(kotlin.collections/List<com.google.protobuf.kotlin/GeneratedCodeInfo.Annotation>) // com.google.protobuf.kotlin/GeneratedCodeInfo.Builder.annotation.<set-annotation>|<set-annotation>(kotlin.collections.List<com.google.protobuf.kotlin.GeneratedCodeInfo.Annotation>){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/GeneratedCodeInfo.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/GeneratedCodeInfo.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/GeneratedCodeInfo.Builder, kotlin/Unit>): com.google.protobuf.kotlin/GeneratedCodeInfo // com.google.protobuf.kotlin/GeneratedCodeInfo.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.GeneratedCodeInfo.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/GeneratedCodeInfoPresence { // com.google.protobuf.kotlin/GeneratedCodeInfoPresence|null[0]
@@ -2651,7 +2723,9 @@ abstract interface com.google.protobuf.kotlin/Int32Value { // com.google.protobu
             abstract fun <set-value>(kotlin/Int) // com.google.protobuf.kotlin/Int32Value.Builder.value.<set-value>|<set-value>(kotlin.Int){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/Int32Value.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/Int32Value.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/Int32Value.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Int32Value // com.google.protobuf.kotlin/Int32Value.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.Int32Value.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/Int64Value { // com.google.protobuf.kotlin/Int64Value|null[0]
@@ -2664,7 +2738,9 @@ abstract interface com.google.protobuf.kotlin/Int64Value { // com.google.protobu
             abstract fun <set-value>(kotlin/Long) // com.google.protobuf.kotlin/Int64Value.Builder.value.<set-value>|<set-value>(kotlin.Long){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/Int64Value.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/Int64Value.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/Int64Value.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Int64Value // com.google.protobuf.kotlin/Int64Value.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.Int64Value.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/ListValue { // com.google.protobuf.kotlin/ListValue|null[0]
@@ -2677,7 +2753,9 @@ abstract interface com.google.protobuf.kotlin/ListValue { // com.google.protobuf
             abstract fun <set-values>(kotlin.collections/List<com.google.protobuf.kotlin/Value>) // com.google.protobuf.kotlin/ListValue.Builder.values.<set-values>|<set-values>(kotlin.collections.List<com.google.protobuf.kotlin.Value>){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/ListValue.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/ListValue.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/ListValue.Builder, kotlin/Unit>): com.google.protobuf.kotlin/ListValue // com.google.protobuf.kotlin/ListValue.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.ListValue.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/MessageOptions { // com.google.protobuf.kotlin/MessageOptions|null[0]
@@ -2727,7 +2805,9 @@ abstract interface com.google.protobuf.kotlin/MessageOptions { // com.google.pro
         abstract fun clearNoStandardDescriptorAccessor() // com.google.protobuf.kotlin/MessageOptions.Builder.clearNoStandardDescriptorAccessor|clearNoStandardDescriptorAccessor(){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/MessageOptions.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/MessageOptions.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/MessageOptions.Builder, kotlin/Unit>): com.google.protobuf.kotlin/MessageOptions // com.google.protobuf.kotlin/MessageOptions.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.MessageOptions.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/MessageOptionsPresence { // com.google.protobuf.kotlin/MessageOptionsPresence|null[0]
@@ -2790,7 +2870,9 @@ abstract interface com.google.protobuf.kotlin/Method { // com.google.protobuf.ko
             abstract fun <set-syntax>(com.google.protobuf.kotlin/Syntax) // com.google.protobuf.kotlin/Method.Builder.syntax.<set-syntax>|<set-syntax>(com.google.protobuf.kotlin.Syntax){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/Method.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/Method.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/Method.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Method // com.google.protobuf.kotlin/Method.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.Method.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/MethodDescriptorProto { // com.google.protobuf.kotlin/MethodDescriptorProto|null[0]
@@ -2835,7 +2917,9 @@ abstract interface com.google.protobuf.kotlin/MethodDescriptorProto { // com.goo
         abstract fun clearServerStreaming() // com.google.protobuf.kotlin/MethodDescriptorProto.Builder.clearServerStreaming|clearServerStreaming(){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/MethodDescriptorProto.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/MethodDescriptorProto.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/MethodDescriptorProto.Builder, kotlin/Unit>): com.google.protobuf.kotlin/MethodDescriptorProto // com.google.protobuf.kotlin/MethodDescriptorProto.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.MethodDescriptorProto.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/MethodDescriptorProtoPresence { // com.google.protobuf.kotlin/MethodDescriptorProtoPresence|null[0]
@@ -2923,7 +3007,9 @@ abstract interface com.google.protobuf.kotlin/MethodOptions { // com.google.prot
         }
     }
 
-    final object Companion // com.google.protobuf.kotlin/MethodOptions.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/MethodOptions.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/MethodOptions.Builder, kotlin/Unit>): com.google.protobuf.kotlin/MethodOptions // com.google.protobuf.kotlin/MethodOptions.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.MethodOptions.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/MethodOptionsPresence { // com.google.protobuf.kotlin/MethodOptionsPresence|null[0]
@@ -2950,7 +3036,9 @@ abstract interface com.google.protobuf.kotlin/Mixin { // com.google.protobuf.kot
             abstract fun <set-root>(kotlin/String) // com.google.protobuf.kotlin/Mixin.Builder.root.<set-root>|<set-root>(kotlin.String){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/Mixin.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/Mixin.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/Mixin.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Mixin // com.google.protobuf.kotlin/Mixin.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.Mixin.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/OneofDescriptorProto { // com.google.protobuf.kotlin/OneofDescriptorProto|null[0]
@@ -2971,7 +3059,9 @@ abstract interface com.google.protobuf.kotlin/OneofDescriptorProto { // com.goog
         abstract fun clearOptions() // com.google.protobuf.kotlin/OneofDescriptorProto.Builder.clearOptions|clearOptions(){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/OneofDescriptorProto.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/OneofDescriptorProto.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/OneofDescriptorProto.Builder, kotlin/Unit>): com.google.protobuf.kotlin/OneofDescriptorProto // com.google.protobuf.kotlin/OneofDescriptorProto.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.OneofDescriptorProto.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/OneofDescriptorProtoPresence { // com.google.protobuf.kotlin/OneofDescriptorProtoPresence|null[0]
@@ -2998,7 +3088,9 @@ abstract interface com.google.protobuf.kotlin/OneofOptions { // com.google.proto
         abstract fun clearFeatures() // com.google.protobuf.kotlin/OneofOptions.Builder.clearFeatures|clearFeatures(){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/OneofOptions.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/OneofOptions.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/OneofOptions.Builder, kotlin/Unit>): com.google.protobuf.kotlin/OneofOptions // com.google.protobuf.kotlin/OneofOptions.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.OneofOptions.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/OneofOptionsPresence { // com.google.protobuf.kotlin/OneofOptionsPresence|null[0]
@@ -3023,7 +3115,9 @@ abstract interface com.google.protobuf.kotlin/Option { // com.google.protobuf.ko
         abstract fun clearValue() // com.google.protobuf.kotlin/Option.Builder.clearValue|clearValue(){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/Option.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/Option.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/Option.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Option // com.google.protobuf.kotlin/Option.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.Option.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/OptionPresence { // com.google.protobuf.kotlin/OptionPresence|null[0]
@@ -3054,7 +3148,9 @@ abstract interface com.google.protobuf.kotlin/ServiceDescriptorProto { // com.go
         abstract fun clearOptions() // com.google.protobuf.kotlin/ServiceDescriptorProto.Builder.clearOptions|clearOptions(){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/ServiceDescriptorProto.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/ServiceDescriptorProto.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/ServiceDescriptorProto.Builder, kotlin/Unit>): com.google.protobuf.kotlin/ServiceDescriptorProto // com.google.protobuf.kotlin/ServiceDescriptorProto.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.ServiceDescriptorProto.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/ServiceDescriptorProtoPresence { // com.google.protobuf.kotlin/ServiceDescriptorProtoPresence|null[0]
@@ -3087,7 +3183,9 @@ abstract interface com.google.protobuf.kotlin/ServiceOptions { // com.google.pro
         abstract fun clearFeatures() // com.google.protobuf.kotlin/ServiceOptions.Builder.clearFeatures|clearFeatures(){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/ServiceOptions.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/ServiceOptions.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/ServiceOptions.Builder, kotlin/Unit>): com.google.protobuf.kotlin/ServiceOptions // com.google.protobuf.kotlin/ServiceOptions.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.ServiceOptions.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/ServiceOptionsPresence { // com.google.protobuf.kotlin/ServiceOptionsPresence|null[0]
@@ -3140,10 +3238,14 @@ abstract interface com.google.protobuf.kotlin/SourceCodeInfo { // com.google.pro
             abstract fun clearTrailingComments() // com.google.protobuf.kotlin/SourceCodeInfo.Location.Builder.clearTrailingComments|clearTrailingComments(){}[0]
         }
 
-        final object Companion // com.google.protobuf.kotlin/SourceCodeInfo.Location.Companion|null[0]
+        final object Companion { // com.google.protobuf.kotlin/SourceCodeInfo.Location.Companion|null[0]
+            final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/SourceCodeInfo.Location.Builder, kotlin/Unit>): com.google.protobuf.kotlin/SourceCodeInfo.Location // com.google.protobuf.kotlin/SourceCodeInfo.Location.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.SourceCodeInfo.Location.Builder,kotlin.Unit>){}[0]
+        }
     }
 
-    final object Companion // com.google.protobuf.kotlin/SourceCodeInfo.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/SourceCodeInfo.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/SourceCodeInfo.Builder, kotlin/Unit>): com.google.protobuf.kotlin/SourceCodeInfo // com.google.protobuf.kotlin/SourceCodeInfo.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.SourceCodeInfo.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/SourceCodeInfoPresence { // com.google.protobuf.kotlin/SourceCodeInfoPresence|null[0]
@@ -3165,7 +3267,9 @@ abstract interface com.google.protobuf.kotlin/SourceContext { // com.google.prot
             abstract fun <set-fileName>(kotlin/String) // com.google.protobuf.kotlin/SourceContext.Builder.fileName.<set-fileName>|<set-fileName>(kotlin.String){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/SourceContext.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/SourceContext.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/SourceContext.Builder, kotlin/Unit>): com.google.protobuf.kotlin/SourceContext // com.google.protobuf.kotlin/SourceContext.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.SourceContext.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/StringValue { // com.google.protobuf.kotlin/StringValue|null[0]
@@ -3178,7 +3282,9 @@ abstract interface com.google.protobuf.kotlin/StringValue { // com.google.protob
             abstract fun <set-value>(kotlin/String) // com.google.protobuf.kotlin/StringValue.Builder.value.<set-value>|<set-value>(kotlin.String){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/StringValue.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/StringValue.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/StringValue.Builder, kotlin/Unit>): com.google.protobuf.kotlin/StringValue // com.google.protobuf.kotlin/StringValue.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.StringValue.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/Struct { // com.google.protobuf.kotlin/Struct|null[0]
@@ -3191,7 +3297,9 @@ abstract interface com.google.protobuf.kotlin/Struct { // com.google.protobuf.ko
             abstract fun <set-fields>(kotlin.collections/Map<kotlin/String, com.google.protobuf.kotlin/Value>) // com.google.protobuf.kotlin/Struct.Builder.fields.<set-fields>|<set-fields>(kotlin.collections.Map<kotlin.String,com.google.protobuf.kotlin.Value>){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/Struct.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/Struct.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/Struct.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Struct // com.google.protobuf.kotlin/Struct.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.Struct.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/Timestamp { // com.google.protobuf.kotlin/Timestamp|null[0]
@@ -3209,7 +3317,9 @@ abstract interface com.google.protobuf.kotlin/Timestamp { // com.google.protobuf
             abstract fun <set-seconds>(kotlin/Long) // com.google.protobuf.kotlin/Timestamp.Builder.seconds.<set-seconds>|<set-seconds>(kotlin.Long){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/Timestamp.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/Timestamp.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/Timestamp.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Timestamp // com.google.protobuf.kotlin/Timestamp.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.Timestamp.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/Type { // com.google.protobuf.kotlin/Type|null[0]
@@ -3254,7 +3364,9 @@ abstract interface com.google.protobuf.kotlin/Type { // com.google.protobuf.kotl
         abstract fun clearSourceContext() // com.google.protobuf.kotlin/Type.Builder.clearSourceContext|clearSourceContext(){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/Type.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/Type.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/Type.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Type // com.google.protobuf.kotlin/Type.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.Type.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/TypePresence { // com.google.protobuf.kotlin/TypePresence|null[0]
@@ -3272,7 +3384,9 @@ abstract interface com.google.protobuf.kotlin/UInt32Value { // com.google.protob
             abstract fun <set-value>(kotlin/UInt) // com.google.protobuf.kotlin/UInt32Value.Builder.value.<set-value>|<set-value>(kotlin.UInt){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/UInt32Value.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/UInt32Value.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/UInt32Value.Builder, kotlin/Unit>): com.google.protobuf.kotlin/UInt32Value // com.google.protobuf.kotlin/UInt32Value.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.UInt32Value.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/UInt64Value { // com.google.protobuf.kotlin/UInt64Value|null[0]
@@ -3285,7 +3399,9 @@ abstract interface com.google.protobuf.kotlin/UInt64Value { // com.google.protob
             abstract fun <set-value>(kotlin/ULong) // com.google.protobuf.kotlin/UInt64Value.Builder.value.<set-value>|<set-value>(kotlin.ULong){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/UInt64Value.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/UInt64Value.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/UInt64Value.Builder, kotlin/Unit>): com.google.protobuf.kotlin/UInt64Value // com.google.protobuf.kotlin/UInt64Value.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.UInt64Value.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/UninterpretedOption { // com.google.protobuf.kotlin/UninterpretedOption|null[0]
@@ -3353,10 +3469,14 @@ abstract interface com.google.protobuf.kotlin/UninterpretedOption { // com.googl
             abstract fun clearNamePart() // com.google.protobuf.kotlin/UninterpretedOption.NamePart.Builder.clearNamePart|clearNamePart(){}[0]
         }
 
-        final object Companion // com.google.protobuf.kotlin/UninterpretedOption.NamePart.Companion|null[0]
+        final object Companion { // com.google.protobuf.kotlin/UninterpretedOption.NamePart.Companion|null[0]
+            final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/UninterpretedOption.NamePart.Builder, kotlin/Unit>): com.google.protobuf.kotlin/UninterpretedOption.NamePart // com.google.protobuf.kotlin/UninterpretedOption.NamePart.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.UninterpretedOption.NamePart.Builder,kotlin.Unit>){}[0]
+        }
     }
 
-    final object Companion // com.google.protobuf.kotlin/UninterpretedOption.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/UninterpretedOption.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/UninterpretedOption.Builder, kotlin/Unit>): com.google.protobuf.kotlin/UninterpretedOption // com.google.protobuf.kotlin/UninterpretedOption.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.UninterpretedOption.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/UninterpretedOptionPresence { // com.google.protobuf.kotlin/UninterpretedOptionPresence|null[0]
@@ -3424,7 +3544,9 @@ abstract interface com.google.protobuf.kotlin/Value { // com.google.protobuf.kot
         abstract fun clearStructValue() // com.google.protobuf.kotlin/Value.Builder.clearStructValue|clearStructValue(){}[0]
     }
 
-    final object Companion // com.google.protobuf.kotlin/Value.Companion|null[0]
+    final object Companion { // com.google.protobuf.kotlin/Value.Companion|null[0]
+        final fun invoke(kotlin/Function1<com.google.protobuf.kotlin/Value.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Value // com.google.protobuf.kotlin/Value.Companion.invoke|invoke(kotlin.Function1<com.google.protobuf.kotlin.Value.Builder,kotlin.Unit>){}[0]
+    }
 }
 
 abstract interface com.google.protobuf.kotlin/ValuePresence { // com.google.protobuf.kotlin/ValuePresence|null[0]
@@ -4026,129 +4148,68 @@ final val com.google.protobuf.kotlin/weakOrNull // com.google.protobuf.kotlin/we
     final fun (com.google.protobuf.kotlin/FieldOptions).<get-weakOrNull>(): kotlin/Boolean? // com.google.protobuf.kotlin/weakOrNull.<get-weakOrNull>|<get-weakOrNull>@com.google.protobuf.kotlin.FieldOptions(){}[0]
 
 final fun (com.google.protobuf.kotlin/Any).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/Any.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/Any // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.Any(kotlin.Function1<com.google.protobuf.kotlin.Any.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/Any.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/Any.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Any // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Any.Companion(kotlin.Function1<com.google.protobuf.kotlin.Any.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/Api).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/Api.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/Api // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.Api(kotlin.Function1<com.google.protobuf.kotlin.Api.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/Api.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/Api.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Api // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Api.Companion(kotlin.Function1<com.google.protobuf.kotlin.Api.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/BoolValue).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/BoolValue.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/BoolValue // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.BoolValue(kotlin.Function1<com.google.protobuf.kotlin.BoolValue.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/BoolValue.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/BoolValue.Builder, kotlin/Unit>): com.google.protobuf.kotlin/BoolValue // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.BoolValue.Companion(kotlin.Function1<com.google.protobuf.kotlin.BoolValue.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/BytesValue).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/BytesValue.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/BytesValue // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.BytesValue(kotlin.Function1<com.google.protobuf.kotlin.BytesValue.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/BytesValue.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/BytesValue.Builder, kotlin/Unit>): com.google.protobuf.kotlin/BytesValue // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.BytesValue.Companion(kotlin.Function1<com.google.protobuf.kotlin.BytesValue.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/DescriptorProto).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/DescriptorProto.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/DescriptorProto // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.DescriptorProto(kotlin.Function1<com.google.protobuf.kotlin.DescriptorProto.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/DescriptorProto.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/DescriptorProto.Builder, kotlin/Unit>): com.google.protobuf.kotlin/DescriptorProto // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.DescriptorProto.Companion(kotlin.Function1<com.google.protobuf.kotlin.DescriptorProto.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/DescriptorProto.ExtensionRange).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/DescriptorProto.ExtensionRange.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/DescriptorProto.ExtensionRange // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.DescriptorProto.ExtensionRange(kotlin.Function1<com.google.protobuf.kotlin.DescriptorProto.ExtensionRange.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/DescriptorProto.ExtensionRange.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/DescriptorProto.ExtensionRange.Builder, kotlin/Unit>): com.google.protobuf.kotlin/DescriptorProto.ExtensionRange // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.DescriptorProto.ExtensionRange.Companion(kotlin.Function1<com.google.protobuf.kotlin.DescriptorProto.ExtensionRange.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/DescriptorProto.ReservedRange).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/DescriptorProto.ReservedRange.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/DescriptorProto.ReservedRange // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.DescriptorProto.ReservedRange(kotlin.Function1<com.google.protobuf.kotlin.DescriptorProto.ReservedRange.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/DescriptorProto.ReservedRange.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/DescriptorProto.ReservedRange.Builder, kotlin/Unit>): com.google.protobuf.kotlin/DescriptorProto.ReservedRange // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.DescriptorProto.ReservedRange.Companion(kotlin.Function1<com.google.protobuf.kotlin.DescriptorProto.ReservedRange.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/DoubleValue).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/DoubleValue.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/DoubleValue // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.DoubleValue(kotlin.Function1<com.google.protobuf.kotlin.DoubleValue.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/DoubleValue.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/DoubleValue.Builder, kotlin/Unit>): com.google.protobuf.kotlin/DoubleValue // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.DoubleValue.Companion(kotlin.Function1<com.google.protobuf.kotlin.DoubleValue.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/Duration).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/Duration.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/Duration // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.Duration(kotlin.Function1<com.google.protobuf.kotlin.Duration.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/Duration).com.google.protobuf.kotlin/toKotlinDuration(): kotlin.time/Duration // com.google.protobuf.kotlin/toKotlinDuration|toKotlinDuration@com.google.protobuf.kotlin.Duration(){}[0]
-final fun (com.google.protobuf.kotlin/Duration.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/Duration.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Duration // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Duration.Companion(kotlin.Function1<com.google.protobuf.kotlin.Duration.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/Empty).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/Empty.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/Empty // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.Empty(kotlin.Function1<com.google.protobuf.kotlin.Empty.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/Empty.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/Empty.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Empty // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Empty.Companion(kotlin.Function1<com.google.protobuf.kotlin.Empty.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/Enum).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/Enum.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/Enum // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.Enum(kotlin.Function1<com.google.protobuf.kotlin.Enum.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/Enum.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/Enum.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Enum // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Enum.Companion(kotlin.Function1<com.google.protobuf.kotlin.Enum.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/EnumDescriptorProto).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/EnumDescriptorProto.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/EnumDescriptorProto // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.EnumDescriptorProto(kotlin.Function1<com.google.protobuf.kotlin.EnumDescriptorProto.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/EnumDescriptorProto.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/EnumDescriptorProto.Builder, kotlin/Unit>): com.google.protobuf.kotlin/EnumDescriptorProto // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.EnumDescriptorProto.Companion(kotlin.Function1<com.google.protobuf.kotlin.EnumDescriptorProto.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/EnumDescriptorProto.EnumReservedRange).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/EnumDescriptorProto.EnumReservedRange.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/EnumDescriptorProto.EnumReservedRange // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.EnumDescriptorProto.EnumReservedRange(kotlin.Function1<com.google.protobuf.kotlin.EnumDescriptorProto.EnumReservedRange.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/EnumDescriptorProto.EnumReservedRange.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/EnumDescriptorProto.EnumReservedRange.Builder, kotlin/Unit>): com.google.protobuf.kotlin/EnumDescriptorProto.EnumReservedRange // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.EnumDescriptorProto.EnumReservedRange.Companion(kotlin.Function1<com.google.protobuf.kotlin.EnumDescriptorProto.EnumReservedRange.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/EnumOptions).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/EnumOptions.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/EnumOptions // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.EnumOptions(kotlin.Function1<com.google.protobuf.kotlin.EnumOptions.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/EnumOptions.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/EnumOptions.Builder, kotlin/Unit>): com.google.protobuf.kotlin/EnumOptions // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.EnumOptions.Companion(kotlin.Function1<com.google.protobuf.kotlin.EnumOptions.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/EnumValue).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/EnumValue.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/EnumValue // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.EnumValue(kotlin.Function1<com.google.protobuf.kotlin.EnumValue.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/EnumValue.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/EnumValue.Builder, kotlin/Unit>): com.google.protobuf.kotlin/EnumValue // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.EnumValue.Companion(kotlin.Function1<com.google.protobuf.kotlin.EnumValue.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/EnumValueDescriptorProto).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/EnumValueDescriptorProto.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/EnumValueDescriptorProto // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.EnumValueDescriptorProto(kotlin.Function1<com.google.protobuf.kotlin.EnumValueDescriptorProto.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/EnumValueDescriptorProto.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/EnumValueDescriptorProto.Builder, kotlin/Unit>): com.google.protobuf.kotlin/EnumValueDescriptorProto // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.EnumValueDescriptorProto.Companion(kotlin.Function1<com.google.protobuf.kotlin.EnumValueDescriptorProto.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/EnumValueOptions).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/EnumValueOptions.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/EnumValueOptions // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.EnumValueOptions(kotlin.Function1<com.google.protobuf.kotlin.EnumValueOptions.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/EnumValueOptions.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/EnumValueOptions.Builder, kotlin/Unit>): com.google.protobuf.kotlin/EnumValueOptions // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.EnumValueOptions.Companion(kotlin.Function1<com.google.protobuf.kotlin.EnumValueOptions.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/ExtensionRangeOptions).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/ExtensionRangeOptions.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/ExtensionRangeOptions // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.ExtensionRangeOptions(kotlin.Function1<com.google.protobuf.kotlin.ExtensionRangeOptions.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/ExtensionRangeOptions.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/ExtensionRangeOptions.Builder, kotlin/Unit>): com.google.protobuf.kotlin/ExtensionRangeOptions // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.ExtensionRangeOptions.Companion(kotlin.Function1<com.google.protobuf.kotlin.ExtensionRangeOptions.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/ExtensionRangeOptions.Declaration).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/ExtensionRangeOptions.Declaration.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/ExtensionRangeOptions.Declaration // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.ExtensionRangeOptions.Declaration(kotlin.Function1<com.google.protobuf.kotlin.ExtensionRangeOptions.Declaration.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/ExtensionRangeOptions.Declaration.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/ExtensionRangeOptions.Declaration.Builder, kotlin/Unit>): com.google.protobuf.kotlin/ExtensionRangeOptions.Declaration // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.ExtensionRangeOptions.Declaration.Companion(kotlin.Function1<com.google.protobuf.kotlin.ExtensionRangeOptions.Declaration.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/FeatureSet).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/FeatureSet.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/FeatureSet // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.FeatureSet(kotlin.Function1<com.google.protobuf.kotlin.FeatureSet.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/FeatureSet.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/FeatureSet.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FeatureSet // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.FeatureSet.Companion(kotlin.Function1<com.google.protobuf.kotlin.FeatureSet.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.FeatureSet.ProtoLimitsFeature(kotlin.Function1<com.google.protobuf.kotlin.FeatureSet.ProtoLimitsFeature.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.FeatureSet.ProtoLimitsFeature.Companion(kotlin.Function1<com.google.protobuf.kotlin.FeatureSet.ProtoLimitsFeature.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/FeatureSet.VisibilityFeature).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/FeatureSet.VisibilityFeature.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/FeatureSet.VisibilityFeature // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.FeatureSet.VisibilityFeature(kotlin.Function1<com.google.protobuf.kotlin.FeatureSet.VisibilityFeature.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/FeatureSet.VisibilityFeature.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/FeatureSet.VisibilityFeature.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FeatureSet.VisibilityFeature // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.FeatureSet.VisibilityFeature.Companion(kotlin.Function1<com.google.protobuf.kotlin.FeatureSet.VisibilityFeature.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/FeatureSetDefaults).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/FeatureSetDefaults.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/FeatureSetDefaults // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.FeatureSetDefaults(kotlin.Function1<com.google.protobuf.kotlin.FeatureSetDefaults.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/FeatureSetDefaults.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/FeatureSetDefaults.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FeatureSetDefaults // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.FeatureSetDefaults.Companion(kotlin.Function1<com.google.protobuf.kotlin.FeatureSetDefaults.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/FeatureSetDefaults.FeatureSetEditionDefault).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/FeatureSetDefaults.FeatureSetEditionDefault.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/FeatureSetDefaults.FeatureSetEditionDefault // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.FeatureSetDefaults.FeatureSetEditionDefault(kotlin.Function1<com.google.protobuf.kotlin.FeatureSetDefaults.FeatureSetEditionDefault.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/FeatureSetDefaults.FeatureSetEditionDefault.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/FeatureSetDefaults.FeatureSetEditionDefault.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FeatureSetDefaults.FeatureSetEditionDefault // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.FeatureSetDefaults.FeatureSetEditionDefault.Companion(kotlin.Function1<com.google.protobuf.kotlin.FeatureSetDefaults.FeatureSetEditionDefault.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/Field).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/Field.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/Field // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.Field(kotlin.Function1<com.google.protobuf.kotlin.Field.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/Field.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/Field.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Field // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Field.Companion(kotlin.Function1<com.google.protobuf.kotlin.Field.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/FieldDescriptorProto).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/FieldDescriptorProto.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/FieldDescriptorProto // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.FieldDescriptorProto(kotlin.Function1<com.google.protobuf.kotlin.FieldDescriptorProto.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/FieldDescriptorProto.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/FieldDescriptorProto.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FieldDescriptorProto // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.FieldDescriptorProto.Companion(kotlin.Function1<com.google.protobuf.kotlin.FieldDescriptorProto.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/FieldMask).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/FieldMask.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/FieldMask // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.FieldMask(kotlin.Function1<com.google.protobuf.kotlin.FieldMask.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/FieldMask.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/FieldMask.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FieldMask // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.FieldMask.Companion(kotlin.Function1<com.google.protobuf.kotlin.FieldMask.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/FieldOptions).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/FieldOptions.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/FieldOptions // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.FieldOptions(kotlin.Function1<com.google.protobuf.kotlin.FieldOptions.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/FieldOptions.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/FieldOptions.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FieldOptions // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.FieldOptions.Companion(kotlin.Function1<com.google.protobuf.kotlin.FieldOptions.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/FieldOptions.EditionDefault).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/FieldOptions.EditionDefault.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/FieldOptions.EditionDefault // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.FieldOptions.EditionDefault(kotlin.Function1<com.google.protobuf.kotlin.FieldOptions.EditionDefault.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/FieldOptions.EditionDefault.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/FieldOptions.EditionDefault.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FieldOptions.EditionDefault // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.FieldOptions.EditionDefault.Companion(kotlin.Function1<com.google.protobuf.kotlin.FieldOptions.EditionDefault.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/FieldOptions.FeatureSupport).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/FieldOptions.FeatureSupport // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.FieldOptions.FeatureSupport(kotlin.Function1<com.google.protobuf.kotlin.FieldOptions.FeatureSupport.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FieldOptions.FeatureSupport // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.FieldOptions.FeatureSupport.Companion(kotlin.Function1<com.google.protobuf.kotlin.FieldOptions.FeatureSupport.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/FileDescriptorProto).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/FileDescriptorProto.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/FileDescriptorProto // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.FileDescriptorProto(kotlin.Function1<com.google.protobuf.kotlin.FileDescriptorProto.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/FileDescriptorProto.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/FileDescriptorProto.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FileDescriptorProto // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.FileDescriptorProto.Companion(kotlin.Function1<com.google.protobuf.kotlin.FileDescriptorProto.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/FileDescriptorSet).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/FileDescriptorSet.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/FileDescriptorSet // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.FileDescriptorSet(kotlin.Function1<com.google.protobuf.kotlin.FileDescriptorSet.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/FileDescriptorSet.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/FileDescriptorSet.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FileDescriptorSet // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.FileDescriptorSet.Companion(kotlin.Function1<com.google.protobuf.kotlin.FileDescriptorSet.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/FileOptions).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/FileOptions.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/FileOptions // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.FileOptions(kotlin.Function1<com.google.protobuf.kotlin.FileOptions.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/FileOptions.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/FileOptions.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FileOptions // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.FileOptions.Companion(kotlin.Function1<com.google.protobuf.kotlin.FileOptions.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/FloatValue).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/FloatValue.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/FloatValue // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.FloatValue(kotlin.Function1<com.google.protobuf.kotlin.FloatValue.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/FloatValue.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/FloatValue.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FloatValue // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.FloatValue.Companion(kotlin.Function1<com.google.protobuf.kotlin.FloatValue.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/GeneratedCodeInfo).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/GeneratedCodeInfo.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/GeneratedCodeInfo // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.GeneratedCodeInfo(kotlin.Function1<com.google.protobuf.kotlin.GeneratedCodeInfo.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/GeneratedCodeInfo.Annotation).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/GeneratedCodeInfo.Annotation.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/GeneratedCodeInfo.Annotation // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.GeneratedCodeInfo.Annotation(kotlin.Function1<com.google.protobuf.kotlin.GeneratedCodeInfo.Annotation.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/GeneratedCodeInfo.Annotation.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/GeneratedCodeInfo.Annotation.Builder, kotlin/Unit>): com.google.protobuf.kotlin/GeneratedCodeInfo.Annotation // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.GeneratedCodeInfo.Annotation.Companion(kotlin.Function1<com.google.protobuf.kotlin.GeneratedCodeInfo.Annotation.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/GeneratedCodeInfo.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/GeneratedCodeInfo.Builder, kotlin/Unit>): com.google.protobuf.kotlin/GeneratedCodeInfo // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.GeneratedCodeInfo.Companion(kotlin.Function1<com.google.protobuf.kotlin.GeneratedCodeInfo.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/Int32Value).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/Int32Value.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/Int32Value // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.Int32Value(kotlin.Function1<com.google.protobuf.kotlin.Int32Value.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/Int32Value.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/Int32Value.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Int32Value // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Int32Value.Companion(kotlin.Function1<com.google.protobuf.kotlin.Int32Value.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/Int64Value).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/Int64Value.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/Int64Value // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.Int64Value(kotlin.Function1<com.google.protobuf.kotlin.Int64Value.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/Int64Value.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/Int64Value.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Int64Value // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Int64Value.Companion(kotlin.Function1<com.google.protobuf.kotlin.Int64Value.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/ListValue).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/ListValue.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/ListValue // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.ListValue(kotlin.Function1<com.google.protobuf.kotlin.ListValue.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/ListValue.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/ListValue.Builder, kotlin/Unit>): com.google.protobuf.kotlin/ListValue // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.ListValue.Companion(kotlin.Function1<com.google.protobuf.kotlin.ListValue.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/MessageOptions).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/MessageOptions.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/MessageOptions // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.MessageOptions(kotlin.Function1<com.google.protobuf.kotlin.MessageOptions.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/MessageOptions.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/MessageOptions.Builder, kotlin/Unit>): com.google.protobuf.kotlin/MessageOptions // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.MessageOptions.Companion(kotlin.Function1<com.google.protobuf.kotlin.MessageOptions.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/Method).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/Method.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/Method // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.Method(kotlin.Function1<com.google.protobuf.kotlin.Method.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/Method.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/Method.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Method // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Method.Companion(kotlin.Function1<com.google.protobuf.kotlin.Method.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/MethodDescriptorProto).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/MethodDescriptorProto.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/MethodDescriptorProto // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.MethodDescriptorProto(kotlin.Function1<com.google.protobuf.kotlin.MethodDescriptorProto.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/MethodDescriptorProto.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/MethodDescriptorProto.Builder, kotlin/Unit>): com.google.protobuf.kotlin/MethodDescriptorProto // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.MethodDescriptorProto.Companion(kotlin.Function1<com.google.protobuf.kotlin.MethodDescriptorProto.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/MethodOptions).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/MethodOptions.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/MethodOptions // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.MethodOptions(kotlin.Function1<com.google.protobuf.kotlin.MethodOptions.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/MethodOptions.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/MethodOptions.Builder, kotlin/Unit>): com.google.protobuf.kotlin/MethodOptions // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.MethodOptions.Companion(kotlin.Function1<com.google.protobuf.kotlin.MethodOptions.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/Mixin).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/Mixin.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/Mixin // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.Mixin(kotlin.Function1<com.google.protobuf.kotlin.Mixin.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/Mixin.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/Mixin.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Mixin // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Mixin.Companion(kotlin.Function1<com.google.protobuf.kotlin.Mixin.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/OneofDescriptorProto).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/OneofDescriptorProto.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/OneofDescriptorProto // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.OneofDescriptorProto(kotlin.Function1<com.google.protobuf.kotlin.OneofDescriptorProto.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/OneofDescriptorProto.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/OneofDescriptorProto.Builder, kotlin/Unit>): com.google.protobuf.kotlin/OneofDescriptorProto // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.OneofDescriptorProto.Companion(kotlin.Function1<com.google.protobuf.kotlin.OneofDescriptorProto.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/OneofOptions).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/OneofOptions.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/OneofOptions // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.OneofOptions(kotlin.Function1<com.google.protobuf.kotlin.OneofOptions.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/OneofOptions.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/OneofOptions.Builder, kotlin/Unit>): com.google.protobuf.kotlin/OneofOptions // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.OneofOptions.Companion(kotlin.Function1<com.google.protobuf.kotlin.OneofOptions.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/Option).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/Option.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/Option // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.Option(kotlin.Function1<com.google.protobuf.kotlin.Option.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/Option.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/Option.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Option // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Option.Companion(kotlin.Function1<com.google.protobuf.kotlin.Option.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/ServiceDescriptorProto).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/ServiceDescriptorProto.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/ServiceDescriptorProto // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.ServiceDescriptorProto(kotlin.Function1<com.google.protobuf.kotlin.ServiceDescriptorProto.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/ServiceDescriptorProto.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/ServiceDescriptorProto.Builder, kotlin/Unit>): com.google.protobuf.kotlin/ServiceDescriptorProto // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.ServiceDescriptorProto.Companion(kotlin.Function1<com.google.protobuf.kotlin.ServiceDescriptorProto.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/ServiceOptions).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/ServiceOptions.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/ServiceOptions // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.ServiceOptions(kotlin.Function1<com.google.protobuf.kotlin.ServiceOptions.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/ServiceOptions.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/ServiceOptions.Builder, kotlin/Unit>): com.google.protobuf.kotlin/ServiceOptions // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.ServiceOptions.Companion(kotlin.Function1<com.google.protobuf.kotlin.ServiceOptions.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/SourceCodeInfo).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/SourceCodeInfo.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/SourceCodeInfo // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.SourceCodeInfo(kotlin.Function1<com.google.protobuf.kotlin.SourceCodeInfo.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/SourceCodeInfo.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/SourceCodeInfo.Builder, kotlin/Unit>): com.google.protobuf.kotlin/SourceCodeInfo // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.SourceCodeInfo.Companion(kotlin.Function1<com.google.protobuf.kotlin.SourceCodeInfo.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/SourceCodeInfo.Location).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/SourceCodeInfo.Location.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/SourceCodeInfo.Location // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.SourceCodeInfo.Location(kotlin.Function1<com.google.protobuf.kotlin.SourceCodeInfo.Location.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/SourceCodeInfo.Location.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/SourceCodeInfo.Location.Builder, kotlin/Unit>): com.google.protobuf.kotlin/SourceCodeInfo.Location // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.SourceCodeInfo.Location.Companion(kotlin.Function1<com.google.protobuf.kotlin.SourceCodeInfo.Location.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/SourceContext).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/SourceContext.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/SourceContext // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.SourceContext(kotlin.Function1<com.google.protobuf.kotlin.SourceContext.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/SourceContext.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/SourceContext.Builder, kotlin/Unit>): com.google.protobuf.kotlin/SourceContext // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.SourceContext.Companion(kotlin.Function1<com.google.protobuf.kotlin.SourceContext.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/StringValue).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/StringValue.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/StringValue // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.StringValue(kotlin.Function1<com.google.protobuf.kotlin.StringValue.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/StringValue.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/StringValue.Builder, kotlin/Unit>): com.google.protobuf.kotlin/StringValue // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.StringValue.Companion(kotlin.Function1<com.google.protobuf.kotlin.StringValue.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/Struct).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/Struct.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/Struct // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.Struct(kotlin.Function1<com.google.protobuf.kotlin.Struct.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/Struct.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/Struct.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Struct // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Struct.Companion(kotlin.Function1<com.google.protobuf.kotlin.Struct.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/Timestamp).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/Timestamp.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/Timestamp // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.Timestamp(kotlin.Function1<com.google.protobuf.kotlin.Timestamp.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/Timestamp).com.google.protobuf.kotlin/toInstant(): kotlin.time/Instant // com.google.protobuf.kotlin/toInstant|toInstant@com.google.protobuf.kotlin.Timestamp(){}[0]
-final fun (com.google.protobuf.kotlin/Timestamp.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/Timestamp.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Timestamp // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Timestamp.Companion(kotlin.Function1<com.google.protobuf.kotlin.Timestamp.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/Type).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/Type.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/Type // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.Type(kotlin.Function1<com.google.protobuf.kotlin.Type.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/Type.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/Type.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Type // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Type.Companion(kotlin.Function1<com.google.protobuf.kotlin.Type.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/UInt32Value).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/UInt32Value.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/UInt32Value // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.UInt32Value(kotlin.Function1<com.google.protobuf.kotlin.UInt32Value.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/UInt32Value.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/UInt32Value.Builder, kotlin/Unit>): com.google.protobuf.kotlin/UInt32Value // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.UInt32Value.Companion(kotlin.Function1<com.google.protobuf.kotlin.UInt32Value.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/UInt64Value).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/UInt64Value.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/UInt64Value // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.UInt64Value(kotlin.Function1<com.google.protobuf.kotlin.UInt64Value.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/UInt64Value.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/UInt64Value.Builder, kotlin/Unit>): com.google.protobuf.kotlin/UInt64Value // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.UInt64Value.Companion(kotlin.Function1<com.google.protobuf.kotlin.UInt64Value.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/UninterpretedOption).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/UninterpretedOption.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/UninterpretedOption // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.UninterpretedOption(kotlin.Function1<com.google.protobuf.kotlin.UninterpretedOption.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/UninterpretedOption.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/UninterpretedOption.Builder, kotlin/Unit>): com.google.protobuf.kotlin/UninterpretedOption // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.UninterpretedOption.Companion(kotlin.Function1<com.google.protobuf.kotlin.UninterpretedOption.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/UninterpretedOption.NamePart).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/UninterpretedOption.NamePart.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/UninterpretedOption.NamePart // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.UninterpretedOption.NamePart(kotlin.Function1<com.google.protobuf.kotlin.UninterpretedOption.NamePart.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/UninterpretedOption.NamePart.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/UninterpretedOption.NamePart.Builder, kotlin/Unit>): com.google.protobuf.kotlin/UninterpretedOption.NamePart // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.UninterpretedOption.NamePart.Companion(kotlin.Function1<com.google.protobuf.kotlin.UninterpretedOption.NamePart.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/Value).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/Value.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/Value // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.Value(kotlin.Function1<com.google.protobuf.kotlin.Value.Builder,kotlin.Unit>){}[0]
-final fun (com.google.protobuf.kotlin/Value.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/Value.Builder, kotlin/Unit>): com.google.protobuf.kotlin/Value // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.Value.Companion(kotlin.Function1<com.google.protobuf.kotlin.Value.Builder,kotlin.Unit>){}[0]
 final fun (kotlin.time/Duration).com.google.protobuf.kotlin/toProtobufDuration(): com.google.protobuf.kotlin/Duration // com.google.protobuf.kotlin/toProtobufDuration|toProtobufDuration@kotlin.time.Duration(){}[0]
 final fun (kotlin.time/Instant).com.google.protobuf.kotlin/toTimestamp(): com.google.protobuf.kotlin/Timestamp // com.google.protobuf.kotlin/toTimestamp|toTimestamp@kotlin.time.Instant(){}[0]
 final fun <#A: kotlin/Any> (com.google.protobuf.kotlin/Any).com.google.protobuf.kotlin/contains(kotlin.reflect/KClass<#A>): kotlin/Boolean // com.google.protobuf.kotlin/contains|contains@com.google.protobuf.kotlin.Any(kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]

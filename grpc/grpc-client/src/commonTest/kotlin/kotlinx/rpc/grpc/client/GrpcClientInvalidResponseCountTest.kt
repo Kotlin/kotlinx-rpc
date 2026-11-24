@@ -5,7 +5,6 @@
 package kotlinx.rpc.grpc.client
 
 import com.google.protobuf.kotlin.Empty
-import com.google.protobuf.kotlin.invoke
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
@@ -20,7 +19,6 @@ import kotlinx.rpc.grpc.client.testing.grpcClientTest
 import kxrpc.testing.EchoRequest
 import kxrpc.testing.EventType
 import kxrpc.testing.InvalidResponseCount
-import kxrpc.testing.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

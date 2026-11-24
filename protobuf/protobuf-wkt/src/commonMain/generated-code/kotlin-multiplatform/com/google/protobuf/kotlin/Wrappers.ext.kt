@@ -6,20 +6,6 @@ package com.google.protobuf.kotlin
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
- * Constructs a new message.
- * ```
- * val message = DoubleValue {
- *    value = ...
- * }
- * ```
- */
-public operator fun DoubleValue.Companion.invoke(
-    body: DoubleValue.Builder.() -> Unit,
-): DoubleValue {
-    return DoubleValueInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -29,18 +15,6 @@ public operator fun DoubleValue.Companion.invoke(
  */
 public fun DoubleValue.copy(body: DoubleValue.Builder.() -> Unit = {}): DoubleValue {
     return this.asInternal().copyInternal(body)
-}
-
-/**
- * Constructs a new message.
- * ```
- * val message = FloatValue {
- *    value = ...
- * }
- * ```
- */
-public operator fun FloatValue.Companion.invoke(body: FloatValue.Builder.() -> Unit): FloatValue {
-    return FloatValueInternal().apply(body)
 }
 
 /**
@@ -56,18 +30,6 @@ public fun FloatValue.copy(body: FloatValue.Builder.() -> Unit = {}): FloatValue
 }
 
 /**
- * Constructs a new message.
- * ```
- * val message = Int64Value {
- *    value = ...
- * }
- * ```
- */
-public operator fun Int64Value.Companion.invoke(body: Int64Value.Builder.() -> Unit): Int64Value {
-    return Int64ValueInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -77,20 +39,6 @@ public operator fun Int64Value.Companion.invoke(body: Int64Value.Builder.() -> U
  */
 public fun Int64Value.copy(body: Int64Value.Builder.() -> Unit = {}): Int64Value {
     return this.asInternal().copyInternal(body)
-}
-
-/**
- * Constructs a new message.
- * ```
- * val message = UInt64Value {
- *    value = ...
- * }
- * ```
- */
-public operator fun UInt64Value.Companion.invoke(
-    body: UInt64Value.Builder.() -> Unit,
-): UInt64Value {
-    return UInt64ValueInternal().apply(body)
 }
 
 /**
@@ -106,18 +54,6 @@ public fun UInt64Value.copy(body: UInt64Value.Builder.() -> Unit = {}): UInt64Va
 }
 
 /**
- * Constructs a new message.
- * ```
- * val message = Int32Value {
- *    value = ...
- * }
- * ```
- */
-public operator fun Int32Value.Companion.invoke(body: Int32Value.Builder.() -> Unit): Int32Value {
-    return Int32ValueInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -127,20 +63,6 @@ public operator fun Int32Value.Companion.invoke(body: Int32Value.Builder.() -> U
  */
 public fun Int32Value.copy(body: Int32Value.Builder.() -> Unit = {}): Int32Value {
     return this.asInternal().copyInternal(body)
-}
-
-/**
- * Constructs a new message.
- * ```
- * val message = UInt32Value {
- *    value = ...
- * }
- * ```
- */
-public operator fun UInt32Value.Companion.invoke(
-    body: UInt32Value.Builder.() -> Unit,
-): UInt32Value {
-    return UInt32ValueInternal().apply(body)
 }
 
 /**
@@ -156,18 +78,6 @@ public fun UInt32Value.copy(body: UInt32Value.Builder.() -> Unit = {}): UInt32Va
 }
 
 /**
- * Constructs a new message.
- * ```
- * val message = BoolValue {
- *    value = ...
- * }
- * ```
- */
-public operator fun BoolValue.Companion.invoke(body: BoolValue.Builder.() -> Unit): BoolValue {
-    return BoolValueInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -180,20 +90,6 @@ public fun BoolValue.copy(body: BoolValue.Builder.() -> Unit = {}): BoolValue {
 }
 
 /**
- * Constructs a new message.
- * ```
- * val message = StringValue {
- *    value = ...
- * }
- * ```
- */
-public operator fun StringValue.Companion.invoke(
-    body: StringValue.Builder.() -> Unit,
-): StringValue {
-    return StringValueInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -203,18 +99,6 @@ public operator fun StringValue.Companion.invoke(
  */
 public fun StringValue.copy(body: StringValue.Builder.() -> Unit = {}): StringValue {
     return this.asInternal().copyInternal(body)
-}
-
-/**
- * Constructs a new message.
- * ```
- * val message = BytesValue {
- *    value = ...
- * }
- * ```
- */
-public operator fun BytesValue.Companion.invoke(body: BytesValue.Builder.() -> Unit): BytesValue {
-    return BytesValueInternal().apply(body)
 }
 
 /**

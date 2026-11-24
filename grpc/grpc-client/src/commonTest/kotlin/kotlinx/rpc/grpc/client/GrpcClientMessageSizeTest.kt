@@ -5,7 +5,6 @@
 package kotlinx.rpc.grpc.client
 
 import io.grpc.testing.integration.SimpleRequest
-import io.grpc.testing.integration.invoke
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.client.testing.GrpcClientTestServer
 import kotlinx.rpc.grpc.client.testing.GrpcClientTestFixture

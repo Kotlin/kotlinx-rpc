@@ -32,7 +32,6 @@ import kxrpc.testing.ReleaseBarrierRequest
 import kxrpc.testing.ScenarioDiagnostics
 import kxrpc.testing.StartDisposableEndpointRequest
 import kxrpc.testing.StopDisposableEndpointRequest
-import kxrpc.testing.invoke
 import kotlin.random.Random
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

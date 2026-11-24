@@ -78,7 +78,7 @@ internal class RpcIrProtoProcessor(
 ) : IrTransformer<RpcIrContext>() {
     override fun visitClass(declaration: IrClass, data: RpcIrContext): IrStatement {
         computeProtoDeclarationIfNeeded(declaration, data)?.let {
-            ProtoDescriptorGenerator(it, data, logger).generate()
+            ProtoIrGenerator(it, data, logger).generate()
         }
 
         return super.visitClass(declaration, data)

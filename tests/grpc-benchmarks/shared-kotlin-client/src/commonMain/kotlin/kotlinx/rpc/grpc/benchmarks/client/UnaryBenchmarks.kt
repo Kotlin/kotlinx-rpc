@@ -7,7 +7,6 @@ package kotlinx.rpc.grpc.benchmarks.client
 import io.grpc.testing.integration.Payload
 import io.grpc.testing.integration.PayloadType
 import io.grpc.testing.integration.SimpleRequest
-import io.grpc.testing.integration.invoke
 import kotlinx.io.bytestring.ByteString
 
 internal fun unaryBenchmarks(backend: BenchmarkBackend) = listOf(

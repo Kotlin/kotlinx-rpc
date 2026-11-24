@@ -10,14 +10,12 @@ import OneOfMsgFieldCase
 import field
 import bytes2OrNull
 import copy
-import invoke
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import nestedOrNull
 import presence
 import str2OrNull
 import test.submsg.Other
-import test.submsg.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

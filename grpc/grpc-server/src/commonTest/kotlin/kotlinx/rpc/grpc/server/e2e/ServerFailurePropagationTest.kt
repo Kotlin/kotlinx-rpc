@@ -8,7 +8,6 @@ import io.grpc.testing.integration.ResponseParameters
 import io.grpc.testing.integration.StreamingInputCallRequest
 import io.grpc.testing.integration.StreamingOutputCallRequest
 import io.grpc.testing.integration.StreamingOutputCallResponse
-import io.grpc.testing.integration.invoke
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.awaitCancellation

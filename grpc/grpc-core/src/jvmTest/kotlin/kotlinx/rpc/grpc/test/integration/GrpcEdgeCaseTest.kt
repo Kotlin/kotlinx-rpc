@@ -16,7 +16,6 @@ import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.assertGrpcFailure
-import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.withService
 import kotlin.test.Test
 import kotlin.test.assertEquals

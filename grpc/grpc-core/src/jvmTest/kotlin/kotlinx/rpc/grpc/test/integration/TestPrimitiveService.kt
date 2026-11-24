@@ -7,7 +7,6 @@ package kotlinx.rpc.grpc.test.integration
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.test.AllPrimitives
 import kotlinx.rpc.grpc.test.PrimitiveService
-import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlin.test.Test

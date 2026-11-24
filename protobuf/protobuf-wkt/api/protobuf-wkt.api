@@ -12,6 +12,7 @@ public abstract interface class com/google/protobuf/kotlin/Any$Builder : com/goo
 }
 
 public final class com/google/protobuf/kotlin/Any$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Any;
 }
 
 public final class com/google/protobuf/kotlin/AnyKotlinKt {
@@ -26,7 +27,6 @@ public final class com/google/protobuf/kotlin/AnyKotlinKt {
 public final class com/google/protobuf/kotlin/Any_extKt {
 	public static final fun copy (Lcom/google/protobuf/kotlin/Any;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Any;
 	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Any;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Any;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/Any$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Any;
 }
 
 public abstract interface class com/google/protobuf/kotlin/Api {
@@ -62,6 +62,7 @@ public abstract interface class com/google/protobuf/kotlin/Api$Builder : com/goo
 }
 
 public final class com/google/protobuf/kotlin/Api$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Api;
 }
 
 public abstract interface class com/google/protobuf/kotlin/ApiPresence {
@@ -77,9 +78,6 @@ public final class com/google/protobuf/kotlin/Api_extKt {
 	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Mixin;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Mixin;
 	public static final fun getPresence (Lcom/google/protobuf/kotlin/Api;)Lcom/google/protobuf/kotlin/ApiPresence;
 	public static final fun getSourceContextOrNull (Lcom/google/protobuf/kotlin/Api;)Lcom/google/protobuf/kotlin/SourceContext;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/Api$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Api;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/Method$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Method;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/Mixin$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Mixin;
 }
 
 public abstract interface class com/google/protobuf/kotlin/BoolValue {
@@ -93,6 +91,7 @@ public abstract interface class com/google/protobuf/kotlin/BoolValue$Builder : c
 }
 
 public final class com/google/protobuf/kotlin/BoolValue$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/BoolValue;
 }
 
 public abstract interface class com/google/protobuf/kotlin/BytesValue {
@@ -106,6 +105,7 @@ public abstract interface class com/google/protobuf/kotlin/BytesValue$Builder : 
 }
 
 public final class com/google/protobuf/kotlin/BytesValue$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/BytesValue;
 }
 
 public abstract interface class com/google/protobuf/kotlin/DescriptorProto {
@@ -152,6 +152,7 @@ public abstract interface class com/google/protobuf/kotlin/DescriptorProto$Build
 }
 
 public final class com/google/protobuf/kotlin/DescriptorProto$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/DescriptorProto;
 }
 
 public abstract interface class com/google/protobuf/kotlin/DescriptorProto$ExtensionRange {
@@ -174,6 +175,7 @@ public abstract interface class com/google/protobuf/kotlin/DescriptorProto$Exten
 }
 
 public final class com/google/protobuf/kotlin/DescriptorProto$ExtensionRange$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/DescriptorProto$ExtensionRange;
 }
 
 public abstract interface class com/google/protobuf/kotlin/DescriptorProto$ReservedRange {
@@ -192,6 +194,7 @@ public abstract interface class com/google/protobuf/kotlin/DescriptorProto$Reser
 }
 
 public final class com/google/protobuf/kotlin/DescriptorProto$ReservedRange$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/DescriptorProto$ReservedRange;
 }
 
 public abstract interface class com/google/protobuf/kotlin/DescriptorProtoPresence {
@@ -448,41 +451,6 @@ public final class com/google/protobuf/kotlin/Descriptor_extKt {
 	public static final fun getVisibilityOrNull (Lcom/google/protobuf/kotlin/DescriptorProto;)Lcom/google/protobuf/kotlin/SymbolVisibility;
 	public static final fun getVisibilityOrNull (Lcom/google/protobuf/kotlin/EnumDescriptorProto;)Lcom/google/protobuf/kotlin/SymbolVisibility;
 	public static final fun getWeakOrNull (Lcom/google/protobuf/kotlin/FieldOptions;)Ljava/lang/Boolean;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/DescriptorProto$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/DescriptorProto;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/DescriptorProto$ExtensionRange$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/DescriptorProto$ExtensionRange;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/DescriptorProto$ReservedRange$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/DescriptorProto$ReservedRange;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/EnumDescriptorProto$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumDescriptorProto;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/EnumDescriptorProto$EnumReservedRange$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumDescriptorProto$EnumReservedRange;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/EnumOptions$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumOptions;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/EnumValueDescriptorProto$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumValueDescriptorProto;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/EnumValueOptions$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumValueOptions;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ExtensionRangeOptions;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Declaration$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Declaration;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/FeatureSet$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSet;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/FeatureSetDefaults$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSetDefaults;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/FieldDescriptorProto$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldDescriptorProto;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/FieldOptions$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldOptions;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/FieldOptions$EditionDefault$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldOptions$EditionDefault;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/FileDescriptorProto$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FileDescriptorProto;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/FileDescriptorSet$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FileDescriptorSet;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/FileOptions$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FileOptions;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/GeneratedCodeInfo;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/MessageOptions$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/MessageOptions;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/MethodDescriptorProto$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/MethodDescriptorProto;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/MethodOptions$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/MethodOptions;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/OneofDescriptorProto$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/OneofDescriptorProto;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/OneofOptions$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/OneofOptions;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/ServiceDescriptorProto$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ServiceDescriptorProto;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/ServiceOptions$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ServiceOptions;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/SourceCodeInfo$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/SourceCodeInfo;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/SourceCodeInfo$Location$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/SourceCodeInfo$Location;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/UninterpretedOption$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/UninterpretedOption;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/UninterpretedOption$NamePart$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/UninterpretedOption$NamePart;
 }
 
 public abstract interface class com/google/protobuf/kotlin/DoubleValue {
@@ -496,6 +464,7 @@ public abstract interface class com/google/protobuf/kotlin/DoubleValue$Builder :
 }
 
 public final class com/google/protobuf/kotlin/DoubleValue$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/DoubleValue;
 }
 
 public abstract interface class com/google/protobuf/kotlin/Duration {
@@ -512,6 +481,7 @@ public abstract interface class com/google/protobuf/kotlin/Duration$Builder : co
 }
 
 public final class com/google/protobuf/kotlin/Duration$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Duration;
 }
 
 public final class com/google/protobuf/kotlin/DurationKotlinKt {
@@ -522,7 +492,6 @@ public final class com/google/protobuf/kotlin/DurationKotlinKt {
 public final class com/google/protobuf/kotlin/Duration_extKt {
 	public static final fun copy (Lcom/google/protobuf/kotlin/Duration;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Duration;
 	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Duration;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Duration;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/Duration$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Duration;
 }
 
 public abstract class com/google/protobuf/kotlin/Edition {
@@ -652,12 +621,12 @@ public abstract interface class com/google/protobuf/kotlin/Empty$Builder : com/g
 }
 
 public final class com/google/protobuf/kotlin/Empty$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Empty;
 }
 
 public final class com/google/protobuf/kotlin/Empty_extKt {
 	public static final fun copy (Lcom/google/protobuf/kotlin/Empty;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Empty;
 	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Empty;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Empty;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/Empty$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Empty;
 }
 
 public abstract interface class com/google/protobuf/kotlin/Enum {
@@ -687,6 +656,7 @@ public abstract interface class com/google/protobuf/kotlin/Enum$Builder : com/go
 }
 
 public final class com/google/protobuf/kotlin/Enum$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Enum;
 }
 
 public abstract interface class com/google/protobuf/kotlin/EnumDescriptorProto {
@@ -718,6 +688,7 @@ public abstract interface class com/google/protobuf/kotlin/EnumDescriptorProto$B
 }
 
 public final class com/google/protobuf/kotlin/EnumDescriptorProto$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumDescriptorProto;
 }
 
 public abstract interface class com/google/protobuf/kotlin/EnumDescriptorProto$EnumReservedRange {
@@ -736,6 +707,7 @@ public abstract interface class com/google/protobuf/kotlin/EnumDescriptorProto$E
 }
 
 public final class com/google/protobuf/kotlin/EnumDescriptorProto$EnumReservedRange$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumDescriptorProto$EnumReservedRange;
 }
 
 public abstract interface class com/google/protobuf/kotlin/EnumDescriptorProtoPresence {
@@ -776,6 +748,7 @@ public abstract interface class com/google/protobuf/kotlin/EnumOptions$Builder :
 }
 
 public final class com/google/protobuf/kotlin/EnumOptions$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumOptions;
 }
 
 public abstract interface class com/google/protobuf/kotlin/EnumOptionsPresence {
@@ -806,6 +779,7 @@ public abstract interface class com/google/protobuf/kotlin/EnumValue$Builder : c
 }
 
 public final class com/google/protobuf/kotlin/EnumValue$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumValue;
 }
 
 public abstract interface class com/google/protobuf/kotlin/EnumValueDescriptorProto {
@@ -828,6 +802,7 @@ public abstract interface class com/google/protobuf/kotlin/EnumValueDescriptorPr
 }
 
 public final class com/google/protobuf/kotlin/EnumValueDescriptorProto$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumValueDescriptorProto;
 }
 
 public abstract interface class com/google/protobuf/kotlin/EnumValueDescriptorProtoPresence {
@@ -863,6 +838,7 @@ public abstract interface class com/google/protobuf/kotlin/EnumValueOptions$Buil
 }
 
 public final class com/google/protobuf/kotlin/EnumValueOptions$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumValueOptions;
 }
 
 public abstract interface class com/google/protobuf/kotlin/EnumValueOptionsPresence {
@@ -894,6 +870,7 @@ public abstract interface class com/google/protobuf/kotlin/ExtensionRangeOptions
 }
 
 public final class com/google/protobuf/kotlin/ExtensionRangeOptions$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ExtensionRangeOptions;
 }
 
 public abstract interface class com/google/protobuf/kotlin/ExtensionRangeOptions$Declaration {
@@ -924,6 +901,7 @@ public abstract interface class com/google/protobuf/kotlin/ExtensionRangeOptions
 }
 
 public final class com/google/protobuf/kotlin/ExtensionRangeOptions$Declaration$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Declaration;
 }
 
 public abstract class com/google/protobuf/kotlin/ExtensionRangeOptions$VerificationState {
@@ -1018,6 +996,7 @@ public abstract interface class com/google/protobuf/kotlin/FeatureSet$Builder : 
 }
 
 public final class com/google/protobuf/kotlin/FeatureSet$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSet;
 }
 
 public abstract class com/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle {
@@ -1252,6 +1231,7 @@ public abstract interface class com/google/protobuf/kotlin/FeatureSet$ProtoLimit
 }
 
 public final class com/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature;
 }
 
 public abstract class com/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits {
@@ -1388,6 +1368,7 @@ public abstract interface class com/google/protobuf/kotlin/FeatureSet$Visibility
 }
 
 public final class com/google/protobuf/kotlin/FeatureSet$VisibilityFeature$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature;
 }
 
 public abstract class com/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility {
@@ -1465,6 +1446,7 @@ public abstract interface class com/google/protobuf/kotlin/FeatureSetDefaults$Bu
 }
 
 public final class com/google/protobuf/kotlin/FeatureSetDefaults$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSetDefaults;
 }
 
 public abstract interface class com/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault {
@@ -1487,6 +1469,7 @@ public abstract interface class com/google/protobuf/kotlin/FeatureSetDefaults$Fe
 }
 
 public final class com/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault;
 }
 
 public abstract interface class com/google/protobuf/kotlin/FeatureSetDefaultsPresence {
@@ -1599,6 +1582,7 @@ public final class com/google/protobuf/kotlin/Field$Cardinality$UNRECOGNIZED : c
 }
 
 public final class com/google/protobuf/kotlin/Field$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Field;
 }
 
 public abstract class com/google/protobuf/kotlin/Field$Kind {
@@ -1807,6 +1791,7 @@ public abstract interface class com/google/protobuf/kotlin/FieldDescriptorProto$
 }
 
 public final class com/google/protobuf/kotlin/FieldDescriptorProto$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldDescriptorProto;
 }
 
 public abstract class com/google/protobuf/kotlin/FieldDescriptorProto$Label {
@@ -2023,12 +2008,12 @@ public abstract interface class com/google/protobuf/kotlin/FieldMask$Builder : c
 }
 
 public final class com/google/protobuf/kotlin/FieldMask$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldMask;
 }
 
 public final class com/google/protobuf/kotlin/FieldMask_extKt {
 	public static final fun copy (Lcom/google/protobuf/kotlin/FieldMask;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldMask;
 	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FieldMask;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/FieldMask;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/FieldMask$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldMask;
 }
 
 public abstract interface class com/google/protobuf/kotlin/FieldOptions {
@@ -2134,6 +2119,7 @@ public final class com/google/protobuf/kotlin/FieldOptions$CType$UNRECOGNIZED : 
 }
 
 public final class com/google/protobuf/kotlin/FieldOptions$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldOptions;
 }
 
 public abstract interface class com/google/protobuf/kotlin/FieldOptions$EditionDefault {
@@ -2152,6 +2138,7 @@ public abstract interface class com/google/protobuf/kotlin/FieldOptions$EditionD
 }
 
 public final class com/google/protobuf/kotlin/FieldOptions$EditionDefault$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldOptions$EditionDefault;
 }
 
 public abstract interface class com/google/protobuf/kotlin/FieldOptions$FeatureSupport {
@@ -2182,6 +2169,7 @@ public abstract interface class com/google/protobuf/kotlin/FieldOptions$FeatureS
 }
 
 public final class com/google/protobuf/kotlin/FieldOptions$FeatureSupport$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport;
 }
 
 public abstract class com/google/protobuf/kotlin/FieldOptions$JSType {
@@ -2442,6 +2430,7 @@ public abstract interface class com/google/protobuf/kotlin/FileDescriptorProto$B
 }
 
 public final class com/google/protobuf/kotlin/FileDescriptorProto$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FileDescriptorProto;
 }
 
 public abstract interface class com/google/protobuf/kotlin/FileDescriptorProtoPresence {
@@ -2464,6 +2453,7 @@ public abstract interface class com/google/protobuf/kotlin/FileDescriptorSet$Bui
 }
 
 public final class com/google/protobuf/kotlin/FileDescriptorSet$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FileDescriptorSet;
 }
 
 public abstract interface class com/google/protobuf/kotlin/FileDescriptorSetPresence {
@@ -2560,6 +2550,7 @@ public abstract interface class com/google/protobuf/kotlin/FileOptions$Builder :
 }
 
 public final class com/google/protobuf/kotlin/FileOptions$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FileOptions;
 }
 
 public abstract class com/google/protobuf/kotlin/FileOptions$OptimizeMode {
@@ -2638,6 +2629,7 @@ public abstract interface class com/google/protobuf/kotlin/FloatValue$Builder : 
 }
 
 public final class com/google/protobuf/kotlin/FloatValue$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FloatValue;
 }
 
 public abstract interface class com/google/protobuf/kotlin/GeneratedCodeInfo {
@@ -2672,6 +2664,7 @@ public abstract interface class com/google/protobuf/kotlin/GeneratedCodeInfo$Ann
 }
 
 public final class com/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation;
 }
 
 public abstract class com/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic {
@@ -2722,6 +2715,7 @@ public abstract interface class com/google/protobuf/kotlin/GeneratedCodeInfo$Bui
 }
 
 public final class com/google/protobuf/kotlin/GeneratedCodeInfo$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/GeneratedCodeInfo;
 }
 
 public abstract interface class com/google/protobuf/kotlin/GeneratedCodeInfoPresence {
@@ -2745,6 +2739,7 @@ public abstract interface class com/google/protobuf/kotlin/Int32Value$Builder : 
 }
 
 public final class com/google/protobuf/kotlin/Int32Value$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Int32Value;
 }
 
 public abstract interface class com/google/protobuf/kotlin/Int64Value {
@@ -2758,6 +2753,7 @@ public abstract interface class com/google/protobuf/kotlin/Int64Value$Builder : 
 }
 
 public final class com/google/protobuf/kotlin/Int64Value$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Int64Value;
 }
 
 public abstract interface class com/google/protobuf/kotlin/ListValue {
@@ -2771,6 +2767,7 @@ public abstract interface class com/google/protobuf/kotlin/ListValue$Builder : c
 }
 
 public final class com/google/protobuf/kotlin/ListValue$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ListValue;
 }
 
 public abstract interface class com/google/protobuf/kotlin/MessageOptions {
@@ -2808,6 +2805,7 @@ public abstract interface class com/google/protobuf/kotlin/MessageOptions$Builde
 }
 
 public final class com/google/protobuf/kotlin/MessageOptions$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/MessageOptions;
 }
 
 public abstract interface class com/google/protobuf/kotlin/MessageOptionsPresence {
@@ -2851,6 +2849,7 @@ public abstract interface class com/google/protobuf/kotlin/Method$Builder : com/
 }
 
 public final class com/google/protobuf/kotlin/Method$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Method;
 }
 
 public abstract interface class com/google/protobuf/kotlin/MethodDescriptorProto {
@@ -2885,6 +2884,7 @@ public abstract interface class com/google/protobuf/kotlin/MethodDescriptorProto
 }
 
 public final class com/google/protobuf/kotlin/MethodDescriptorProto$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/MethodDescriptorProto;
 }
 
 public abstract interface class com/google/protobuf/kotlin/MethodDescriptorProtoPresence {
@@ -2919,6 +2919,7 @@ public abstract interface class com/google/protobuf/kotlin/MethodOptions$Builder
 }
 
 public final class com/google/protobuf/kotlin/MethodOptions$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/MethodOptions;
 }
 
 public abstract class com/google/protobuf/kotlin/MethodOptions$IdempotencyLevel {
@@ -2983,6 +2984,7 @@ public abstract interface class com/google/protobuf/kotlin/Mixin$Builder : com/g
 }
 
 public final class com/google/protobuf/kotlin/Mixin$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Mixin;
 }
 
 public abstract class com/google/protobuf/kotlin/NullValue {
@@ -3029,6 +3031,7 @@ public abstract interface class com/google/protobuf/kotlin/OneofDescriptorProto$
 }
 
 public final class com/google/protobuf/kotlin/OneofDescriptorProto$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/OneofDescriptorProto;
 }
 
 public abstract interface class com/google/protobuf/kotlin/OneofDescriptorProtoPresence {
@@ -3051,6 +3054,7 @@ public abstract interface class com/google/protobuf/kotlin/OneofOptions$Builder 
 }
 
 public final class com/google/protobuf/kotlin/OneofOptions$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/OneofOptions;
 }
 
 public abstract interface class com/google/protobuf/kotlin/OneofOptionsPresence {
@@ -3072,6 +3076,7 @@ public abstract interface class com/google/protobuf/kotlin/Option$Builder : com/
 }
 
 public final class com/google/protobuf/kotlin/Option$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Option;
 }
 
 public abstract interface class com/google/protobuf/kotlin/OptionPresence {
@@ -3097,6 +3102,7 @@ public abstract interface class com/google/protobuf/kotlin/ServiceDescriptorProt
 }
 
 public final class com/google/protobuf/kotlin/ServiceDescriptorProto$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ServiceDescriptorProto;
 }
 
 public abstract interface class com/google/protobuf/kotlin/ServiceDescriptorProtoPresence {
@@ -3123,6 +3129,7 @@ public abstract interface class com/google/protobuf/kotlin/ServiceOptions$Builde
 }
 
 public final class com/google/protobuf/kotlin/ServiceOptions$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ServiceOptions;
 }
 
 public abstract interface class com/google/protobuf/kotlin/ServiceOptionsPresence {
@@ -3141,6 +3148,7 @@ public abstract interface class com/google/protobuf/kotlin/SourceCodeInfo$Builde
 }
 
 public final class com/google/protobuf/kotlin/SourceCodeInfo$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/SourceCodeInfo;
 }
 
 public abstract interface class com/google/protobuf/kotlin/SourceCodeInfo$Location {
@@ -3168,6 +3176,7 @@ public abstract interface class com/google/protobuf/kotlin/SourceCodeInfo$Locati
 }
 
 public final class com/google/protobuf/kotlin/SourceCodeInfo$Location$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/SourceCodeInfo$Location;
 }
 
 public abstract interface class com/google/protobuf/kotlin/SourceCodeInfoPresence {
@@ -3189,12 +3198,12 @@ public abstract interface class com/google/protobuf/kotlin/SourceContext$Builder
 }
 
 public final class com/google/protobuf/kotlin/SourceContext$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/SourceContext;
 }
 
 public final class com/google/protobuf/kotlin/SourceContext_extKt {
 	public static final fun copy (Lcom/google/protobuf/kotlin/SourceContext;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/SourceContext;
 	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/SourceContext;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/SourceContext;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/SourceContext$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/SourceContext;
 }
 
 public abstract interface class com/google/protobuf/kotlin/StringValue {
@@ -3208,6 +3217,7 @@ public abstract interface class com/google/protobuf/kotlin/StringValue$Builder :
 }
 
 public final class com/google/protobuf/kotlin/StringValue$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/StringValue;
 }
 
 public abstract interface class com/google/protobuf/kotlin/Struct {
@@ -3221,6 +3231,7 @@ public abstract interface class com/google/protobuf/kotlin/Struct$Builder : com/
 }
 
 public final class com/google/protobuf/kotlin/Struct$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Struct;
 }
 
 public final class com/google/protobuf/kotlin/Struct_extKt {
@@ -3238,9 +3249,6 @@ public final class com/google/protobuf/kotlin/Struct_extKt {
 	public static final fun getPresence (Lcom/google/protobuf/kotlin/Value;)Lcom/google/protobuf/kotlin/ValuePresence;
 	public static final fun getStringValueOrNull (Lcom/google/protobuf/kotlin/Value;)Ljava/lang/String;
 	public static final fun getStructValueOrNull (Lcom/google/protobuf/kotlin/Value;)Lcom/google/protobuf/kotlin/Struct;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/ListValue$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ListValue;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/Struct$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Struct;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/Value$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Value;
 	public static final fun whenKind (Lcom/google/protobuf/kotlin/Value;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
 }
 
@@ -3342,6 +3350,7 @@ public abstract interface class com/google/protobuf/kotlin/Timestamp$Builder : c
 }
 
 public final class com/google/protobuf/kotlin/Timestamp$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Timestamp;
 }
 
 public final class com/google/protobuf/kotlin/TimestampKotlinKt {
@@ -3352,7 +3361,6 @@ public final class com/google/protobuf/kotlin/TimestampKotlinKt {
 public final class com/google/protobuf/kotlin/Timestamp_extKt {
 	public static final fun copy (Lcom/google/protobuf/kotlin/Timestamp;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Timestamp;
 	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Timestamp;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Timestamp;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/Timestamp$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Timestamp;
 }
 
 public abstract interface class com/google/protobuf/kotlin/Type {
@@ -3385,6 +3393,7 @@ public abstract interface class com/google/protobuf/kotlin/Type$Builder : com/go
 }
 
 public final class com/google/protobuf/kotlin/Type$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Type;
 }
 
 public abstract interface class com/google/protobuf/kotlin/TypePresence {
@@ -3408,11 +3417,6 @@ public final class com/google/protobuf/kotlin/Type_extKt {
 	public static final fun getSourceContextOrNull (Lcom/google/protobuf/kotlin/Enum;)Lcom/google/protobuf/kotlin/SourceContext;
 	public static final fun getSourceContextOrNull (Lcom/google/protobuf/kotlin/Type;)Lcom/google/protobuf/kotlin/SourceContext;
 	public static final fun getValueOrNull (Lcom/google/protobuf/kotlin/Option;)Lcom/google/protobuf/kotlin/Any;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/Enum$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Enum;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/EnumValue$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumValue;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/Field$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Field;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/Option$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Option;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/Type$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Type;
 }
 
 public abstract interface class com/google/protobuf/kotlin/UInt32Value {
@@ -3426,6 +3430,7 @@ public abstract interface class com/google/protobuf/kotlin/UInt32Value$Builder :
 }
 
 public final class com/google/protobuf/kotlin/UInt32Value$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/UInt32Value;
 }
 
 public abstract interface class com/google/protobuf/kotlin/UInt64Value {
@@ -3439,6 +3444,7 @@ public abstract interface class com/google/protobuf/kotlin/UInt64Value$Builder :
 }
 
 public final class com/google/protobuf/kotlin/UInt64Value$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/UInt64Value;
 }
 
 public abstract interface class com/google/protobuf/kotlin/UninterpretedOption {
@@ -3476,6 +3482,7 @@ public abstract interface class com/google/protobuf/kotlin/UninterpretedOption$B
 }
 
 public final class com/google/protobuf/kotlin/UninterpretedOption$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/UninterpretedOption;
 }
 
 public abstract interface class com/google/protobuf/kotlin/UninterpretedOption$NamePart {
@@ -3494,6 +3501,7 @@ public abstract interface class com/google/protobuf/kotlin/UninterpretedOption$N
 }
 
 public final class com/google/protobuf/kotlin/UninterpretedOption$NamePart$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/UninterpretedOption$NamePart;
 }
 
 public abstract interface class com/google/protobuf/kotlin/UninterpretedOptionPresence {
@@ -3543,6 +3551,7 @@ public abstract interface class com/google/protobuf/kotlin/Value$Builder : com/g
 }
 
 public final class com/google/protobuf/kotlin/Value$Companion {
+	public final fun invoke (Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Value;
 }
 
 public final class com/google/protobuf/kotlin/ValueKindCase : java/lang/Enum {
@@ -3586,14 +3595,5 @@ public final class com/google/protobuf/kotlin/Wrappers_extKt {
 	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/StringValue;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/StringValue;
 	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/UInt32Value;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/UInt32Value;
 	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/UInt64Value;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/UInt64Value;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/BoolValue$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/BoolValue;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/BytesValue$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/BytesValue;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/DoubleValue$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/DoubleValue;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/FloatValue$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FloatValue;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/Int32Value$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Int32Value;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/Int64Value$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Int64Value;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/StringValue$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/StringValue;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/UInt32Value$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/UInt32Value;
-	public static final fun invoke (Lcom/google/protobuf/kotlin/UInt64Value$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/UInt64Value;
 }
 

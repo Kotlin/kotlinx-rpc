@@ -16,7 +16,6 @@ import tag_constants.Left
 import tag_constants.Right
 import tag_constants.TagConstantNames
 import tag_constants.TagConstantNamesInternalTags
-import tag_constants.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

@@ -19,9 +19,7 @@ import kotlinx.rpc.protobuf.internal.encodeWire
 import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtoExtensionRegistry
 import test.groups.WithGroups
-import test.groups.invoke
 import test.nested.NestedOuter
-import test.nested.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

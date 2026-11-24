@@ -5,12 +5,10 @@
 package kotlinx.rpc.grpc.client
 
 import com.google.protobuf.kotlin.Empty
-import com.google.protobuf.kotlin.invoke
 import io.grpc.testing.integration.EchoStatus
 import io.grpc.testing.integration.Payload
 import io.grpc.testing.integration.PayloadType
 import io.grpc.testing.integration.SimpleRequest
-import io.grpc.testing.integration.invoke
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.yield

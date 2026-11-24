@@ -6,7 +6,6 @@ package kotlinx.rpc.grpc.test.integration
 
 import com.google.protobuf.kotlin.Empty
 import com.google.protobuf.kotlin.EmptyInternal
-import com.google.protobuf.kotlin.invoke
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.descriptor.methodDescriptor

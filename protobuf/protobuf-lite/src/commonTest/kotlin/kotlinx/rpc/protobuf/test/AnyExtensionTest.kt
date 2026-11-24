@@ -12,16 +12,11 @@ import com.google.protobuf.kotlin.Any
 import com.google.protobuf.kotlin.Duration
 import com.google.protobuf.kotlin.Empty
 import com.google.protobuf.kotlin.Timestamp
-import com.google.protobuf.kotlin.invoke
 import com.google.protobuf.kotlin.contains
-import invoke
 import kotlinx.io.bytestring.isNotEmpty
 import test.nested.NestedOuter
-import test.nested.invoke
 import test.recursive.Recursive
-import test.recursive.invoke
 import test.submsg.Other
-import test.submsg.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

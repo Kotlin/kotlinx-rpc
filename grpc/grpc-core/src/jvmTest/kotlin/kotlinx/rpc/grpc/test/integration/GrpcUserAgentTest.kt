@@ -9,7 +9,6 @@ import kotlinx.rpc.grpc.client.internal.ManagedChannel
 import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.EchoServiceImpl
-import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlin.test.Test

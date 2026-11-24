@@ -5,12 +5,10 @@
 package kotlinx.rpc.grpc.client
 
 import com.google.protobuf.kotlin.Empty
-import com.google.protobuf.kotlin.invoke
 import io.grpc.testing.integration.PayloadType
 import io.grpc.testing.integration.ResponseParameters
 import io.grpc.testing.integration.SimpleRequest
 import io.grpc.testing.integration.StreamingOutputCallRequest
-import io.grpc.testing.integration.invoke
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.toList
@@ -34,7 +32,6 @@ import kxrpc.testing.GrpcStatus as ScenarioGrpcStatus
 import kxrpc.testing.MetadataEntry
 import kxrpc.testing.TerminalBehavior
 import kxrpc.testing.TerminalStage
-import kxrpc.testing.invoke
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals

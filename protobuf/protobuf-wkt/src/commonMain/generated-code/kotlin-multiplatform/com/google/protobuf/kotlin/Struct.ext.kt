@@ -8,18 +8,6 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoDeclaration
 
 /**
- * Constructs a new message.
- * ```
- * val message = Struct {
- *    fields = ...
- * }
- * ```
- */
-public operator fun Struct.Companion.invoke(body: Struct.Builder.() -> Unit): Struct {
-    return StructInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -29,18 +17,6 @@ public operator fun Struct.Companion.invoke(body: Struct.Builder.() -> Unit): St
  */
 public fun Struct.copy(body: Struct.Builder.() -> Unit = {}): Struct {
     return this.asInternal().copyInternal(body)
-}
-
-/**
- * Constructs a new message.
- * ```
- * val message = Value {
- *    nullValue = ...
- * }
- * ```
- */
-public operator fun Value.Companion.invoke(body: Value.Builder.() -> Unit): Value {
-    return ValueInternal().apply(body)
 }
 
 /**
@@ -117,18 +93,6 @@ public inline fun <R> Value.whenKind(
         ValueKindCase.LIST_VALUE -> listValue(this.listValue)
         ValueKindCase.NOT_SET -> notSet()
     }
-}
-
-/**
- * Constructs a new message.
- * ```
- * val message = ListValue {
- *    values = ...
- * }
- * ```
- */
-public operator fun ListValue.Companion.invoke(body: ListValue.Builder.() -> Unit): ListValue {
-    return ListValueInternal().apply(body)
 }
 
 /**

@@ -9,18 +9,6 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoDeclaration
 
 /**
- * Constructs a new message.
- * ```
- * val message = TestStatus {
- *    name = ...
- * }
- * ```
- */
-operator fun TestStatus.Companion.invoke(body: TestStatus.Builder.() -> Unit): TestStatus {
-    return TestStatusInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -33,18 +21,6 @@ fun TestStatus.copy(body: TestStatus.Builder.() -> Unit = {}): TestStatus {
 }
 
 /**
- * Constructs a new message.
- * ```
- * val message = FailureSet {
- *    test = ...
- * }
- * ```
- */
-operator fun FailureSet.Companion.invoke(body: FailureSet.Builder.() -> Unit): FailureSet {
-    return FailureSetInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -54,20 +30,6 @@ operator fun FailureSet.Companion.invoke(body: FailureSet.Builder.() -> Unit): F
  */
 fun FailureSet.copy(body: FailureSet.Builder.() -> Unit = {}): FailureSet {
     return this.asInternal().copyInternal(body)
-}
-
-/**
- * Constructs a new message.
- * ```
- * val message = ConformanceRequest {
- *    protobufPayload = ...
- * }
- * ```
- */
-operator fun ConformanceRequest.Companion.invoke(
-    body: ConformanceRequest.Builder.() -> Unit,
-): ConformanceRequest {
-    return ConformanceRequestInternal().apply(body)
 }
 
 /**
@@ -135,20 +97,6 @@ inline fun <R> ConformanceRequest.whenPayload(
         ConformanceRequestPayloadCase.TEXT_PAYLOAD -> textPayload(this.textPayload)
         ConformanceRequestPayloadCase.NOT_SET -> notSet()
     }
-}
-
-/**
- * Constructs a new message.
- * ```
- * val message = ConformanceResponse {
- *    parseError = ...
- * }
- * ```
- */
-operator fun ConformanceResponse.Companion.invoke(
-    body: ConformanceResponse.Builder.() -> Unit,
-): ConformanceResponse {
-    return ConformanceResponseInternal().apply(body)
 }
 
 /**
@@ -248,20 +196,6 @@ inline fun <R> ConformanceResponse.whenResult(
         ConformanceResponseResultCase.TEXT_PAYLOAD -> textPayload(this.textPayload)
         ConformanceResponseResultCase.NOT_SET -> notSet()
     }
-}
-
-/**
- * Constructs a new message.
- * ```
- * val message = JspbEncodingConfig {
- *    useJspbArrayAnyFormat = ...
- * }
- * ```
- */
-operator fun JspbEncodingConfig.Companion.invoke(
-    body: JspbEncodingConfig.Builder.() -> Unit,
-): JspbEncodingConfig {
-    return JspbEncodingConfigInternal().apply(body)
 }
 
 /**
