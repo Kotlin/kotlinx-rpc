@@ -13,9 +13,8 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHash
 /**
  * Creates a gRPC client on the channel that [builder] builds.
  *
- * Use this function when a hostname and a port can't describe the connection, or when the channel
- * needs a grpc-java setting that [GrpcClientConfiguration] doesn't have.
- * Examples are an in-process channel, a Unix domain socket and a custom transport.
+ * Use this function for an in-process channel, a Unix domain socket, a custom transport,
+ * or a grpc-java setting that [GrpcClientConfiguration] doesn't have.
  *
  * ```kotlin
  * val client = GrpcClient(InProcessChannelBuilder.forName("my-server")) {
@@ -23,19 +22,24 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHash
  * }
  * ```
  *
- * The function applies [configure] to [builder] and then builds the channel:
+ * A setting from [configure] replaces the value of [builder]. A setting that [configure] doesn't set
+ * has the value of [builder], not the default of [GrpcClientBaseConfiguration]. Exceptions:
  *
- * - A setting from [configure] replaces the value that [builder] has.
- * - A setting that [configure] doesn't set has the value from [builder],
- *   not the default of [GrpcClientBaseConfiguration].
- * - [configure] has no transport credentials. Set them on [builder].
- * - If [builder] rejects a setting from [configure] with [UnsupportedOperationException],
- *   the function throws [GrpcUnsupportedSettingException].
- *   [builder] can then have a part of the settings, so make a new builder for the next call.
- * - A builder can ignore a setting that it doesn't support. The function doesn't report such a setting.
+ * - [GrpcClientChannelBuilderConfiguration.keepAlive]:
+ *   replaces the [GrpcClientChannelBuilderConfiguration.KeepAlive.time],
+ *   the [GrpcClientChannelBuilderConfiguration.KeepAlive.timeout],
+ *   and [GrpcClientChannelBuilderConfiguration.KeepAlive.withoutCalls] of [builder].
+ *   A value that the block doesn't set has the default of [GrpcClientBaseConfiguration.KeepAlive].
+ * - [GrpcClientChannelBuilderConfiguration.callCredentials]: each call uses them and the call credentials of [builder].
+ * - [GrpcClientChannelBuilderConfiguration.intercept]: each call runs these interceptors,
+ *   then the interceptors of [builder]. The interceptors of [builder] run nearer to the network.
+ * - Transport credentials: [configure] has none. Set them on [builder].
  *
  * [GrpcClient.shutdown] shuts down the channel.
- * The client doesn't shut down an executor or an event loop group that the caller gave to [builder].
+ * It doesn't shut down an executor or an event loop group that the caller gave to [builder].
+ *
+ * @throws GrpcUnsupportedSettingException when [builder] rejects a setting from [configure]
+ * with [UnsupportedOperationException]. [builder] then has a part of the settings, so don't use it again.
  */
 public fun GrpcClient(
     builder: io.grpc.ManagedChannelBuilder<*>,
@@ -53,31 +57,19 @@ public fun GrpcClient(
 }
 
 /**
- * The settings of a `GrpcClient` that gets its channel from a grpc-java `ManagedChannelBuilder`.
+ * The configuration of a [GrpcClient] on a grpc-java `ManagedChannelBuilder`.
  *
- * The builder already has the transport credentials, so this configuration has only [callCredentials].
- *
- * A setting that the configuration block doesn't set has the value of the builder,
- * not the default that the property docs of [GrpcClientBaseConfiguration] give.
+ * A setting that the configuration block doesn't set has the value of the builder, not the documented default.
+ * Set the transport credentials on the builder. This configuration has only [callCredentials].
  */
 @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
 public class GrpcClientChannelBuilderConfiguration internal constructor() : GrpcClientBaseConfiguration() {
     /**
      * The call credentials that the client sends with every call.
+     * The default is [GrpcEmptyCallCredentials]. To send more than one, combine them with `+`.
      *
-     * The default is [GrpcEmptyCallCredentials], which doesn't send anything.
-     * To send more than one, combine them with `+`.
-     * To use the call credentials of a value that also has transport credentials,
-     * read its [GrpcClientCredentials.callCredentials].
-     *
-     * Call credentials with [GrpcCallCredentials.requiresTransportSecurity] `true`, which is the default,
-     * need a channel that reports the security level `PRIVACY_AND_INTEGRITY`.
-     * On another channel, each call fails with `UNAUTHENTICATED`.
-     * Whether a channel reports this level depends on its transport:
-     *
-     * - TLS or in-process: yes.
-     * - Plaintext: no.
-     * - Custom: only when the code of the transport sets it.
+     * To take them from a value that also has transport credentials,
+     * read its [GrpcClientCredentials.callCredentials]:
      *
      * ```kotlin
      * val credentials = GrpcTlsClientCredentials { ... } + BearerTokenCredentials(token)
@@ -86,6 +78,16 @@ public class GrpcClientChannelBuilderConfiguration internal constructor() : Grpc
      *     callCredentials = credentials.callCredentials
      * }
      * ```
+     *
+     * The builder can have call credentials, for example from `io.grpc.CompositeChannelCredentials`.
+     * This property doesn't replace them. Each call uses both.
+     *
+     * By default, [GrpcCallCredentials.requiresTransportSecurity] is `true`. Each call then fails with
+     * `UNAUTHENTICATED`, unless the channel reports the security level `PRIVACY_AND_INTEGRITY`:
+     *
+     * - TLS or in-process: yes.
+     * - Plaintext: no.
+     * - Custom transport: only when its code sets the level.
      */
     public var callCredentials: GrpcCallCredentials = GrpcEmptyCallCredentials
 }

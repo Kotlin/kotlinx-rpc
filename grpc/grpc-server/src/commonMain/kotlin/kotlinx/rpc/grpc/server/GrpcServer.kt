@@ -139,9 +139,6 @@ public fun GrpcServer(
     return buildGrpcServer(serverBuilder, config, parentContext)
 }
 
-/**
- * Builds the server from [serverBuilder], which already has the transport settings of [config].
- */
 internal fun buildGrpcServer(
     serverBuilder: ServerBuilder<*>,
     config: GrpcServerBaseConfiguration,
@@ -161,17 +158,16 @@ internal fun buildGrpcServer(
 }
 
 /**
- * The gRPC server settings that every `GrpcServer` factory accepts.
+ * The settings that every `GrpcServer` factory accepts. [GrpcServerConfiguration] adds the credentials.
  *
- * The credentials aren't among them. [GrpcServerConfiguration] adds them.
+ * The documented defaults are for the factory that takes a port.
  *
- * The property docs give the defaults of the factory that takes a port.
- * On the JVM, the factory that takes a grpc-java `ServerBuilder` has other defaults:
- * a setting that the configuration block doesn't set has the value of the builder.
+ * On the JVM, a setting that the configuration block doesn't set has the value of the grpc-java builder
+ * in two cases:
  *
- * On the JVM, a custom `io.grpc.ServerProvider` can give the factory that takes a port
- * a builder without support for a setting.
- * A setting that the configuration block doesn't set then has the value of that builder, not the default.
+ * - The factory takes a grpc-java `ServerBuilder`.
+ * - A custom `io.grpc.ServerProvider` gives the factory that takes a port a builder,
+ *   and the builder doesn't support the setting.
  *
  * @see GrpcServerConfiguration
  */
@@ -357,6 +353,9 @@ public open class GrpcServerBaseConfiguration internal constructor() {
      * A client that repeatedly pings more often loses its connection.
      * The server sends `GOAWAY` with the debug data `too_many_pings`.
      *
+     * On the JVM, with a grpc-java `io.grpc.ServerBuilder`, this function replaces the keepalive time and
+     * the keepalive timeout of the builder. A value that [configure] doesn't set has the default of [KeepAlive].
+     *
      * On the JVM, the server provider must support this option, otherwise it will fail at runtime.
      * Netty supports this option.
      */
@@ -365,10 +364,8 @@ public open class GrpcServerBaseConfiguration internal constructor() {
     }
 
     /**
-     * Configures the gRPC server to register services.
+     * Registers the services of the server. A second call replaces the block of the first call.
      *
-     * This method allows defining a block of logic to configure an [RpcServer] instance,
-     * where multiple services can be registered:
      * ```kt
      * GrpcServer(port) {
      *     services {
@@ -377,8 +374,6 @@ public open class GrpcServerBaseConfiguration internal constructor() {
      *     }
      * }
      * ```
-     *
-     * @param block A lambda with [RpcServer] as its receiver, allowing service registration.
      */
     public fun services(block: RpcServer.() -> Unit) {
         serviceBuilder = block
@@ -410,24 +405,22 @@ public open class GrpcServerBaseConfiguration internal constructor() {
 }
 
 /**
- * A configuration class for setting up a gRPC server.
- *
- * This class provides an API to configure various server parameters, such as message marshallers,
- * security credentials, server-side interceptors, and service registration.
+ * The configuration of the `GrpcServer` factory that takes a port.
  */
 @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
 public class GrpcServerConfiguration internal constructor() : GrpcServerBaseConfiguration() {
     /**
-     * Sets the credentials to be used by the gRPC server for secure communication.
+     * The transport credentials of the server.
      *
-     * By default, the server does not have any credentials configured and the communication is plaintext.
-     * To set up transport-layer security provide a [GrpcTlsServerCredentials] by constructing it with the
-     * [tls] function.
-     *
-     * @see GrpcTlsServerCredentials
-     * @see tls
+     * The default is [plaintext]. For TLS, set the result of [tls].
      */
-    public var credentials: GrpcServerCredentials? = null
+    public var credentials: GrpcServerCredentials = plaintext()
+
+    /**
+     * Returns transport credentials without encryption, for [credentials].
+     * Use them only where security isn't a concern, such as local development and tests.
+     */
+    public fun plaintext(): GrpcServerCredentials = GrpcInsecureServerCredentials()
 
     /**
      * Configures and creates TLS (Transport Layer Security) credentials for the gRPC server.

@@ -10,14 +10,12 @@ import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
 import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
- * The credentials of a gRPC client.
- *
- * The credentials have two parts, and a value has one of them or both:
+ * The credentials of a gRPC client. A value has one of two parts, or both:
  *
  * - [GrpcTransportCredentials]: the security of the connection, plaintext or TLS.
  * - [GrpcCallCredentials]: the authentication data that the client sends with each call.
  *
- * To make a value with both parts, combine them with the [plus] operator:
+ * To make a value with both parts, use the [plus] operator:
  * ```kotlin
  * val credentials = GrpcTlsClientCredentials { ... } + BearerTokenCredentials(token)
  * ```
@@ -31,36 +29,24 @@ public interface GrpcClientCredentials
 /**
  * The credentials that set the security of the connection to the gRPC server.
  *
- * The library has two implementations:
- *
- * - [GrpcInsecureClientCredentials]: no transport security (plaintext).
- * - [GrpcTlsClientCredentials]: TLS, with optional mutual TLS (mTLS).
+ * Variations:
+ * - [GrpcInsecureClientCredentials] - no transport security (plaintext).
+ * - [GrpcTlsClientCredentials] - TLS, with optional mutual TLS (mTLS).
  */
 @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface GrpcTransportCredentials : GrpcClientCredentials
 
 /**
- * Adds call credentials to these credentials.
- *
- * The result has the transport credentials of the receiver, and the call credentials of
- * the receiver followed by [other].
- *
- * ## Example
+ * Returns credentials with the transport credentials of the receiver,
+ * and the call credentials of the receiver followed by [other].
  *
  * ```kotlin
- * val tlsCredentials = GrpcTlsClientCredentials {
- *     trustManager(serverCertPem)
- * }
- * val bearerToken = BearerTokenCredentials("my-token")
- * val combined = tlsCredentials + bearerToken
- *
  * val client = GrpcClient("example.com", 443) {
- *     credentials = combined
+ *     credentials = tls { trustManager(serverCertPem) } + BearerTokenCredentials("my-token")
  * }
  * ```
  *
  * @see combine
- * @see GrpcCallCredentials
  */
 public operator fun GrpcClientCredentials.plus(other: GrpcCallCredentials): GrpcClientCredentials {
     val transport = transportCredentials ?: return callCredentials + other
@@ -68,11 +54,10 @@ public operator fun GrpcClientCredentials.plus(other: GrpcCallCredentials): Grpc
 }
 
 /**
- * The call credentials of these credentials.
+ * The call credentials of these credentials,
+ * or [GrpcEmptyCallCredentials] when they have only transport credentials.
  *
- * Use this property when a `GrpcClient` factory takes only call credentials,
- * and the value also has transport credentials.
- * The value is [GrpcEmptyCallCredentials] when the credentials have only transport credentials.
+ * Use this property for a `GrpcClient` factory that takes only call credentials:
  *
  * ```kotlin
  * val credentials = GrpcTlsClientCredentials { ... } + BearerTokenCredentials(token)
@@ -97,8 +82,6 @@ internal val GrpcClientCredentials.transportCredentials: GrpcTransportCredential
 
 /**
  * Adds call credentials to these credentials. The same as the [plus] operator.
- *
- * @see plus
  */
 public fun GrpcClientCredentials.combine(other: GrpcCallCredentials): GrpcClientCredentials = this + other
 

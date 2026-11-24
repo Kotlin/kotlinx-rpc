@@ -86,12 +86,6 @@ internal actual fun ManagedChannelBuilder<*>.buildChannel(config: GrpcClientConf
     return applyConfig(config, explicitOnly = false).build().toKotlin()
 }
 
-/**
- * Applies each setting of [config] to the builder with [applySetting].
- *
- * @param explicitOnly When `true`, a size limit or the idle timeout that [config] doesn't set
- * explicitly stays as the builder has it.
- */
 internal fun ManagedChannelBuilder<*>.applyConfig(
     config: GrpcClientBaseConfiguration,
     explicitOnly: Boolean,

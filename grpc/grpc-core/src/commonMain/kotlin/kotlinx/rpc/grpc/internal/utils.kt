@@ -17,17 +17,6 @@ public fun internalError(message: String): Nothing {
     )
 }
 
-/**
- * Runs [set], which applies the setting [name] of a configuration to [builder].
- *
- * When [set] throws [UnsupportedOperationException], [builder] doesn't support the setting:
- *
- * - [isSet] is `true`: the function throws a [GrpcUnsupportedSettingException] that names the setting.
- * - [isSet] is `false`: the function returns. The setting has the value of [builder].
- *
- * @param isSet `true` when the configuration block set the setting.
- * `false` when [set] applies the default of the setting.
- */
 @InternalRpcApi
 public inline fun applySetting(builder: Any, name: String, isSet: Boolean, set: () -> Unit) {
     try {

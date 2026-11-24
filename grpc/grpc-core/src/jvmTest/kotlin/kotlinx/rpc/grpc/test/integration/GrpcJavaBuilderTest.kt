@@ -4,25 +4,44 @@
 
 package kotlinx.rpc.grpc.test.integration
 
+import io.grpc.CallCredentials
+import io.grpc.CallOptions
+import io.grpc.Channel
+import io.grpc.ClientCall
+import io.grpc.ClientInterceptor
+import io.grpc.CompositeChannelCredentials
 import io.grpc.ForwardingChannelBuilder2
 import io.grpc.ForwardingServerBuilder
+import io.grpc.Grpc
+import io.grpc.InsecureChannelCredentials
 import io.grpc.ManagedChannelBuilder
+import io.grpc.Metadata
+import io.grpc.MethodDescriptor
 import io.grpc.Server
 import io.grpc.ServerBuilder
+import io.grpc.ServerCall
+import io.grpc.ServerCallHandler
+import io.grpc.ServerInterceptor
 import io.grpc.ServerProvider
 import io.grpc.ServerRegistry
+import io.grpc.ServerServiceDefinition
+import io.grpc.Status
 import io.grpc.inprocess.InProcessChannelBuilder
 import io.grpc.inprocess.InProcessServerBuilder
 import io.grpc.inprocess.InProcessSocketAddress
 import io.grpc.netty.NettyChannelBuilder
 import io.grpc.netty.NettyServerBuilder
+import io.grpc.stub.ClientCalls
+import io.grpc.stub.ServerCalls
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
 import kotlinx.rpc.grpc.client.GrpcClient
+import kotlinx.rpc.grpc.client.GrpcClientCallScope
 import kotlinx.rpc.grpc.client.GrpcClientChannelBuilderConfiguration
+import kotlinx.rpc.grpc.client.GrpcClientInterceptor
 import kotlinx.rpc.grpc.client.GrpcTlsClientCredentials
 import kotlinx.rpc.grpc.client.callCredentials
 import kotlinx.rpc.grpc.client.plus
@@ -39,13 +58,18 @@ import kotlinx.rpc.grpc.test.assertGrpcFailure
 import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
+import java.io.InputStream
 import java.net.InetSocketAddress
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.Duration.Companion.seconds
 
 class GrpcJavaBuilderTest {
@@ -235,21 +259,12 @@ class GrpcJavaBuilderTest {
     @Test
     fun `call credentials of a combined value - should reach the server`() {
         val shared = GrpcTlsClientCredentials() + NoTLSBearerTokenCredentials()
-        var serverHeaders: GrpcMetadata? = null
+        val server = RequestHeadersInterceptor()
         val name = InProcessServerBuilder.generateName()
         runBuilderTest(
             serverBuilder = InProcessServerBuilder.forName(name),
             clientBuilder = { InProcessChannelBuilder.forName(name) },
-            serverConfiguration = {
-                intercept(object : GrpcServerInterceptor {
-                    override fun <Req, Resp> GrpcServerCallScope<Req, Resp>.intercept(
-                        request: Flow<Req>,
-                    ): Flow<Resp> {
-                        serverHeaders = requestHeaders
-                        return proceed(request)
-                    }
-                })
-            },
+            serverConfiguration = { intercept(server) },
             clientConfiguration = {
                 callCredentials = shared.callCredentials
             },
@@ -257,7 +272,143 @@ class GrpcJavaBuilderTest {
             client.echo("Echo")
         }
 
-        assertEquals(listOf("Bearer token"), serverHeaders?.getAll("authorization"))
+        assertEquals(listOf("Bearer token"), server.requestHeaders?.getAll("authorization"))
+    }
+
+    @Test
+    fun `client builder call credentials with configured call credentials - should both reach the server`() {
+        val server = RequestHeadersInterceptor()
+        runBuilderTest(
+            clientBuilder = {
+                val credentials = CompositeChannelCredentials.create(
+                    InsecureChannelCredentials.create(),
+                    HeaderCallCredentials("x-builder", "builder"),
+                )
+                Grpc.newChannelBuilderForAddress("localhost", it.port, credentials)
+            },
+            serverConfiguration = { intercept(server) },
+            clientConfiguration = { callCredentials = NoTLSBearerTokenCredentials() },
+        ) { _, client ->
+            client.echo("Echo")
+        }
+
+        assertEquals(listOf("builder"), server.requestHeaders?.getAll("x-builder"))
+        assertEquals(listOf("Bearer token"), server.requestHeaders?.getAll("authorization"))
+    }
+
+    @Test
+    fun `client interceptors of the configuration and of the builder - should run in this order`() {
+        val interceptors = CopyOnWriteArrayList<String>()
+        val name = InProcessServerBuilder.generateName()
+        runBuilderTest(
+            serverBuilder = InProcessServerBuilder.forName(name),
+            clientBuilder = {
+                InProcessChannelBuilder.forName(name).intercept(RecordingJavaClientInterceptor(interceptors))
+            },
+            clientConfiguration = { intercept(RecordingClientInterceptor(interceptors)) },
+        ) { _, client ->
+            client.echo("Echo")
+        }
+
+        assertEquals(listOf(CONFIGURATION, BUILDER), interceptors)
+    }
+
+    @Test
+    fun `client keepAlive with one value - should replace all keep-alive values of the builder`() {
+        val builder = KeepAliveRecordingChannelBuilder(InProcessChannelBuilder.forName("unused"))
+            .keepAliveTimeout(5, TimeUnit.SECONDS)
+            .keepAliveWithoutCalls(true)
+
+        GrpcClient(builder) {
+            keepAlive { time = 30.seconds }
+        }.shutdownNow()
+
+        assertEquals(30.seconds, builder.time)
+        assertEquals(20.seconds, builder.timeout)
+        assertEquals(false, builder.withoutCalls)
+    }
+
+    @Test
+    fun `server keepAlive with one value - should replace both keepalive values of the builder`() {
+        val builder = KeepAliveRecordingServerBuilder(InProcessServerBuilder.forName("unused"))
+            .keepAliveTimeout(5, TimeUnit.SECONDS)
+
+        GrpcServer(builder) {
+            keepAlive { time = 30.seconds }
+        }.shutdownNow()
+
+        assertEquals(30.seconds, builder.time)
+        assertEquals(20.seconds, builder.timeout)
+    }
+
+    @Test
+    fun `server builder service with configured services - should stay`() {
+        val name = InProcessServerBuilder.generateName()
+        runBuilderTest(
+            serverBuilder = InProcessServerBuilder.forName(name).addService(grpcJavaService(BUILDER_METHOD)),
+            clientBuilder = { InProcessChannelBuilder.forName(name) },
+        ) { _, client ->
+            callGrpcJavaService(name, BUILDER_METHOD)
+            assertEquals("Echo", client.echo("Echo"))
+        }
+    }
+
+    @Test
+    fun `server builder service with the name of a configured service - should be replaced`() {
+        var calledMethod: String? = null
+        val name = InProcessServerBuilder.generateName()
+        runBuilderTest(
+            serverBuilder = InProcessServerBuilder.forName(name)
+                .addService(grpcJavaService(ECHO_METHOD, Status.DATA_LOSS)),
+            clientBuilder = { InProcessChannelBuilder.forName(name) },
+            clientConfiguration = {
+                intercept(object : GrpcClientInterceptor {
+                    override fun <Request, Response> GrpcClientCallScope<Request, Response>.intercept(
+                        request: Flow<Request>,
+                    ): Flow<Response> {
+                        calledMethod = method.getFullMethodName()
+                        return proceed(request)
+                    }
+                })
+            },
+        ) { _, client ->
+            assertEquals("Echo", client.echo("Echo"))
+        }
+
+        assertEquals(ECHO_METHOD.fullMethodName, calledMethod)
+    }
+
+    @Test
+    fun `server interceptors of the builder and of the configuration - should run in this order`() {
+        val interceptors = CopyOnWriteArrayList<String>()
+        val name = InProcessServerBuilder.generateName()
+        runBuilderTest(
+            serverBuilder = InProcessServerBuilder.forName(name)
+                .intercept(RecordingJavaServerInterceptor(interceptors)),
+            clientBuilder = { InProcessChannelBuilder.forName(name) },
+            serverConfiguration = { intercept(RecordingServerInterceptor(interceptors)) },
+        ) { _, client ->
+            client.echo("Echo")
+        }
+
+        assertEquals(listOf(BUILDER, CONFIGURATION), interceptors)
+    }
+
+    @Test
+    fun `server interceptor of the configuration on a service of the builder - should not run`() {
+        val interceptors = CopyOnWriteArrayList<String>()
+        val name = InProcessServerBuilder.generateName()
+        runBuilderTest(
+            serverBuilder = InProcessServerBuilder.forName(name)
+                .addService(grpcJavaService(BUILDER_METHOD))
+                .intercept(RecordingJavaServerInterceptor(interceptors)),
+            clientBuilder = { InProcessChannelBuilder.forName(name) },
+            serverConfiguration = { intercept(RecordingServerInterceptor(interceptors)) },
+        ) { _, _ ->
+            callGrpcJavaService(name, BUILDER_METHOD)
+        }
+
+        assertEquals(listOf(BUILDER), interceptors)
     }
 
     private fun runBuilderTest(
@@ -318,6 +469,101 @@ class GrpcJavaBuilderTest {
             throw UnsupportedOperationException()
     }
 
+    private class KeepAliveRecordingChannelBuilder(
+        private val delegate: ManagedChannelBuilder<*>,
+    ) : ForwardingChannelBuilder2<KeepAliveRecordingChannelBuilder>() {
+        var time: Duration? = null
+        var timeout: Duration? = null
+        var withoutCalls: Boolean? = null
+
+        override fun delegate(): ManagedChannelBuilder<*> = delegate
+
+        override fun keepAliveTime(keepAliveTime: Long, timeUnit: TimeUnit): KeepAliveRecordingChannelBuilder =
+            apply { time = timeUnit.toNanos(keepAliveTime).nanoseconds }
+
+        override fun keepAliveTimeout(keepAliveTimeout: Long, timeUnit: TimeUnit): KeepAliveRecordingChannelBuilder =
+            apply { timeout = timeUnit.toNanos(keepAliveTimeout).nanoseconds }
+
+        override fun keepAliveWithoutCalls(enable: Boolean): KeepAliveRecordingChannelBuilder =
+            apply { withoutCalls = enable }
+    }
+
+    private class KeepAliveRecordingServerBuilder(
+        private val delegate: ServerBuilder<*>,
+    ) : ForwardingServerBuilder<KeepAliveRecordingServerBuilder>() {
+        var time: Duration? = null
+        var timeout: Duration? = null
+
+        override fun delegate(): ServerBuilder<*> = delegate
+
+        override fun keepAliveTime(keepAliveTime: Long, timeUnit: TimeUnit): KeepAliveRecordingServerBuilder =
+            apply { time = timeUnit.toNanos(keepAliveTime).nanoseconds }
+
+        override fun keepAliveTimeout(keepAliveTimeout: Long, timeUnit: TimeUnit): KeepAliveRecordingServerBuilder =
+            apply { timeout = timeUnit.toNanos(keepAliveTimeout).nanoseconds }
+    }
+
+    private class RequestHeadersInterceptor : GrpcServerInterceptor {
+        @Volatile
+        var requestHeaders: GrpcMetadata? = null
+
+        override fun <Req, Resp> GrpcServerCallScope<Req, Resp>.intercept(request: Flow<Req>): Flow<Resp> {
+            this@RequestHeadersInterceptor.requestHeaders = requestHeaders
+            return proceed(request)
+        }
+    }
+
+    private class RecordingServerInterceptor(private val interceptors: MutableList<String>) : GrpcServerInterceptor {
+        override fun <Req, Resp> GrpcServerCallScope<Req, Resp>.intercept(request: Flow<Req>): Flow<Resp> {
+            interceptors += CONFIGURATION
+            return proceed(request)
+        }
+    }
+
+    private class RecordingJavaServerInterceptor(private val interceptors: MutableList<String>) : ServerInterceptor {
+        override fun <ReqT, RespT> interceptCall(
+            call: ServerCall<ReqT, RespT>,
+            headers: Metadata,
+            next: ServerCallHandler<ReqT, RespT>,
+        ): ServerCall.Listener<ReqT> {
+            interceptors += BUILDER
+            return next.startCall(call, headers)
+        }
+    }
+
+    private class RecordingClientInterceptor(private val interceptors: MutableList<String>) : GrpcClientInterceptor {
+        override fun <Request, Response> GrpcClientCallScope<Request, Response>.intercept(
+            request: Flow<Request>,
+        ): Flow<Response> {
+            interceptors += CONFIGURATION
+            return proceed(request)
+        }
+    }
+
+    private class RecordingJavaClientInterceptor(private val interceptors: MutableList<String>) : ClientInterceptor {
+        override fun <ReqT, RespT> interceptCall(
+            method: MethodDescriptor<ReqT, RespT>,
+            callOptions: CallOptions,
+            next: Channel,
+        ): ClientCall<ReqT, RespT> {
+            interceptors += BUILDER
+            return next.newCall(method, callOptions)
+        }
+    }
+
+    private class HeaderCallCredentials(private val name: String, private val value: String) : CallCredentials() {
+        override fun applyRequestMetadata(requestInfo: RequestInfo, appExecutor: Executor, applier: MetadataApplier) {
+            val headers = Metadata()
+            headers.put(Metadata.Key.of(name, Metadata.ASCII_STRING_MARSHALLER), value)
+            applier.apply(headers)
+        }
+    }
+
+    private object BytesMarshaller : MethodDescriptor.Marshaller<ByteArray> {
+        override fun stream(value: ByteArray): InputStream = value.inputStream()
+        override fun parse(stream: InputStream): ByteArray = stream.readBytes()
+    }
+
     private class NoListenSocketsServerBuilder(
         private val delegate: ServerBuilder<*>,
     ) : ForwardingServerBuilder<NoListenSocketsServerBuilder>() {
@@ -342,6 +588,43 @@ class GrpcJavaBuilderTest {
     companion object {
         private const val SMALL_LIMIT = 128
         private val LARGE_MESSAGE = "x".repeat(1024)
+        private const val BUILDER = "builder"
+        private const val CONFIGURATION = "configuration"
+
+        private val BUILDER_METHOD = bytesMethod("kotlinx.rpc.grpc.test.BuilderService", "Call")
+        private val ECHO_METHOD = bytesMethod("kotlinx.rpc.grpc.test.EchoService", "UnaryEcho")
+
+        private fun bytesMethod(service: String, method: String): MethodDescriptor<ByteArray, ByteArray> =
+            MethodDescriptor.newBuilder(BytesMarshaller, BytesMarshaller)
+                .setType(MethodDescriptor.MethodType.UNARY)
+                .setFullMethodName(MethodDescriptor.generateFullMethodName(service, method))
+                .build()
+
+        private fun grpcJavaService(
+            method: MethodDescriptor<ByteArray, ByteArray>,
+            status: Status = Status.OK,
+        ): ServerServiceDefinition {
+            val handler = ServerCalls.asyncUnaryCall<ByteArray, ByteArray> { _, response ->
+                if (status.isOk) {
+                    response.onNext(ByteArray(0))
+                    response.onCompleted()
+                } else {
+                    response.onError(status.asRuntimeException())
+                }
+            }
+
+            return ServerServiceDefinition.builder(method.serviceName.orEmpty()).addMethod(method, handler).build()
+        }
+
+        private fun callGrpcJavaService(serverName: String, method: MethodDescriptor<ByteArray, ByteArray>) {
+            val channel = InProcessChannelBuilder.forName(serverName).build()
+
+            try {
+                ClientCalls.blockingUnaryCall(channel, method, CallOptions.DEFAULT, ByteArray(0))
+            } finally {
+                channel.shutdownNow()
+            }
+        }
 
         private fun nettyChannelBuilder(server: GrpcServer): NettyChannelBuilder =
             NettyChannelBuilder.forAddress("localhost", server.port).usePlaintext()

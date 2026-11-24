@@ -22,11 +22,8 @@ import kotlin.time.Duration
 public actual typealias ServerBuilder<T> = io.grpc.ServerBuilder<T>
 
 @InternalRpcApi
-public actual fun ServerBuilder(port: Int, credentials: GrpcServerCredentials?): ServerBuilder<*> {
-    if (credentials != null) {
-        return Grpc.newServerBuilderForPort(port, credentials)
-    }
-    return io.grpc.ServerBuilder.forPort(port)
+public actual fun ServerBuilder(port: Int, credentials: GrpcServerCredentials): ServerBuilder<*> {
+    return Grpc.newServerBuilderForPort(port, credentials)
 }
 
 @InternalRpcApi
@@ -38,12 +35,6 @@ internal actual fun ServerBuilder<*>.applyConfig(config: GrpcServerConfiguration
     return applyConfig(config, explicitOnly = false)
 }
 
-/**
- * Applies each setting of [config] to the builder with [applySetting].
- *
- * @param explicitOnly When `true`, a size limit or a connection limit that [config] doesn't set
- * explicitly stays as the builder has it.
- */
 internal fun ServerBuilder<*>.applyConfig(
     config: GrpcServerBaseConfiguration,
     explicitOnly: Boolean,
