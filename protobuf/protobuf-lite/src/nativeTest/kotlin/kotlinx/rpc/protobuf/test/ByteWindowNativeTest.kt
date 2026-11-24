@@ -52,7 +52,7 @@ class ByteWindowNativeTest {
         }
     }
 
-    private fun snapshot(memory: CPointer<ByteVar>, size: Int): ByteArray = ByteArray(size).also {
-        it.usePinned { pinned -> memcpy(pinned.addressOf(0), memory, size.convert()) }
+    private fun snapshot(memory: CPointer<ByteVar>, size: Int): ByteArray = ByteArray(size).apply {
+        usePinned { pinned -> memcpy(pinned.addressOf(0), memory, size.convert()) }
     }
 }

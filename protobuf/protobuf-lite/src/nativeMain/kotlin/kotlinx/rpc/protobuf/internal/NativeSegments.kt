@@ -9,7 +9,6 @@ package kotlinx.rpc.protobuf.internal
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.NativePtr
 import kotlinx.cinterop.plus
 
 /**
