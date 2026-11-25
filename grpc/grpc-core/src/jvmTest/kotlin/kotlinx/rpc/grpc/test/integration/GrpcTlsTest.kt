@@ -9,7 +9,7 @@ import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.server.GrpcTlsClientAuth
-import kotlinx.rpc.grpc.client.GrpcTlsClientCredentials
+import kotlinx.rpc.grpc.client.GrpcTlsClientTransportCredentials
 import kotlinx.rpc.grpc.server.GrpcTlsServerCredentials
 import kotlinx.rpc.test.tls.CA_PEM
 import kotlinx.rpc.test.tls.CLIENT_CERT_PEM
@@ -34,7 +34,7 @@ class GrpcTlsTest : GrpcTestBase() {
     @Test
     fun `test TLS with valid certificates - should succeed`() {
         val serverTls = GrpcTlsServerCredentials(SERVER_CERT_PEM, SERVER_KEY_PEM)
-        val clientTls = GrpcTlsClientCredentials { trustManager(SERVER_CERT_PEM) }
+        val clientTls = GrpcTlsClientTransportCredentials { trustManager(SERVER_CERT_PEM) }
 
         runGrpcTest(serverTls, clientTls, overrideAuthority = "foo.test.google.fr", test = ::defaultUnaryTest)
     }
@@ -45,7 +45,7 @@ class GrpcTlsTest : GrpcTestBase() {
             trustManager(CA_PEM)
             clientAuth(GrpcTlsClientAuth.REQUIRE)
         }
-        val clientTls = GrpcTlsClientCredentials {
+        val clientTls = GrpcTlsClientTransportCredentials {
             keyManager(CLIENT_CERT_PEM, CLIENT_KEY_PEM)
             trustManager(CA_PEM)
         }
@@ -64,7 +64,7 @@ class GrpcTlsTest : GrpcTestBase() {
             // clientAuth is optional, so a client without a certificate can connect
             clientAuth(GrpcTlsClientAuth.OPTIONAL)
         }
-        val clientTls = GrpcTlsClientCredentials {
+        val clientTls = GrpcTlsClientTransportCredentials {
             keyManager(CLIENT_CERT_PEM, CLIENT_KEY_PEM)
             trustManager(CA_PEM)
         }
@@ -80,7 +80,7 @@ class GrpcTlsTest : GrpcTestBase() {
             clientAuth(GrpcTlsClientAuth.REQUIRE)
         }
         // client does NOT provide keyManager, only trusts CA
-        val clientTls = GrpcTlsClientCredentials {
+        val clientTls = GrpcTlsClientTransportCredentials {
             trustManager(CA_PEM)
         }
 
@@ -93,7 +93,7 @@ class GrpcTlsTest : GrpcTestBase() {
     fun `test TLS with no client trustManager - should fail`() = runTest {
         val serverTls = GrpcTlsServerCredentials(SERVER_CERT_PEM, SERVER_KEY_PEM)
         // client credential doesn't contain a trustManager, so server authentication will fail
-        val clientTls = GrpcTlsClientCredentials {}
+        val clientTls = GrpcTlsClientTransportCredentials {}
         assertGrpcFailure(GrpcStatusCode.UNAVAILABLE) {
             runGrpcTest(serverTls, clientTls, overrideAuthority = "foo.test.google.fr", test = ::defaultUnaryTest)
         }
@@ -102,7 +102,7 @@ class GrpcTlsTest : GrpcTestBase() {
     @Test
     fun `test TLS with invalid authority - should fail`() = runTest {
         val serverTls = GrpcTlsServerCredentials(SERVER_CERT_PEM, SERVER_KEY_PEM)
-        val clientTls = GrpcTlsClientCredentials { trustManager(CA_PEM) }
+        val clientTls = GrpcTlsClientTransportCredentials { trustManager(CA_PEM) }
         // the authority does not match the certificate
         assertGrpcFailure(GrpcStatusCode.UNAVAILABLE) {
             runGrpcTest(serverTls, clientTls, overrideAuthority = "invalid.host.name", test = ::defaultUnaryTest)
@@ -119,7 +119,7 @@ class GrpcTlsTest : GrpcTestBase() {
 
     @Test
     fun `test TLS client with plaintext server - should fail`() = runTest {
-        val clientTls = GrpcTlsClientCredentials { trustManager(CA_PEM) }
+        val clientTls = GrpcTlsClientTransportCredentials { trustManager(CA_PEM) }
         assertGrpcFailure(GrpcStatusCode.UNAVAILABLE) {
             runGrpcTest(clientCreds = clientTls, overrideAuthority = "foo.test.google.fr", test = ::defaultUnaryTest)
         }

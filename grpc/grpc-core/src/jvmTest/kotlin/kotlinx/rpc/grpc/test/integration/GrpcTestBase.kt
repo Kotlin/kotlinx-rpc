@@ -17,6 +17,7 @@ import kotlinx.rpc.grpc.client.GrpcClientConfiguration
 import kotlinx.rpc.grpc.client.GrpcClientCredentials
 import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.server.GrpcServerConfiguration
+import kotlinx.rpc.grpc.server.GrpcDefaultServerCredentials
 import kotlinx.rpc.grpc.server.GrpcServerCallScope
 import kotlinx.rpc.grpc.server.GrpcServerCredentials
 import kotlinx.rpc.grpc.server.GrpcServerInterceptor
@@ -27,7 +28,7 @@ abstract class GrpcTestBase {
     abstract fun RpcServer.registerServices()
 
     fun runGrpcTest(
-        serverCreds: GrpcServerCredentials? = null,
+        serverCreds: GrpcServerCredentials = GrpcDefaultServerCredentials,
         clientCreds: GrpcClientCredentials? = null,
         overrideAuthority: String? = null,
         clientInterceptors: List<GrpcClientInterceptor> = emptyList(),

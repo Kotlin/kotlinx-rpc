@@ -20,7 +20,7 @@ abstract interface <#A: kotlin/Any?, #B: kotlin/Any?> kotlinx.rpc.grpc.client/Gr
     abstract fun proceed(kotlinx.coroutines.flow/Flow<#A>): kotlinx.coroutines.flow/Flow<#B> // kotlinx.rpc.grpc.client/GrpcClientCallScope.proceed|proceed(kotlinx.coroutines.flow.Flow<1:0>){}[0]
 }
 
-abstract interface kotlinx.rpc.grpc.client/GrpcCallCredentials { // kotlinx.rpc.grpc.client/GrpcCallCredentials|null[0]
+abstract interface kotlinx.rpc.grpc.client/GrpcCallCredentials : kotlinx.rpc.grpc.client/GrpcClientCredentials { // kotlinx.rpc.grpc.client/GrpcCallCredentials|null[0]
     open val requiresTransportSecurity // kotlinx.rpc.grpc.client/GrpcCallCredentials.requiresTransportSecurity|{}requiresTransportSecurity[0]
         open fun <get-requiresTransportSecurity>(): kotlin/Boolean // kotlinx.rpc.grpc.client/GrpcCallCredentials.requiresTransportSecurity.<get-requiresTransportSecurity>|<get-requiresTransportSecurity>(){}[0]
 
@@ -42,10 +42,12 @@ abstract interface kotlinx.rpc.grpc.client/GrpcClientInterceptor { // kotlinx.rp
     abstract fun <#A1: kotlin/Any?, #B1: kotlin/Any?> (kotlinx.rpc.grpc.client/GrpcClientCallScope<#A1, #B1>).intercept(kotlinx.coroutines.flow/Flow<#A1>): kotlinx.coroutines.flow/Flow<#B1> // kotlinx.rpc.grpc.client/GrpcClientInterceptor.intercept|intercept@kotlinx.rpc.grpc.client.GrpcClientCallScope<0:0,0:1>(kotlinx.coroutines.flow.Flow<0:0>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
 }
 
-abstract interface kotlinx.rpc.grpc.client/GrpcTlsClientCredentialsBuilder { // kotlinx.rpc.grpc.client/GrpcTlsClientCredentialsBuilder|null[0]
-    abstract fun keyManager(kotlin/String, kotlin/String): kotlinx.rpc.grpc.client/GrpcTlsClientCredentialsBuilder // kotlinx.rpc.grpc.client/GrpcTlsClientCredentialsBuilder.keyManager|keyManager(kotlin.String;kotlin.String){}[0]
-    abstract fun trustManager(kotlin/String): kotlinx.rpc.grpc.client/GrpcTlsClientCredentialsBuilder // kotlinx.rpc.grpc.client/GrpcTlsClientCredentialsBuilder.trustManager|trustManager(kotlin.String){}[0]
+abstract interface kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentialsBuilder { // kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentialsBuilder|null[0]
+    abstract fun keyManager(kotlin/String, kotlin/String): kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentialsBuilder // kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentialsBuilder.keyManager|keyManager(kotlin.String;kotlin.String){}[0]
+    abstract fun trustManager(kotlin/String): kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentialsBuilder // kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentialsBuilder.trustManager|trustManager(kotlin.String){}[0]
 }
+
+abstract interface kotlinx.rpc.grpc.client/GrpcTransportCredentials : kotlinx.rpc.grpc.client/GrpcClientCredentials // kotlinx.rpc.grpc.client/GrpcTransportCredentials|null[0]
 
 final class kotlinx.rpc.grpc.client/GrpcCallOptions { // kotlinx.rpc.grpc.client/GrpcCallOptions|null[0]
     constructor <init>() // kotlinx.rpc.grpc.client/GrpcCallOptions.<init>|<init>(){}[0]
@@ -75,59 +77,69 @@ final class kotlinx.rpc.grpc.client/GrpcClient : kotlinx.rpc/RpcClient { // kotl
     final suspend fun awaitTermination(kotlin.time/Duration = ...) // kotlinx.rpc.grpc.client/GrpcClient.awaitTermination|awaitTermination(kotlin.time.Duration){}[0]
 }
 
-final class kotlinx.rpc.grpc.client/GrpcClientConfiguration { // kotlinx.rpc.grpc.client/GrpcClientConfiguration|null[0]
+final class kotlinx.rpc.grpc.client/GrpcClientConfiguration : kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration { // kotlinx.rpc.grpc.client/GrpcClientConfiguration|null[0]
     final var credentials // kotlinx.rpc.grpc.client/GrpcClientConfiguration.credentials|{}credentials[0]
-        final fun <get-credentials>(): kotlinx.rpc.grpc.client/GrpcClientCredentials? // kotlinx.rpc.grpc.client/GrpcClientConfiguration.credentials.<get-credentials>|<get-credentials>(){}[0]
-        final fun <set-credentials>(kotlinx.rpc.grpc.client/GrpcClientCredentials?) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.credentials.<set-credentials>|<set-credentials>(kotlinx.rpc.grpc.client.GrpcClientCredentials?){}[0]
-    final var idleTimeout // kotlinx.rpc.grpc.client/GrpcClientConfiguration.idleTimeout|{}idleTimeout[0]
-        final fun <get-idleTimeout>(): kotlin.time/Duration // kotlinx.rpc.grpc.client/GrpcClientConfiguration.idleTimeout.<get-idleTimeout>|<get-idleTimeout>(){}[0]
-        final fun <set-idleTimeout>(kotlin.time/Duration) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.idleTimeout.<set-idleTimeout>|<set-idleTimeout>(kotlin.time.Duration){}[0]
-    final var marshallerConfig // kotlinx.rpc.grpc.client/GrpcClientConfiguration.marshallerConfig|{}marshallerConfig[0]
-        final fun <get-marshallerConfig>(): kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig? // kotlinx.rpc.grpc.client/GrpcClientConfiguration.marshallerConfig.<get-marshallerConfig>|<get-marshallerConfig>(){}[0]
-        final fun <set-marshallerConfig>(kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig?) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.marshallerConfig.<set-marshallerConfig>|<set-marshallerConfig>(kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){}[0]
-    final var maxInboundMessageSize // kotlinx.rpc.grpc.client/GrpcClientConfiguration.maxInboundMessageSize|{}maxInboundMessageSize[0]
-        final fun <get-maxInboundMessageSize>(): kotlin/Int // kotlinx.rpc.grpc.client/GrpcClientConfiguration.maxInboundMessageSize.<get-maxInboundMessageSize>|<get-maxInboundMessageSize>(){}[0]
-        final fun <set-maxInboundMessageSize>(kotlin/Int) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.maxInboundMessageSize.<set-maxInboundMessageSize>|<set-maxInboundMessageSize>(kotlin.Int){}[0]
-    final var maxInboundMetadataSize // kotlinx.rpc.grpc.client/GrpcClientConfiguration.maxInboundMetadataSize|{}maxInboundMetadataSize[0]
-        final fun <get-maxInboundMetadataSize>(): kotlin/Int // kotlinx.rpc.grpc.client/GrpcClientConfiguration.maxInboundMetadataSize.<get-maxInboundMetadataSize>|<get-maxInboundMetadataSize>(){}[0]
-        final fun <set-maxInboundMetadataSize>(kotlin/Int) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.maxInboundMetadataSize.<set-maxInboundMetadataSize>|<set-maxInboundMetadataSize>(kotlin.Int){}[0]
-    final var messageMarshallerResolver // kotlinx.rpc.grpc.client/GrpcClientConfiguration.messageMarshallerResolver|{}messageMarshallerResolver[0]
-        final fun <get-messageMarshallerResolver>(): kotlinx.rpc.grpc.marshaller/GrpcMarshallerResolver // kotlinx.rpc.grpc.client/GrpcClientConfiguration.messageMarshallerResolver.<get-messageMarshallerResolver>|<get-messageMarshallerResolver>(){}[0]
-        final fun <set-messageMarshallerResolver>(kotlinx.rpc.grpc.marshaller/GrpcMarshallerResolver) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.messageMarshallerResolver.<set-messageMarshallerResolver>|<set-messageMarshallerResolver>(kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver){}[0]
-    final var overrideAuthority // kotlinx.rpc.grpc.client/GrpcClientConfiguration.overrideAuthority|{}overrideAuthority[0]
-        final fun <get-overrideAuthority>(): kotlin/String? // kotlinx.rpc.grpc.client/GrpcClientConfiguration.overrideAuthority.<get-overrideAuthority>|<get-overrideAuthority>(){}[0]
-        final fun <set-overrideAuthority>(kotlin/String?) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.overrideAuthority.<set-overrideAuthority>|<set-overrideAuthority>(kotlin.String?){}[0]
-    final var userAgent // kotlinx.rpc.grpc.client/GrpcClientConfiguration.userAgent|{}userAgent[0]
-        final fun <get-userAgent>(): kotlin/String? // kotlinx.rpc.grpc.client/GrpcClientConfiguration.userAgent.<get-userAgent>|<get-userAgent>(){}[0]
-        final fun <set-userAgent>(kotlin/String?) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.userAgent.<set-userAgent>|<set-userAgent>(kotlin.String?){}[0]
+        final fun <get-credentials>(): kotlinx.rpc.grpc.client/GrpcClientCredentials // kotlinx.rpc.grpc.client/GrpcClientConfiguration.credentials.<get-credentials>|<get-credentials>(){}[0]
+        final fun <set-credentials>(kotlinx.rpc.grpc.client/GrpcClientCredentials) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.credentials.<set-credentials>|<set-credentials>(kotlinx.rpc.grpc.client.GrpcClientCredentials){}[0]
 
-    final fun clearIdleTimeout() // kotlinx.rpc.grpc.client/GrpcClientConfiguration.clearIdleTimeout|clearIdleTimeout(){}[0]
-    final fun clearMaxInboundMessageSize() // kotlinx.rpc.grpc.client/GrpcClientConfiguration.clearMaxInboundMessageSize|clearMaxInboundMessageSize(){}[0]
-    final fun clearMaxInboundMetadataSize() // kotlinx.rpc.grpc.client/GrpcClientConfiguration.clearMaxInboundMetadataSize|clearMaxInboundMetadataSize(){}[0]
-    final fun intercept(kotlin/Array<out kotlinx.rpc.grpc.client/GrpcClientInterceptor>...) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.intercept|intercept(kotlin.Array<out|kotlinx.rpc.grpc.client.GrpcClientInterceptor>...){}[0]
-    final fun keepAlive(kotlin/Function1<kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive, kotlin/Unit>) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.keepAlive|keepAlive(kotlin.Function1<kotlinx.rpc.grpc.client.GrpcClientConfiguration.KeepAlive,kotlin.Unit>){}[0]
-    final fun plaintext(): kotlinx.rpc.grpc.client/GrpcClientCredentials // kotlinx.rpc.grpc.client/GrpcClientConfiguration.plaintext|plaintext(){}[0]
-    final fun tls(kotlin/Function1<kotlinx.rpc.grpc.client/GrpcTlsClientCredentialsBuilder, kotlin/Unit>): kotlinx.rpc.grpc.client/GrpcClientCredentials // kotlinx.rpc.grpc.client/GrpcClientConfiguration.tls|tls(kotlin.Function1<kotlinx.rpc.grpc.client.GrpcTlsClientCredentialsBuilder,kotlin.Unit>){}[0]
+    final fun plaintext(): kotlinx.rpc.grpc.client/GrpcTransportCredentials // kotlinx.rpc.grpc.client/GrpcClientConfiguration.plaintext|plaintext(){}[0]
+    final fun tls(kotlin/Function1<kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentialsBuilder, kotlin/Unit>): kotlinx.rpc.grpc.client/GrpcTransportCredentials // kotlinx.rpc.grpc.client/GrpcClientConfiguration.tls|tls(kotlin.Function1<kotlinx.rpc.grpc.client.GrpcTlsClientTransportCredentialsBuilder,kotlin.Unit>){}[0]
+}
 
-    final class KeepAlive { // kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive|null[0]
-        final var time // kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive.time|{}time[0]
-            final fun <get-time>(): kotlin.time/Duration // kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive.time.<get-time>|<get-time>(){}[0]
-            final fun <set-time>(kotlin.time/Duration) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive.time.<set-time>|<set-time>(kotlin.time.Duration){}[0]
-        final var timeout // kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive.timeout|{}timeout[0]
-            final fun <get-timeout>(): kotlin.time/Duration // kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive.timeout.<get-timeout>|<get-timeout>(){}[0]
-            final fun <set-timeout>(kotlin.time/Duration) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive.timeout.<set-timeout>|<set-timeout>(kotlin.time.Duration){}[0]
-        final var withoutCalls // kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive.withoutCalls|{}withoutCalls[0]
-            final fun <get-withoutCalls>(): kotlin/Boolean // kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive.withoutCalls.<get-withoutCalls>|<get-withoutCalls>(){}[0]
-            final fun <set-withoutCalls>(kotlin/Boolean) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive.withoutCalls.<set-withoutCalls>|<set-withoutCalls>(kotlin.Boolean){}[0]
+final class kotlinx.rpc.grpc.client/GrpcInsecureClientTransportCredentials : kotlinx.rpc.grpc.client/GrpcTransportCredentials { // kotlinx.rpc.grpc.client/GrpcInsecureClientTransportCredentials|null[0]
+    constructor <init>() // kotlinx.rpc.grpc.client/GrpcInsecureClientTransportCredentials.<init>|<init>(){}[0]
+}
+
+final class kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentials : kotlinx.rpc.grpc.client/GrpcTransportCredentials { // kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentials|null[0]
+    constructor <init>(kotlin/Function1<kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentialsBuilder, kotlin/Unit> = ...) // kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentials.<init>|<init>(kotlin.Function1<kotlinx.rpc.grpc.client.GrpcTlsClientTransportCredentialsBuilder,kotlin.Unit>){}[0]
+}
+
+open class kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration { // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration|null[0]
+    final var idleTimeout // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.idleTimeout|{}idleTimeout[0]
+        final fun <get-idleTimeout>(): kotlin.time/Duration // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.idleTimeout.<get-idleTimeout>|<get-idleTimeout>(){}[0]
+        final fun <set-idleTimeout>(kotlin.time/Duration) // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.idleTimeout.<set-idleTimeout>|<set-idleTimeout>(kotlin.time.Duration){}[0]
+    final var marshallerConfig // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.marshallerConfig|{}marshallerConfig[0]
+        final fun <get-marshallerConfig>(): kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig? // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.marshallerConfig.<get-marshallerConfig>|<get-marshallerConfig>(){}[0]
+        final fun <set-marshallerConfig>(kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig?) // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.marshallerConfig.<set-marshallerConfig>|<set-marshallerConfig>(kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){}[0]
+    final var maxInboundMessageSize // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.maxInboundMessageSize|{}maxInboundMessageSize[0]
+        final fun <get-maxInboundMessageSize>(): kotlin/Int // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.maxInboundMessageSize.<get-maxInboundMessageSize>|<get-maxInboundMessageSize>(){}[0]
+        final fun <set-maxInboundMessageSize>(kotlin/Int) // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.maxInboundMessageSize.<set-maxInboundMessageSize>|<set-maxInboundMessageSize>(kotlin.Int){}[0]
+    final var maxInboundMetadataSize // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.maxInboundMetadataSize|{}maxInboundMetadataSize[0]
+        final fun <get-maxInboundMetadataSize>(): kotlin/Int // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.maxInboundMetadataSize.<get-maxInboundMetadataSize>|<get-maxInboundMetadataSize>(){}[0]
+        final fun <set-maxInboundMetadataSize>(kotlin/Int) // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.maxInboundMetadataSize.<set-maxInboundMetadataSize>|<set-maxInboundMetadataSize>(kotlin.Int){}[0]
+    final var messageMarshallerResolver // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.messageMarshallerResolver|{}messageMarshallerResolver[0]
+        final fun <get-messageMarshallerResolver>(): kotlinx.rpc.grpc.marshaller/GrpcMarshallerResolver // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.messageMarshallerResolver.<get-messageMarshallerResolver>|<get-messageMarshallerResolver>(){}[0]
+        final fun <set-messageMarshallerResolver>(kotlinx.rpc.grpc.marshaller/GrpcMarshallerResolver) // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.messageMarshallerResolver.<set-messageMarshallerResolver>|<set-messageMarshallerResolver>(kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver){}[0]
+    final var overrideAuthority // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.overrideAuthority|{}overrideAuthority[0]
+        final fun <get-overrideAuthority>(): kotlin/String? // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.overrideAuthority.<get-overrideAuthority>|<get-overrideAuthority>(){}[0]
+        final fun <set-overrideAuthority>(kotlin/String?) // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.overrideAuthority.<set-overrideAuthority>|<set-overrideAuthority>(kotlin.String?){}[0]
+    final var userAgent // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.userAgent|{}userAgent[0]
+        final fun <get-userAgent>(): kotlin/String? // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.userAgent.<get-userAgent>|<get-userAgent>(){}[0]
+        final fun <set-userAgent>(kotlin/String?) // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.userAgent.<set-userAgent>|<set-userAgent>(kotlin.String?){}[0]
+
+    final fun clearIdleTimeout() // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.clearIdleTimeout|clearIdleTimeout(){}[0]
+    final fun clearMaxInboundMessageSize() // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.clearMaxInboundMessageSize|clearMaxInboundMessageSize(){}[0]
+    final fun clearMaxInboundMetadataSize() // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.clearMaxInboundMetadataSize|clearMaxInboundMetadataSize(){}[0]
+    final fun intercept(kotlin/Array<out kotlinx.rpc.grpc.client/GrpcClientInterceptor>...) // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.intercept|intercept(kotlin.Array<out|kotlinx.rpc.grpc.client.GrpcClientInterceptor>...){}[0]
+    final fun keepAlive(kotlin/Function1<kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive, kotlin/Unit>) // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.keepAlive|keepAlive(kotlin.Function1<kotlinx.rpc.grpc.client.GrpcClientBaseConfiguration.KeepAlive,kotlin.Unit>){}[0]
+
+    final class KeepAlive { // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive|null[0]
+        final var time // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive.time|{}time[0]
+            final fun <get-time>(): kotlin.time/Duration // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive.time.<get-time>|<get-time>(){}[0]
+            final fun <set-time>(kotlin.time/Duration) // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive.time.<set-time>|<set-time>(kotlin.time.Duration){}[0]
+        final var timeout // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive.timeout|{}timeout[0]
+            final fun <get-timeout>(): kotlin.time/Duration // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive.timeout.<get-timeout>|<get-timeout>(){}[0]
+            final fun <set-timeout>(kotlin.time/Duration) // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive.timeout.<set-timeout>|<set-timeout>(kotlin.time.Duration){}[0]
+        final var withoutCalls // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive.withoutCalls|{}withoutCalls[0]
+            final fun <get-withoutCalls>(): kotlin/Boolean // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive.withoutCalls.<get-withoutCalls>|<get-withoutCalls>(){}[0]
+            final fun <set-withoutCalls>(kotlin/Boolean) // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive.withoutCalls.<set-withoutCalls>|<set-withoutCalls>(kotlin.Boolean){}[0]
     }
 }
 
-final class kotlinx.rpc.grpc.client/GrpcInsecureClientCredentials : kotlinx.rpc.grpc.client/GrpcClientCredentials { // kotlinx.rpc.grpc.client/GrpcInsecureClientCredentials|null[0]
-    constructor <init>() // kotlinx.rpc.grpc.client/GrpcInsecureClientCredentials.<init>|<init>(){}[0]
-}
-
-final class kotlinx.rpc.grpc.client/GrpcTlsClientCredentials : kotlinx.rpc.grpc.client/GrpcClientCredentials { // kotlinx.rpc.grpc.client/GrpcTlsClientCredentials|null[0]
-    constructor <init>(kotlin/Function1<kotlinx.rpc.grpc.client/GrpcTlsClientCredentialsBuilder, kotlin/Unit> = ...) // kotlinx.rpc.grpc.client/GrpcTlsClientCredentials.<init>|<init>(kotlin.Function1<kotlinx.rpc.grpc.client.GrpcTlsClientCredentialsBuilder,kotlin.Unit>){}[0]
+final object kotlinx.rpc.grpc.client/GrpcDefaultClientTransportCredentials : kotlinx.rpc.grpc.client/GrpcTransportCredentials { // kotlinx.rpc.grpc.client/GrpcDefaultClientTransportCredentials|null[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // kotlinx.rpc.grpc.client/GrpcDefaultClientTransportCredentials.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // kotlinx.rpc.grpc.client/GrpcDefaultClientTransportCredentials.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // kotlinx.rpc.grpc.client/GrpcDefaultClientTransportCredentials.toString|toString(){}[0]
 }
 
 final object kotlinx.rpc.grpc.client/GrpcEmptyCallCredentials : kotlinx.rpc.grpc.client/GrpcCallCredentials { // kotlinx.rpc.grpc.client/GrpcEmptyCallCredentials|null[0]
@@ -136,6 +148,9 @@ final object kotlinx.rpc.grpc.client/GrpcEmptyCallCredentials : kotlinx.rpc.grpc
 
     final suspend fun (kotlinx.rpc.grpc.client/GrpcCallCredentials.Context).getRequestMetadata(): kotlinx.rpc.grpc/GrpcMetadata // kotlinx.rpc.grpc.client/GrpcEmptyCallCredentials.getRequestMetadata|getRequestMetadata@kotlinx.rpc.grpc.client.GrpcCallCredentials.Context(){}[0]
 }
+
+final val kotlinx.rpc.grpc.client/callCredentials // kotlinx.rpc.grpc.client/callCredentials|@kotlinx.rpc.grpc.client.GrpcClientCredentials{}callCredentials[0]
+    final fun (kotlinx.rpc.grpc.client/GrpcClientCredentials).<get-callCredentials>(): kotlinx.rpc.grpc.client/GrpcCallCredentials // kotlinx.rpc.grpc.client/callCredentials.<get-callCredentials>|<get-callCredentials>@kotlinx.rpc.grpc.client.GrpcClientCredentials(){}[0]
 
 final fun (kotlinx.rpc.grpc.client/GrpcCallCredentials).kotlinx.rpc.grpc.client/combine(kotlinx.rpc.grpc.client/GrpcCallCredentials): kotlinx.rpc.grpc.client/GrpcCallCredentials // kotlinx.rpc.grpc.client/combine|combine@kotlinx.rpc.grpc.client.GrpcCallCredentials(kotlinx.rpc.grpc.client.GrpcCallCredentials){}[0]
 final fun (kotlinx.rpc.grpc.client/GrpcCallCredentials).kotlinx.rpc.grpc.client/plus(kotlinx.rpc.grpc.client/GrpcCallCredentials): kotlinx.rpc.grpc.client/GrpcCallCredentials // kotlinx.rpc.grpc.client/plus|plus@kotlinx.rpc.grpc.client.GrpcCallCredentials(kotlinx.rpc.grpc.client.GrpcCallCredentials){}[0]

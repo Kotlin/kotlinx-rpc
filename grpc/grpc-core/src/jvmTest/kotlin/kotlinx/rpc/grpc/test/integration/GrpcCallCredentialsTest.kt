@@ -12,7 +12,7 @@ import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.client.GrpcCallCredentials
 import kotlinx.rpc.grpc.client.GrpcCallCredentials.Context
 import kotlinx.rpc.grpc.client.GrpcClient
-import kotlinx.rpc.grpc.client.GrpcTlsClientCredentials
+import kotlinx.rpc.grpc.client.GrpcTlsClientTransportCredentials
 import kotlinx.rpc.grpc.client.plus
 import kotlinx.rpc.grpc.getAll
 import kotlinx.rpc.grpc.server.GrpcTlsServerCredentials
@@ -61,6 +61,18 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
         )
 
         assertAuthorizationHeaders(grpcMetadata, "Bearer token")
+    }
+
+    @Test
+    fun `test call credentials alone on a plaintext server - should fail because the client uses TLS`() {
+        assertGrpcFailure(GrpcStatusCode.UNAVAILABLE) {
+            runGrpcTest(
+                clientConfiguration = {
+                    credentials = NoTLSBearerTokenCredentials()
+                },
+                test = ::unaryCall
+            )
+        }
     }
 
     @Test
@@ -124,7 +136,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
     @Test
     fun `test tls call credentials - should succeed`() {
         val serverTls = GrpcTlsServerCredentials(SERVER_CERT_PEM, SERVER_KEY_PEM)
-        val clientTls = GrpcTlsClientCredentials { trustManager(SERVER_CERT_PEM) }
+        val clientTls = GrpcTlsClientTransportCredentials { trustManager(SERVER_CERT_PEM) }
         val clientCombined = clientTls + TlsBearerTokenCredentials()
 
         var grpcMetadata: GrpcMetadata? = null

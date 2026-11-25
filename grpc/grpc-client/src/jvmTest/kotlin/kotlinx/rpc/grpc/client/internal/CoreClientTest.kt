@@ -14,7 +14,7 @@ import kotlinx.rpc.grpc.GrpcStatus
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
-import kotlinx.rpc.grpc.client.GrpcInsecureClientCredentials
+import kotlinx.rpc.grpc.client.GrpcInsecureClientTransportCredentials
 import kotlinx.rpc.grpc.client.testing.GrpcClientTestServer
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.descriptor.GrpcMethodType
@@ -55,7 +55,7 @@ class GrpcCoreClientTest {
     private fun createChannel(): ManagedChannel = ManagedChannelBuilder(
         hostname = GrpcClientTestServer.HOST,
         port = GrpcClientTestServer.port,
-        credentials = GrpcInsecureClientCredentials()
+        credentials = GrpcInsecureClientTransportCredentials()
     ).buildChannel(GrpcClientConfiguration())
 
 

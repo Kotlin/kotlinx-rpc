@@ -17,24 +17,22 @@ import kotlinx.rpc.grpc.GrpcStatusException
 import kotlinx.rpc.grpc.client.internal.credentialMetadataFailure
 import kotlinx.rpc.grpc.client.internal.resolveRequestMetadata
 import kotlinx.rpc.grpc.internal.internalError
-import kotlinx.rpc.grpc.status
 import java.util.concurrent.Executor
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
 
-internal fun GrpcClientCredentials.toJvm(): ChannelCredentials {
+internal fun GrpcTransportCredentials.toJvm(): ChannelCredentials {
     return when (this) {
-        is GrpcCombinedClientCredentials -> clientCredentials.toJvm()
-        is GrpcInsecureClientCredentials -> InsecureChannelCredentials.create()
-        is GrpcTlsClientCredentials -> JvmTlsCLientCredentialBuilder().apply(configure).build()
+        is GrpcInsecureClientTransportCredentials -> InsecureChannelCredentials.create()
+        is GrpcTlsClientTransportCredentials -> JvmTlsClientTransportCredentialsBuilder().apply(configure).build()
         else -> internalError("Unknown client credentials type: $this")
     }
 }
 
-private class JvmTlsCLientCredentialBuilder : GrpcTlsClientCredentialsBuilder {
+private class JvmTlsClientTransportCredentialsBuilder : GrpcTlsClientTransportCredentialsBuilder {
     private var cb = TlsChannelCredentials.newBuilder()
 
-    override fun trustManager(rootCertsPem: String): GrpcTlsClientCredentialsBuilder {
+    override fun trustManager(rootCertsPem: String): GrpcTlsClientTransportCredentialsBuilder {
         cb.trustManager(rootCertsPem.byteInputStream())
         return this
     }
@@ -42,7 +40,7 @@ private class JvmTlsCLientCredentialBuilder : GrpcTlsClientCredentialsBuilder {
     override fun keyManager(
         certChainPem: String,
         privateKeyPem: String,
-    ): GrpcTlsClientCredentialsBuilder {
+    ): GrpcTlsClientTransportCredentialsBuilder {
         cb.keyManager(certChainPem.byteInputStream(), privateKeyPem.byteInputStream())
         return this
     }

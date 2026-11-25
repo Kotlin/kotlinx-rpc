@@ -11,10 +11,13 @@ import io.grpc.Grpc
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.rpc.grpc.client.GrpcCallOptions
+import kotlinx.rpc.grpc.client.GrpcClientBaseConfiguration
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
-import kotlinx.rpc.grpc.client.GrpcClientCredentials
+import kotlinx.rpc.grpc.client.GrpcDefaultClientTransportCredentials
+import kotlinx.rpc.grpc.client.GrpcTransportCredentials
 import kotlinx.rpc.grpc.client.toJvm
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
+import kotlinx.rpc.grpc.internal.applySetting
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import java.util.concurrent.TimeUnit
@@ -43,12 +46,12 @@ public actual typealias ManagedChannelBuilder<T> = io.grpc.ManagedChannelBuilder
 public actual fun ManagedChannelBuilder(
     hostname: String,
     port: Int,
-    credentials: GrpcClientCredentials?,
+    credentials: GrpcTransportCredentials,
 ): ManagedChannelBuilder<*> {
-    if (credentials != null) {
-        return Grpc.newChannelBuilderForAddress(hostname, port, credentials.toJvm())
+    if (credentials == GrpcDefaultClientTransportCredentials) {
+        return io.grpc.ManagedChannelBuilder.forAddress(hostname, port)
     }
-    return io.grpc.ManagedChannelBuilder.forAddress(hostname, port)
+    return Grpc.newChannelBuilderForAddress(hostname, port, credentials.toJvm())
 }
 
 @InternalRpcApi
@@ -81,20 +84,38 @@ private class JvmManagedChannel(val channel: io.grpc.ManagedChannel) : ManagedCh
 }
 
 internal actual fun ManagedChannelBuilder<*>.buildChannel(config: GrpcClientConfiguration): ManagedChannel {
+    return applyConfig(config, explicitOnly = false).build().toKotlin()
+}
+
+internal fun ManagedChannelBuilder<*>.applyConfig(
+    config: GrpcClientBaseConfiguration,
+    explicitOnly: Boolean,
+): ManagedChannelBuilder<*> {
     config.keepAlive?.let {
-        keepAliveTime(it.time.inWholeMilliseconds, TimeUnit.MILLISECONDS)
-        keepAliveTimeout(it.timeout.inWholeMilliseconds, TimeUnit.MILLISECONDS)
-        keepAliveWithoutCalls(it.withoutCalls)
+        applySetting(this, "keepAlive", isSet = true) {
+            keepAliveTime(it.time.inWholeMilliseconds, TimeUnit.MILLISECONDS)
+            keepAliveTimeout(it.timeout.inWholeMilliseconds, TimeUnit.MILLISECONDS)
+            keepAliveWithoutCalls(it.withoutCalls)
+        }
     }
 
-    config.overrideAuthority?.let { overrideAuthority(it) }
-    config.userAgent?.let { userAgent(it) }
-    maxInboundMessageSize(config.maxInboundMessageSize)
-    maxInboundMetadataSize(config.maxInboundMetadataSize)
-    idleTimeout(
-        config.idleTimeout.inWholeMilliseconds,
-        TimeUnit.MILLISECONDS,
-    )
+    config.overrideAuthority?.let { applySetting(this, "overrideAuthority", isSet = true) { overrideAuthority(it) } }
+    config.userAgent?.let { applySetting(this, "userAgent", isSet = true) { userAgent(it) } }
+    if (!explicitOnly || config.isMaxInboundMessageSizeExplicitlySet) {
+        applySetting(this, "maxInboundMessageSize", config.isMaxInboundMessageSizeExplicitlySet) {
+            maxInboundMessageSize(config.maxInboundMessageSize)
+        }
+    }
+    if (!explicitOnly || config.isMaxInboundMetadataSizeExplicitlySet) {
+        applySetting(this, "maxInboundMetadataSize", config.isMaxInboundMetadataSizeExplicitlySet) {
+            maxInboundMetadataSize(config.maxInboundMetadataSize)
+        }
+    }
+    if (!explicitOnly || config.isIdleTimeoutExplicitlySet) {
+        applySetting(this, "idleTimeout", config.isIdleTimeoutExplicitlySet) {
+            idleTimeout(config.idleTimeout.inWholeMilliseconds, TimeUnit.MILLISECONDS)
+        }
+    }
 
-    return build().toKotlin()
+    return this
 }

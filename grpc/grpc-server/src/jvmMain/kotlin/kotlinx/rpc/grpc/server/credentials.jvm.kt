@@ -10,6 +10,8 @@ import kotlinx.library.watchdog.IntentionallyOpen
 @IntentionallyOpen(reason = ExemptionReason.INTEROP, description = "grpc-java type")
 public actual typealias GrpcServerCredentials = io.grpc.ServerCredentials
 
+public actual data object GrpcDefaultServerCredentials : GrpcServerCredentials()
+
 public actual typealias GrpcInsecureServerCredentials = io.grpc.InsecureServerCredentials
 
 public actual typealias GrpcTlsServerCredentials = io.grpc.TlsServerCredentials

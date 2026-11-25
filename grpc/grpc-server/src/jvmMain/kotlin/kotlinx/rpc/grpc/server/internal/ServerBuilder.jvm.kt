@@ -7,6 +7,9 @@ package kotlinx.rpc.grpc.server.internal
 import io.grpc.Grpc
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.rpc.grpc.internal.applySetting
+import kotlinx.rpc.grpc.server.GrpcServerBaseConfiguration
+import kotlinx.rpc.grpc.server.GrpcDefaultServerCredentials
 import kotlinx.rpc.grpc.server.GrpcServerConfiguration
 import kotlinx.rpc.grpc.server.GrpcServerCredentials
 import kotlinx.rpc.internal.utils.InternalRpcApi
@@ -20,11 +23,11 @@ import kotlin.time.Duration
 public actual typealias ServerBuilder<T> = io.grpc.ServerBuilder<T>
 
 @InternalRpcApi
-public actual fun ServerBuilder(port: Int, credentials: GrpcServerCredentials?): ServerBuilder<*> {
-    if (credentials != null) {
-        return Grpc.newServerBuilderForPort(port, credentials)
+public actual fun ServerBuilder(port: Int, credentials: GrpcServerCredentials): ServerBuilder<*> {
+    if (credentials == GrpcDefaultServerCredentials) {
+        return io.grpc.ServerBuilder.forPort(port)
     }
-    return io.grpc.ServerBuilder.forPort(port)
+    return Grpc.newServerBuilderForPort(port, credentials)
 }
 
 @InternalRpcApi
@@ -33,20 +36,56 @@ public actual fun PlatformServer(builder: ServerBuilder<*>): PlatformServer {
 }
 
 internal actual fun ServerBuilder<*>.applyConfig(config: GrpcServerConfiguration): ServerBuilder<*> {
-    maxInboundMessageSize(config.maxInboundMessageSize)
-    maxInboundMetadataSize(config.maxInboundMetadataSize)
-    config.keepAlive?.let {
-        keepAliveTime(it.time.inWholeNanoseconds, TimeUnit.NANOSECONDS)
-        keepAliveTimeout(it.timeout.inWholeNanoseconds, TimeUnit.NANOSECONDS)
+    return applyConfig(config, explicitOnly = false)
+}
+
+internal fun ServerBuilder<*>.applyConfig(
+    config: GrpcServerBaseConfiguration,
+    explicitOnly: Boolean,
+): ServerBuilder<*> {
+    if (!explicitOnly || config.isMaxInboundMessageSizeExplicitlySet) {
+        applySetting(this, "maxInboundMessageSize", config.isMaxInboundMessageSizeExplicitlySet) {
+            maxInboundMessageSize(config.maxInboundMessageSize)
+        }
     }
-    maxConnectionIdle(config.maxConnectionIdle.inWholeNanoseconds, TimeUnit.NANOSECONDS)
-    maxConnectionAge(config.maxConnectionAge.inWholeNanoseconds, TimeUnit.NANOSECONDS)
-    maxConnectionAgeGrace(config.maxConnectionAgeGrace.inWholeNanoseconds, TimeUnit.NANOSECONDS)
+    if (!explicitOnly || config.isMaxInboundMetadataSizeExplicitlySet) {
+        applySetting(this, "maxInboundMetadataSize", config.isMaxInboundMetadataSizeExplicitlySet) {
+            maxInboundMetadataSize(config.maxInboundMetadataSize)
+        }
+    }
+    config.keepAlive?.let {
+        applySetting(this, "keepAlive", isSet = true) {
+            keepAliveTime(it.time.inWholeNanoseconds, TimeUnit.NANOSECONDS)
+            keepAliveTimeout(it.timeout.inWholeNanoseconds, TimeUnit.NANOSECONDS)
+        }
+    }
+    if (!explicitOnly || config.isMaxConnectionIdleExplicitlySet) {
+        applySetting(this, "maxConnectionIdle", config.isMaxConnectionIdleExplicitlySet) {
+            maxConnectionIdle(config.maxConnectionIdle.inWholeNanoseconds, TimeUnit.NANOSECONDS)
+        }
+    }
+    if (!explicitOnly || config.isMaxConnectionAgeExplicitlySet) {
+        applySetting(this, "maxConnectionAge", config.isMaxConnectionAgeExplicitlySet) {
+            maxConnectionAge(config.maxConnectionAge.inWholeNanoseconds, TimeUnit.NANOSECONDS)
+        }
+    }
+    if (!explicitOnly || config.isMaxConnectionAgeGraceExplicitlySet) {
+        applySetting(this, "maxConnectionAgeGrace", config.isMaxConnectionAgeGraceExplicitlySet) {
+            maxConnectionAgeGrace(config.maxConnectionAgeGrace.inWholeNanoseconds, TimeUnit.NANOSECONDS)
+        }
+    }
     return this
 }
 
+internal interface JvmPlatformServer : PlatformServer {
+    val server: io.grpc.Server
+}
+
 private fun io.grpc.Server.toKotlin(): PlatformServer {
-    return object : PlatformServer {
+    return object : JvmPlatformServer {
+        override val server: io.grpc.Server
+            get() = this@toKotlin
+
         override val port: Int
             get() = this@toKotlin.port
 

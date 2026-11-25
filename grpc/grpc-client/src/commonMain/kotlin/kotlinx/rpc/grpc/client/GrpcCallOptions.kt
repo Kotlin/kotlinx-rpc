@@ -133,6 +133,11 @@ public class GrpcCallOptions {
      * the call will fail with [kotlinx.rpc.grpc.GrpcStatusCode.UNAUTHENTICATED] unless the channel
      * is configured with TLS credentials (which is the default, except if the client uses `plaintext()`).
      *
+     * ## Caveats
+     *
+     * In JVM projects, when using a [GrpcClient] builder with grpc-java `io.grpc.ManagedChannelBuilder`,
+     * this property doesn't have access to the credentials set in this builder. One can't read or replace them.
+     *
      * @see GrpcCallCredentials
      * @see GrpcEmptyCallCredentials
      * @see GrpcCallCredentials.plus

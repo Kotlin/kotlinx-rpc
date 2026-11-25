@@ -6,7 +6,7 @@ package kotlinx.rpc.grpc.server.e2e
 
 import io.grpc.testing.integration.SimpleRequest
 import kotlinx.rpc.grpc.GrpcStatusCode
-import kotlinx.rpc.grpc.client.GrpcTlsClientCredentials
+import kotlinx.rpc.grpc.client.GrpcTlsClientTransportCredentials
 import kotlinx.rpc.grpc.server.GrpcTlsClientAuth
 import kotlinx.rpc.grpc.server.GrpcTlsServerCredentials
 import kotlinx.rpc.grpc.server.testing.assertGrpcStatus
@@ -26,7 +26,7 @@ class ServerTlsTest {
         start(
             serverConfig = { credentials = GrpcTlsServerCredentials(SERVER_CERT_PEM, SERVER_KEY_PEM) },
             clientConfig = {
-                credentials = GrpcTlsClientCredentials { trustManager(CA_PEM) }
+                credentials = GrpcTlsClientTransportCredentials { trustManager(CA_PEM) }
                 overrideAuthority = "foo.test.google.fr"
             },
         )
@@ -46,7 +46,7 @@ class ServerTlsTest {
                 }
             },
             clientConfig = {
-                credentials = GrpcTlsClientCredentials {
+                credentials = GrpcTlsClientTransportCredentials {
                     trustManager(CA_PEM)
                     keyManager(CLIENT_CERT_PEM, CLIENT_KEY_PEM)
                 }
@@ -69,7 +69,7 @@ class ServerTlsTest {
                 }
             },
             clientConfig = {
-                credentials = GrpcTlsClientCredentials { trustManager(CA_PEM) }
+                credentials = GrpcTlsClientTransportCredentials { trustManager(CA_PEM) }
                 overrideAuthority = "foo.test.google.fr"
             },
         )

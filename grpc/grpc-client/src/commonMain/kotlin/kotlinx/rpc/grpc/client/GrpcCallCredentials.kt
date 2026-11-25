@@ -15,7 +15,7 @@ import kotlinx.rpc.grpc.plus
  * Provides per-call authentication credentials for gRPC calls.
  *
  * Call credentials are used to attach authentication information (such as tokens, API keys, or signatures)
- * to individual gRPC calls through metadata headers. Unlike client credentials, which establish
+ * to individual gRPC calls through metadata headers. Unlike transport credentials, which establish
  * the transport security layer (e.g., TLS), call credentials operate at the application layer
  * and can be dynamically generated for each request.
  *
@@ -58,7 +58,7 @@ import kotlinx.rpc.grpc.plus
  * Credentials can be combined using the [plus] operator or [combine] function:
  *
  * ```kotlin
- * val credentials = TlsClientCredentials(...) + BearerTokenCredentials("my-token")
+ * val credentials = GrpcTlsClientTransportCredentials(...) + BearerTokenCredentials("my-token")
  * ```
  *
  * ## Transport Security
@@ -73,7 +73,7 @@ import kotlinx.rpc.grpc.plus
  * @see combine
  */
 @IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
-public interface GrpcCallCredentials {
+public interface GrpcCallCredentials : GrpcClientCredentials {
     /**
      * Retrieves authentication metadata for the gRPC call.
      *
@@ -165,7 +165,7 @@ public interface GrpcCallCredentials {
  * ## Example
  *
  * ```kotlin
- * val tlsCreds = TlsClientCredentials { ... }
+ * val tlsCreds = GrpcTlsClientTransportCredentials { ... }
  * val bearerToken = BearerTokenCredentials("my-token")
  * val combined = tlsCreds + bearerToken
  * ```

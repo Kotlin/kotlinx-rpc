@@ -6,6 +6,7 @@ package kotlinx.rpc.grpc.client
 
 import io.grpc.testing.integration.SimpleRequest
 import kotlinx.rpc.grpc.GrpcStatusCode
+import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
 import kotlinx.rpc.grpc.client.testing.GrpcClientTestServer
 import kotlinx.rpc.grpc.client.testing.GrpcClientTestFixture
 import kotlinx.rpc.grpc.client.testing.assertGrpcStatusCode
@@ -79,7 +80,7 @@ class GrpcClientMessageSizeTest {
         block: suspend GrpcClientTestFixture.() -> Unit,
     ) {
         if (currentPlatform in swiftBackendPlatforms) {
-            val failure = assertFailsWith<IllegalStateException> {
+            val failure = assertFailsWith<GrpcUnsupportedSettingException> {
                 GrpcClient(GrpcClientTestServer.HOST, GrpcClientTestServer.port) {
                     maxInboundMessageSize = limitBytes
                 }
