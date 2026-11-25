@@ -35,6 +35,18 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHash
  *   then the interceptors of [builder]. The interceptors of [builder] run nearer to the network.
  * - Transport credentials: [configure] has none. Set them on [builder].
  *
+ * By default, call credentials require a secure channel.
+ * On a channel that isn't secure, each call with call credentials fails with `UNAUTHENTICATED`.
+ *
+ * | Channel of [builder] | Secure                                                                     |
+ * |----------------------|----------------------------------------------------------------------------|
+ * | TLS                  | Yes                                                                        |
+ * | In-process           | Yes                                                                        |
+ * | Plaintext            | No                                                                         |
+ * | Custom transport     | Only when the transport reports the security level `PRIVACY_AND_INTEGRITY` |
+ *
+ * Call credentials with [GrpcCallCredentials.requiresTransportSecurity] set to `false` work on every channel.
+ *
  * [GrpcClient.shutdown] shuts down the channel.
  * It doesn't shut down an executor or an event loop group that the caller gave to [builder].
  *
@@ -72,7 +84,7 @@ public class GrpcClientChannelBuilderConfiguration internal constructor() : Grpc
      * read its [GrpcClientCredentials.callCredentials]:
      *
      * ```kotlin
-     * val credentials = GrpcTlsClientCredentials { ... } + BearerTokenCredentials(token)
+     * val credentials = GrpcTlsClientTransportCredentials { ... } + BearerTokenCredentials(token)
      *
      * GrpcClient(channelBuilder) {
      *     callCredentials = credentials.callCredentials
@@ -82,12 +94,17 @@ public class GrpcClientChannelBuilderConfiguration internal constructor() : Grpc
      * The builder can have call credentials, for example from `io.grpc.CompositeChannelCredentials`.
      * This property doesn't replace them. Each call uses both.
      *
-     * By default, [GrpcCallCredentials.requiresTransportSecurity] is `true`. Each call then fails with
-     * `UNAUTHENTICATED`, unless the channel reports the security level `PRIVACY_AND_INTEGRITY`:
+     * By default, call credentials require a secure channel.
+     * On a channel that isn't secure, each call with call credentials fails with `UNAUTHENTICATED`.
      *
-     * - TLS or in-process: yes.
-     * - Plaintext: no.
-     * - Custom transport: only when its code sets the level.
+     * | Channel of the builder | Secure                                                                     |
+     * |------------------------|----------------------------------------------------------------------------|
+     * | TLS                    | Yes                                                                        |
+     * | In-process             | Yes                                                                        |
+     * | Plaintext              | No                                                                         |
+     * | Custom transport       | Only when the transport reports the security level `PRIVACY_AND_INTEGRITY` |
+     *
+     * Call credentials with [GrpcCallCredentials.requiresTransportSecurity] set to `false` work on every channel.
      */
     public var callCredentials: GrpcCallCredentials = GrpcEmptyCallCredentials
 }

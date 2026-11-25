@@ -58,7 +58,7 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHash
  * Credentials can be combined using the [plus] operator or [combine] function:
  *
  * ```kotlin
- * val credentials = TlsClientCredentials(...) + BearerTokenCredentials("my-token")
+ * val credentials = GrpcTlsClientTransportCredentials(...) + BearerTokenCredentials("my-token")
  * ```
  *
  * ## Transport Security
@@ -165,7 +165,7 @@ public interface GrpcCallCredentials : GrpcClientCredentials {
  * ## Example
  *
  * ```kotlin
- * val tlsCreds = TlsClientCredentials { ... }
+ * val tlsCreds = GrpcTlsClientTransportCredentials { ... }
  * val bearerToken = BearerTokenCredentials("my-token")
  * val combined = tlsCreds + bearerToken
  * ```

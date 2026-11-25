@@ -17,7 +17,7 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHash
  *
  * To make a value with both parts, use the [plus] operator:
  * ```kotlin
- * val credentials = GrpcTlsClientCredentials { ... } + BearerTokenCredentials(token)
+ * val credentials = GrpcTlsClientTransportCredentials { ... } + BearerTokenCredentials(token)
  * ```
  *
  * @see GrpcClientConfiguration.credentials
@@ -30,9 +30,9 @@ public interface GrpcClientCredentials
  * The credentials that set the security of the connection to the gRPC server.
  *
  * Variations:
- * - [GrpcDefaultClientCredentials] - the default of the transport.
- * - [GrpcInsecureClientCredentials] - no transport security (plaintext).
- * - [GrpcTlsClientCredentials] - TLS, with optional mutual TLS (mTLS).
+ * - [GrpcDefaultClientTransportCredentials] - the default of the transport.
+ * - [GrpcInsecureClientTransportCredentials] - no transport security (plaintext).
+ * - [GrpcTlsClientTransportCredentials] - TLS, with optional mutual TLS (mTLS).
  */
 @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface GrpcTransportCredentials : GrpcClientCredentials
@@ -41,14 +41,14 @@ public interface GrpcTransportCredentials : GrpcClientCredentials
  * The transport credentials that leave the security of the connection to the transport.
  * The default of [GrpcClientConfiguration.credentials].
  *
- * | Platform | Security of the connection |
- * |---|---|
- * | JVM | The default of the grpc-java transport. The Netty transport uses TLS with the system trust store. |
- * | Apple | TLS with the system trust store. |
+ * | Platform | Security of the connection                                                                        |
+ * |----------|---------------------------------------------------------------------------------------------------|
+ * | JVM      | The default of the grpc-java transport. The Netty transport uses TLS with the system trust store. |
+ * | Apple    | TLS with the system trust store.                                                                  |
  *
  * Credentials with only call credentials have these transport credentials.
  */
-public data object GrpcDefaultClientCredentials : GrpcTransportCredentials
+public data object GrpcDefaultClientTransportCredentials : GrpcTransportCredentials
 
 /**
  * Returns credentials with the transport credentials of the receiver,
@@ -65,7 +65,7 @@ public data object GrpcDefaultClientCredentials : GrpcTransportCredentials
 public operator fun GrpcClientCredentials.plus(other: GrpcCallCredentials): GrpcClientCredentials {
     val call = callCredentials + other
     return when (val transport = transportCredentials) {
-        GrpcDefaultClientCredentials -> call
+        GrpcDefaultClientTransportCredentials -> call
         else -> GrpcCombinedClientCredentials(transport, call)
     }
 }
@@ -77,7 +77,7 @@ public operator fun GrpcClientCredentials.plus(other: GrpcCallCredentials): Grpc
  * Use this property for a `GrpcClient` factory that takes only call credentials:
  *
  * ```kotlin
- * val credentials = GrpcTlsClientCredentials { ... } + BearerTokenCredentials(token)
+ * val credentials = GrpcTlsClientTransportCredentials { ... } + BearerTokenCredentials(token)
  * val bearerToken = credentials.callCredentials
  * ```
  */
@@ -93,7 +93,7 @@ internal val GrpcClientCredentials.transportCredentials: GrpcTransportCredential
     get() = when (this) {
         is GrpcCombinedClientCredentials -> transport
         is GrpcTransportCredentials -> this
-        is GrpcCallCredentials -> GrpcDefaultClientCredentials
+        is GrpcCallCredentials -> GrpcDefaultClientTransportCredentials
         else -> internalError("Unknown client credentials type: $this")
     }
 
@@ -120,9 +120,9 @@ public fun GrpcClientCredentials.combine(other: GrpcCallCredentials): GrpcClient
  * **Warning**: Plaintext credentials transmit data without encryption. Do not use in production
  * for sensitive data or over untrusted networks.
  *
- * @see GrpcTlsClientCredentials
+ * @see GrpcTlsClientTransportCredentials
  */
-public class GrpcInsecureClientCredentials : GrpcTransportCredentials
+public class GrpcInsecureClientTransportCredentials : GrpcTransportCredentials
 
 /**
  * TLS/SSL credentials for secure transport.
@@ -136,7 +136,7 @@ public class GrpcInsecureClientCredentials : GrpcTransportCredentials
  * Verify the server's identity using a trust manager with root certificates:
  *
  * ```kotlin
- * val tlsCredentials = GrpcTlsClientCredentials {
+ * val tlsCredentials = GrpcTlsClientTransportCredentials {
  *     trustManager(serverCertPem)
  * }
  *
@@ -150,7 +150,7 @@ public class GrpcInsecureClientCredentials : GrpcTransportCredentials
  * For mutual authentication, provide both trust manager and key manager:
  *
  * ```kotlin
- * val credentials = GrpcTlsClientCredentials {
+ * val credentials = GrpcTlsClientTransportCredentials {
  *     trustManager(caCertPem)              // Server's CA certificate
  *     keyManager(clientCertPem, clientKeyPem)  // Client's certificate and private key
  * }
@@ -161,32 +161,32 @@ public class GrpcInsecureClientCredentials : GrpcTransportCredentials
  * If no trust manager is configured, the system's default trust store is used:
  *
  * ```kotlin
- * val credentials = TlsClientCredentials { }  // Uses system CA certificates
+ * val credentials = GrpcTlsClientTransportCredentials { }  // Uses system CA certificates
  * ```
  *
  * **Note**: The server certificate's Common Name (CN) or Subject Alternative Name (SAN)
  * must match the authority specified in the client configuration, or the connection will fail.
  *
- * @see GrpcTlsClientCredentialsBuilder
- * @see GrpcInsecureClientCredentials
+ * @see GrpcTlsClientTransportCredentialsBuilder
+ * @see GrpcInsecureClientTransportCredentials
  */
 @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.API_DESIGN)
-public class GrpcTlsClientCredentials(
-    internal val configure: GrpcTlsClientCredentialsBuilder.() -> Unit = {}
+public class GrpcTlsClientTransportCredentials(
+    internal val configure: GrpcTlsClientTransportCredentialsBuilder.() -> Unit = {}
 ) : GrpcTransportCredentials
 
 /**
- * Builder for configuring [GrpcTlsClientCredentials].
+ * Builder for configuring [GrpcTlsClientTransportCredentials].
  *
  * This builder provides methods to configure trust managers for server authentication
  * and key managers for client authentication (mTLS).
  *
- * @see GrpcTlsClientCredentials
+ * @see GrpcTlsClientTransportCredentials
  * @see trustManager
  * @see keyManager
  */
 @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
-public interface GrpcTlsClientCredentialsBuilder {
+public interface GrpcTlsClientTransportCredentialsBuilder {
     /**
      * Configures the trust manager with root CA certificates for server authentication.
      *
@@ -198,7 +198,7 @@ public interface GrpcTlsClientCredentialsBuilder {
      * ## Example
      *
      * ```kotlin
-     * TlsClientCredentials {
+     * GrpcTlsClientTransportCredentials {
      *     trustManager("""
      *         -----BEGIN CERTIFICATE-----
      *         MIIDXTCCAkWgAwIBAgIJAKl...
@@ -211,7 +211,7 @@ public interface GrpcTlsClientCredentialsBuilder {
      * @return This builder for chaining.
      * @see keyManager
      */
-    public fun trustManager(rootCertsPem: String): GrpcTlsClientCredentialsBuilder
+    public fun trustManager(rootCertsPem: String): GrpcTlsClientTransportCredentialsBuilder
 
     /**
      * Configures the key manager with client certificate and private key for mutual TLS (mTLS).
@@ -222,7 +222,7 @@ public interface GrpcTlsClientCredentialsBuilder {
      * ## Example
      *
      * ```kotlin
-     * TlsClientCredentials {
+     * GrpcTlsClientTransportCredentials {
      *     trustManager(caCertPem)
      *     keyManager(
      *         certChainPem = """
@@ -244,7 +244,7 @@ public interface GrpcTlsClientCredentialsBuilder {
      * @return This builder for chaining.
      * @see trustManager
      */
-    public fun keyManager(certChainPem: String, privateKeyPem: String): GrpcTlsClientCredentialsBuilder
+    public fun keyManager(certChainPem: String, privateKeyPem: String): GrpcTlsClientTransportCredentialsBuilder
 }
 
 internal class GrpcCombinedClientCredentials(

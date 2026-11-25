@@ -23,11 +23,11 @@ import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
-import kotlinx.rpc.grpc.client.GrpcDefaultClientCredentials
+import kotlinx.rpc.grpc.client.GrpcDefaultClientTransportCredentials
 import kotlinx.rpc.grpc.client.GrpcTransportCredentials
-import kotlinx.rpc.grpc.client.GrpcInsecureClientCredentials
-import kotlinx.rpc.grpc.client.GrpcTlsClientCredentials
-import kotlinx.rpc.grpc.client.GrpcTlsClientCredentialsBuilder
+import kotlinx.rpc.grpc.client.GrpcInsecureClientTransportCredentials
+import kotlinx.rpc.grpc.client.GrpcTlsClientTransportCredentials
+import kotlinx.rpc.grpc.client.GrpcTlsClientTransportCredentialsBuilder
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.internal.KOTLINX_RPC_VERSION
@@ -146,10 +146,10 @@ private class SwiftManagedChannelBuilder(
             )
         }
         val plaintext = when (credentials) {
-            is GrpcInsecureClientCredentials -> true
-            is GrpcDefaultClientCredentials -> false
-            is GrpcTlsClientCredentials -> {
-                credentials.configure(UnsupportedSwiftTlsClientCredentialsBuilder)
+            is GrpcInsecureClientTransportCredentials -> true
+            is GrpcDefaultClientTransportCredentials -> false
+            is GrpcTlsClientTransportCredentials -> {
+                credentials.configure(UnsupportedSwiftTlsClientTransportCredentialsBuilder)
                 false
             }
             else -> internalError("Unknown client credentials type: $credentials")
@@ -222,17 +222,17 @@ private fun composeAuthority(hostname: String, port: Int): String =
     // An IPv6 literal contains colons and must be enclosed in brackets, as in a URL.
     (if (hostname.contains(':')) "[$hostname]" else hostname) + ":" + port
 
-// A temporary GrpcTlsClientCredentialsBuilder implementation which throws an error if a user
+// A temporary GrpcTlsClientTransportCredentialsBuilder implementation which throws an error if a user
 // wants to use a custom trustManager or keyManager.
-private object UnsupportedSwiftTlsClientCredentialsBuilder : GrpcTlsClientCredentialsBuilder {
-    override fun trustManager(rootCertsPem: String): GrpcTlsClientCredentialsBuilder {
+private object UnsupportedSwiftTlsClientTransportCredentialsBuilder : GrpcTlsClientTransportCredentialsBuilder {
+    override fun trustManager(rootCertsPem: String): GrpcTlsClientTransportCredentialsBuilder {
         error("Custom TLS trust roots are not yet supported by the grpc-swift transport")
     }
 
     override fun keyManager(
         certChainPem: String,
         privateKeyPem: String,
-    ): GrpcTlsClientCredentialsBuilder {
+    ): GrpcTlsClientTransportCredentialsBuilder {
         error("Mutual TLS is not yet supported by the grpc-swift transport")
     }
 }

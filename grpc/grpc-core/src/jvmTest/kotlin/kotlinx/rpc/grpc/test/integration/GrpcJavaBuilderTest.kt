@@ -44,7 +44,7 @@ import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.client.GrpcClientCallScope
 import kotlinx.rpc.grpc.client.GrpcClientChannelBuilderConfiguration
 import kotlinx.rpc.grpc.client.GrpcClientInterceptor
-import kotlinx.rpc.grpc.client.GrpcTlsClientCredentials
+import kotlinx.rpc.grpc.client.GrpcTlsClientTransportCredentials
 import kotlinx.rpc.grpc.client.callCredentials
 import kotlinx.rpc.grpc.client.plus
 import kotlinx.rpc.grpc.getAll
@@ -298,7 +298,7 @@ class GrpcJavaBuilderTest {
 
     @Test
     fun `call credentials of a combined value - should reach the server`() {
-        val shared = GrpcTlsClientCredentials() + NoTLSBearerTokenCredentials()
+        val shared = GrpcTlsClientTransportCredentials() + NoTLSBearerTokenCredentials()
         val server = RequestHeadersInterceptor()
         val name = InProcessServerBuilder.generateName()
         runBuilderTest(

@@ -416,31 +416,41 @@ public class GrpcClientConfiguration internal constructor() : GrpcClientBaseConf
     /**
      * The transport credentials of the client, the call credentials that it sends with every call, or both.
      *
-     * - [GrpcDefaultClientCredentials], the default: the default security of the transport, without call credentials.
+     * - [GrpcDefaultClientTransportCredentials], the default:
+     *   the default security of the transport, without call credentials.
      * - [tls]: system or custom TLS credentials.
      * - [plaintext]: no encryption. Use it only for tests, or when the API and the data aren't sensitive.
-     * - A [GrpcCallCredentials] value: [GrpcDefaultClientCredentials] and these call credentials.
+     * - A [GrpcCallCredentials] value: [GrpcDefaultClientTransportCredentials] and these call credentials.
      * - Transport credentials `+` call credentials: both.
      *
-     * ```
+     * ```kotlin
      * GrpcClient("example.com", 443) {
      *     credentials = tls { trustManager(rootCertsPem) } + BearerTokenCredentials(token)
      * }
      * ```
+     *
+     * To add call credentials to the current value, use `+=`:
+     *
+     * ```kotlin
+     * GrpcClient("example.com", 443) {
+     *     credentials += BearerTokenCredentials(token)
+     * }
+     * ```
      */
-    public var credentials: GrpcClientCredentials = GrpcDefaultClientCredentials
+    public var credentials: GrpcClientCredentials = GrpcDefaultClientTransportCredentials
 
     /**
      * Returns transport credentials without encryption, for [credentials].
      * Use them only where security isn't a concern, such as local development and tests.
      */
-    public fun plaintext(): GrpcTransportCredentials = GrpcInsecureClientCredentials()
+    public fun plaintext(): GrpcTransportCredentials = GrpcInsecureClientTransportCredentials()
 
     /**
-     * Returns TLS transport credentials, for [credentials]. The same as the [GrpcTlsClientCredentials] constructor.
+     * Returns TLS transport credentials, for [credentials].
+     * The same as the [GrpcTlsClientTransportCredentials] constructor.
      *
      * @param configure Sets the trust manager and, for mutual TLS, the key manager.
      */
-    public fun tls(configure: GrpcTlsClientCredentialsBuilder.() -> Unit): GrpcTransportCredentials =
-        GrpcTlsClientCredentials(configure)
+    public fun tls(configure: GrpcTlsClientTransportCredentialsBuilder.() -> Unit): GrpcTransportCredentials =
+        GrpcTlsClientTransportCredentials(configure)
 }
