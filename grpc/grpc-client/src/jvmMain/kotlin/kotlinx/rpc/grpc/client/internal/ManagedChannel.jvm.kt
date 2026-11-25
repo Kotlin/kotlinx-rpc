@@ -13,6 +13,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.GrpcClientBaseConfiguration
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
+import kotlinx.rpc.grpc.client.GrpcDefaultClientCredentials
 import kotlinx.rpc.grpc.client.GrpcTransportCredentials
 import kotlinx.rpc.grpc.client.toJvm
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
@@ -45,12 +46,12 @@ public actual typealias ManagedChannelBuilder<T> = io.grpc.ManagedChannelBuilder
 public actual fun ManagedChannelBuilder(
     hostname: String,
     port: Int,
-    credentials: GrpcTransportCredentials?,
+    credentials: GrpcTransportCredentials,
 ): ManagedChannelBuilder<*> {
-    if (credentials != null) {
-        return Grpc.newChannelBuilderForAddress(hostname, port, credentials.toJvm())
+    if (credentials == GrpcDefaultClientCredentials) {
+        return io.grpc.ManagedChannelBuilder.forAddress(hostname, port)
     }
-    return io.grpc.ManagedChannelBuilder.forAddress(hostname, port)
+    return Grpc.newChannelBuilderForAddress(hostname, port, credentials.toJvm())
 }
 
 @InternalRpcApi

@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.rpc.grpc.internal.applySetting
 import kotlinx.rpc.grpc.server.GrpcServerBaseConfiguration
+import kotlinx.rpc.grpc.server.GrpcDefaultServerCredentials
 import kotlinx.rpc.grpc.server.GrpcServerConfiguration
 import kotlinx.rpc.grpc.server.GrpcServerCredentials
 import kotlinx.rpc.internal.utils.InternalRpcApi
@@ -22,11 +23,11 @@ import kotlin.time.Duration
 public actual typealias ServerBuilder<T> = io.grpc.ServerBuilder<T>
 
 @InternalRpcApi
-public actual fun ServerBuilder(port: Int, credentials: GrpcServerCredentials?): ServerBuilder<*> {
-    if (credentials != null) {
-        return Grpc.newServerBuilderForPort(port, credentials)
+public actual fun ServerBuilder(port: Int, credentials: GrpcServerCredentials): ServerBuilder<*> {
+    if (credentials == GrpcDefaultServerCredentials) {
+        return io.grpc.ServerBuilder.forPort(port)
     }
-    return io.grpc.ServerBuilder.forPort(port)
+    return Grpc.newServerBuilderForPort(port, credentials)
 }
 
 @InternalRpcApi

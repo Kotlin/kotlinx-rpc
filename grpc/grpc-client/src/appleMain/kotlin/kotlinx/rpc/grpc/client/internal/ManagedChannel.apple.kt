@@ -23,6 +23,7 @@ import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
+import kotlinx.rpc.grpc.client.GrpcDefaultClientCredentials
 import kotlinx.rpc.grpc.client.GrpcTransportCredentials
 import kotlinx.rpc.grpc.client.GrpcInsecureClientCredentials
 import kotlinx.rpc.grpc.client.GrpcTlsClientCredentials
@@ -133,7 +134,7 @@ public actual abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>>
 private class SwiftManagedChannelBuilder(
     private val hostname: String,
     private val port: Int,
-    private val credentials: GrpcTransportCredentials?,
+    private val credentials: GrpcTransportCredentials,
 ) : ManagedChannelBuilder<SwiftManagedChannelBuilder>() {
     @OptIn(UnsafeNumber::class)
     fun buildChannel(config: GrpcClientConfiguration): SwiftManagedChannel {
@@ -144,14 +145,14 @@ private class SwiftManagedChannelBuilder(
                     "See https://github.com/grpc/grpc-swift-nio-transport/issues/207"
             )
         }
-        val clientCredentials = credentials ?: GrpcTlsClientCredentials()
-        val plaintext = when (clientCredentials) {
+        val plaintext = when (credentials) {
             is GrpcInsecureClientCredentials -> true
+            is GrpcDefaultClientCredentials -> false
             is GrpcTlsClientCredentials -> {
-                clientCredentials.configure(UnsupportedSwiftTlsClientCredentialsBuilder)
+                credentials.configure(UnsupportedSwiftTlsClientCredentialsBuilder)
                 false
             }
-            else -> internalError("Unknown client credentials type: $clientCredentials")
+            else -> internalError("Unknown client credentials type: $credentials")
         }
         val swiftConfig = SwiftGrpcClientConfiguration(
             host = hostname,
@@ -240,7 +241,7 @@ private object UnsupportedSwiftTlsClientCredentialsBuilder : GrpcTlsClientCreden
 public actual fun ManagedChannelBuilder(
     hostname: String,
     port: Int,
-    credentials: GrpcTransportCredentials?,
+    credentials: GrpcTransportCredentials,
 ): ManagedChannelBuilder<*> {
     require(hostname.isNotBlank()) { "gRPC hostname must not be blank" }
     require(port in 1..65535) { "gRPC target port must be in 1..65535, but was '$port'" }

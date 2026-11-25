@@ -160,7 +160,7 @@ public fun GrpcClient(
     configure: GrpcClientConfiguration.() -> Unit = {},
 ): GrpcClient {
     val config = GrpcClientConfiguration().apply(configure)
-    return GrpcClient(ManagedChannelBuilder(hostname, port, config.credentials?.transportCredentials), config)
+    return GrpcClient(ManagedChannelBuilder(hostname, port, config.credentials.transportCredentials), config)
 }
 
 private fun GrpcClient(
@@ -168,12 +168,11 @@ private fun GrpcClient(
     config: GrpcClientConfiguration,
 ): GrpcClient {
     val channel = builder.buildChannel(config)
-    val callCredentials = config.credentials?.callCredentials ?: GrpcEmptyCallCredentials
     return GrpcClient(
         channel = channel,
         messageMarshallerResolver = config.messageMarshallerResolver,
         interceptors = config.interceptors,
-        callCredentials = callCredentials,
+        callCredentials = config.credentials.callCredentials,
         marshallerConfig = config.marshallerConfig,
     )
 }
@@ -417,10 +416,10 @@ public class GrpcClientConfiguration internal constructor() : GrpcClientBaseConf
     /**
      * The transport credentials of the client, the call credentials that it sends with every call, or both.
      *
-     * - `null`, the default: the default TLS credentials, without call credentials.
+     * - [GrpcDefaultClientCredentials], the default: the default security of the transport, without call credentials.
      * - [tls]: system or custom TLS credentials.
      * - [plaintext]: no encryption. Use it only for tests, or when the API and the data aren't sensitive.
-     * - A [GrpcCallCredentials] value: the default TLS credentials and these call credentials.
+     * - A [GrpcCallCredentials] value: [GrpcDefaultClientCredentials] and these call credentials.
      * - Transport credentials `+` call credentials: both.
      *
      * ```
@@ -428,11 +427,8 @@ public class GrpcClientConfiguration internal constructor() : GrpcClientBaseConf
      *     credentials = tls { trustManager(rootCertsPem) } + BearerTokenCredentials(token)
      * }
      * ```
-     *
-     * On the JVM, a value without transport credentials leaves the security to the grpc-java transport.
-     * The Netty transport then uses [tls].
      */
-    public var credentials: GrpcClientCredentials? = null
+    public var credentials: GrpcClientCredentials = GrpcDefaultClientCredentials
 
     /**
      * Returns transport credentials without encryption, for [credentials].

@@ -10,7 +10,6 @@ import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.getAll
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 import kotlin.test.assertSame
 
 class GrpcClientCredentialsTest {
@@ -29,7 +28,7 @@ class GrpcClientCredentialsTest {
         val token = Token("a")
         val credentials: GrpcClientCredentials = token
 
-        assertNull(credentials.transportCredentials)
+        assertSame(GrpcDefaultClientCredentials, credentials.transportCredentials)
         assertSame(token, credentials.callCredentials)
     }
 
@@ -54,8 +53,24 @@ class GrpcClientCredentialsTest {
         val first: GrpcClientCredentials = Token("a")
         val credentials = first + Token("b")
 
-        assertNull(credentials.transportCredentials)
+        assertSame(GrpcDefaultClientCredentials, credentials.transportCredentials)
         assertEquals(listOf("a", "b"), credentials.callCredentials.tokens())
+    }
+
+    @Test
+    fun defaultCredentialsWithCallCredentials() = runTest {
+        val credentials = GrpcDefaultClientCredentials + Token("a")
+
+        assertSame(GrpcDefaultClientCredentials, credentials.transportCredentials)
+        assertEquals(listOf("a"), credentials.callCredentials.tokens())
+    }
+
+    @Test
+    fun defaultCredentialsOfConfiguration() {
+        val credentials = GrpcClientConfiguration().credentials
+
+        assertSame(GrpcDefaultClientCredentials, credentials.transportCredentials)
+        assertSame(GrpcEmptyCallCredentials, credentials.callCredentials)
     }
 
     private class Token(private val value: String) : GrpcCallCredentials {

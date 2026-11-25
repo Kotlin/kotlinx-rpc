@@ -410,12 +410,14 @@ public open class GrpcServerBaseConfiguration internal constructor() {
 @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
 public class GrpcServerConfiguration internal constructor() : GrpcServerBaseConfiguration() {
     /**
-     * The transport credentials of the server: the result of [plaintext] or [tls].
+     * The transport credentials of the server:
      *
-     * The default is `null`. The server then doesn't pass credentials to the transport,
-     * and the transport uses its own default. The default of the Netty transport is [plaintext].
+     * - [GrpcDefaultServerCredentials], the default: the default security of the transport.
+     *   The default of the Netty transport is [plaintext].
+     * - [plaintext]: no encryption.
+     * - [tls]: TLS credentials.
      */
-    public var credentials: GrpcServerCredentials? = null
+    public var credentials: GrpcServerCredentials = GrpcDefaultServerCredentials
 
     /**
      * Returns transport credentials without encryption, for [credentials].

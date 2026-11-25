@@ -15,6 +15,17 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
  */
 public expect abstract class GrpcServerCredentials
 
+/**
+ * The credentials that leave the security of the connections to the transport.
+ * The default of [GrpcServerConfiguration.credentials].
+ *
+ * The default of the Netty transport is plaintext.
+ *
+ * Use this object only as the value of [GrpcServerConfiguration.credentials].
+ * A grpc-java server builder rejects it.
+ */
+public expect object GrpcDefaultServerCredentials : GrpcServerCredentials
+
 public expect class GrpcInsecureServerCredentials : GrpcServerCredentials
 
 // we need a wrapper for InsecureChannelCredentials as our constructor would conflict with the private

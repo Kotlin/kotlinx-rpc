@@ -30,11 +30,25 @@ public interface GrpcClientCredentials
  * The credentials that set the security of the connection to the gRPC server.
  *
  * Variations:
+ * - [GrpcDefaultClientCredentials] - the default of the transport.
  * - [GrpcInsecureClientCredentials] - no transport security (plaintext).
  * - [GrpcTlsClientCredentials] - TLS, with optional mutual TLS (mTLS).
  */
 @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface GrpcTransportCredentials : GrpcClientCredentials
+
+/**
+ * The transport credentials that leave the security of the connection to the transport.
+ * The default of [GrpcClientConfiguration.credentials].
+ *
+ * | Platform | Security of the connection |
+ * |---|---|
+ * | JVM | The default of the grpc-java transport. The Netty transport uses TLS with the system trust store. |
+ * | Apple | TLS with the system trust store. |
+ *
+ * Credentials with only call credentials have these transport credentials.
+ */
+public data object GrpcDefaultClientCredentials : GrpcTransportCredentials
 
 /**
  * Returns credentials with the transport credentials of the receiver,
@@ -49,8 +63,11 @@ public interface GrpcTransportCredentials : GrpcClientCredentials
  * @see combine
  */
 public operator fun GrpcClientCredentials.plus(other: GrpcCallCredentials): GrpcClientCredentials {
-    val transport = transportCredentials ?: return callCredentials + other
-    return GrpcCombinedClientCredentials(transport, callCredentials + other)
+    val call = callCredentials + other
+    return when (val transport = transportCredentials) {
+        GrpcDefaultClientCredentials -> call
+        else -> GrpcCombinedClientCredentials(transport, call)
+    }
 }
 
 /**
@@ -72,11 +89,11 @@ public val GrpcClientCredentials.callCredentials: GrpcCallCredentials
         else -> internalError("Unknown client credentials type: $this")
     }
 
-internal val GrpcClientCredentials.transportCredentials: GrpcTransportCredentials?
+internal val GrpcClientCredentials.transportCredentials: GrpcTransportCredentials
     get() = when (this) {
         is GrpcCombinedClientCredentials -> transport
         is GrpcTransportCredentials -> this
-        is GrpcCallCredentials -> null
+        is GrpcCallCredentials -> GrpcDefaultClientCredentials
         else -> internalError("Unknown client credentials type: $this")
     }
 
