@@ -4,11 +4,11 @@
 
 package kotlinx.rpc.grpc.marshaller
 
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyOpen
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.reflect.KType
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 @IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 @ExperimentalRpcApi

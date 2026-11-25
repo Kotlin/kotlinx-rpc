@@ -4,11 +4,11 @@
 
 package kotlinx.rpc.protobuf
 
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 import kotlin.reflect.KClass
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * Protobuf extension descriptor.

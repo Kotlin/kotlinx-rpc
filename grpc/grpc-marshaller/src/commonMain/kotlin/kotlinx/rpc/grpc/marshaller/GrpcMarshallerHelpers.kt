@@ -6,14 +6,14 @@ package kotlinx.rpc.grpc.marshaller
 
 import kotlinx.io.Buffer
 import kotlinx.io.Source
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyMutableCollection
 import kotlinx.rpc.grpc.marshaller.internal.AbstractGrpcMessageWriter
 import kotlinx.rpc.grpc.marshaller.internal.BufferMessageReader
 import kotlinx.rpc.grpc.marshaller.internal.BufferMessageWriter
 import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageReader
 import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageWriter
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
 
 /** Encodes [value] into a byte array. */
 @IntentionallyMutableCollection(reason = ExemptionReason.TODO, description = "review before 1.0")

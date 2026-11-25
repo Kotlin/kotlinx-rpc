@@ -5,6 +5,9 @@
 package kotlinx.rpc.krpc.server
 
 import kotlinx.coroutines.*
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyOpen
+import kotlinx.library.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.descriptor.RpcServiceDescriptor
@@ -19,9 +22,6 @@ import kotlinx.rpc.krpc.server.internal.KrpcServerConnector
 import kotlinx.rpc.krpc.server.internal.KrpcServerService
 import kotlin.concurrent.Volatile
 import kotlin.reflect.KClass
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * kRPC implementation of the [RpcServer].

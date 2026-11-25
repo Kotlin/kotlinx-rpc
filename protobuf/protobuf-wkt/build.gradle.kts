@@ -4,13 +4,13 @@
 
 @file:OptIn(InternalRpcApi::class)
 
+import kotlinx.library.watchdog.WatchdogChecks
+import kotlinx.library.watchdog.WatchdogSeverity
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
 import kotlinx.rpc.protoc.buf
 import kotlinx.rpc.protoc.generate
 import kotlinx.rpc.protoc.protoTasks
-import org.jetbrains.kotlinx.library.api.watchdog.WatchdogChecks
-import org.jetbrains.kotlinx.library.api.watchdog.WatchdogSeverity
 
 plugins {
     alias(libs.plugins.conventions.kmp)

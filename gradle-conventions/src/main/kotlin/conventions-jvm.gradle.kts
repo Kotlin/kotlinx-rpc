@@ -6,10 +6,10 @@
 
 import compat.patrouille.configureJavaCompatibility
 import compat.patrouille.configureKotlinCompatibility
+import kotlinx.library.watchdog.WatchdogGradleExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
-import org.jetbrains.kotlinx.library.api.watchdog.WatchdogGradleExtension
 import util.apiWatchdogSkip
 import util.configureAbiFilters
 import util.enableAbiValidation

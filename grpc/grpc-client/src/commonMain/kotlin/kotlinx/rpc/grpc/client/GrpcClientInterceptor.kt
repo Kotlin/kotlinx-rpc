@@ -5,12 +5,12 @@
 package kotlinx.rpc.grpc.client
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyOpen
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatus
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 /**
  * The scope of a single outgoing gRPC client call observed by a [GrpcClientInterceptor].

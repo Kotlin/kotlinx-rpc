@@ -4,10 +4,10 @@
 
 package kotlinx.rpc.grpc
 
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyWithoutEquals
+import kotlinx.library.watchdog.IntentionallyWithoutHashCode
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEquals
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutHashCode
 
 @IntentionallyWithoutEquals(reason = ExemptionReason.TODO, description = "review before 1.0")
 @IntentionallyWithoutHashCode(reason = ExemptionReason.TODO, description = "review before 1.0")

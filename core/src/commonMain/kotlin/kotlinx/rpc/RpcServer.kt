@@ -5,10 +5,10 @@
 
 package kotlinx.rpc
 
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyOpen
 import kotlinx.rpc.annotations.Rpc
 import kotlin.reflect.KClass
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 /**
  * RpcServer is used to accept RPC messages, route them to a specific service, and process given responses.

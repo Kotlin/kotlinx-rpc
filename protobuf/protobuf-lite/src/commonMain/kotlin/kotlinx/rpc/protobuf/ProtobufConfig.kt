@@ -4,9 +4,9 @@
 
 package kotlinx.rpc.protobuf
 
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * Creates a [ProtoConfig] using a DSL-style builder block.
