@@ -5,6 +5,7 @@
 package kotlinx.rpc.protoc.gen.test
 
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.UnsafeNumber
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.convert
 import kotlinx.cinterop.toKString
@@ -18,7 +19,7 @@ import platform.posix.getenv
 import platform.posix.read
 import platform.posix.write
 
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, UnsafeNumber::class)
 internal actual fun platformRead(buf: ByteArray, offset: Int, length: Int): Int {
     if (length == 0) return 0
     return buf.usePinned { pinned ->
@@ -27,7 +28,7 @@ internal actual fun platformRead(buf: ByteArray, offset: Int, length: Int): Int 
     }
 }
 
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, UnsafeNumber::class)
 internal actual fun platformWrite(buf: ByteArray) {
     if (buf.isEmpty()) return
     buf.usePinned { pinned ->
@@ -45,7 +46,7 @@ internal actual fun getEnvVariable(name: String): String? {
     return getenv(name)?.toKString()
 }
 
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, UnsafeNumber::class)
 internal actual fun writeFile(path: String, bytes: ByteArray) {
     val file = fopen(path, "wb") ?: error("Cannot open file: $path")
     try {
