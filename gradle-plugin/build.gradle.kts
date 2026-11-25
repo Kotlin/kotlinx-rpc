@@ -5,6 +5,7 @@
 import org.gradle.plugin.compatibility.compatibility
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.tooling.core.KotlinToolingVersion
+import util.apiWatchdogSkip
 import util.other.generateSource
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
@@ -45,7 +46,7 @@ tasks.withType<KotlinCompile>().configureEach {
 }
 
 apiWatchdog {
-    enabled = true
+    enabled = !apiWatchdogSkip
 }
 
 // A standalone build of this directory doesn't have the libraries of the root build.
@@ -54,9 +55,6 @@ val hasRootBuild = gradle.parent != null
 pluginDevKit {
     // In the root build, Gradle replaces the artifact with the compiler plugin build.
     compilerPlugin("org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin:$version")
-
-    // The DevKit runtime library isn't on Maven Central, so the published plugin must not depend on it.
-    addRuntimeDependency = false
 
     // The functional tests use the libraries of the root build. See `functionalTestRepository`.
     companionLibrariesKotlinVersion = KotlinToolingVersion(libs.versions.kotlin.lang.get())

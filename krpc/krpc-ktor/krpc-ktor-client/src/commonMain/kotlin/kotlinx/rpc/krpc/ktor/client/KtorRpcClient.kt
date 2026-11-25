@@ -7,6 +7,8 @@ package kotlinx.rpc.krpc.ktor.client
 import io.ktor.websocket.*
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyOpen
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.krpc.KrpcConfig
 import kotlinx.rpc.krpc.KrpcConfigBuilder
@@ -14,8 +16,6 @@ import kotlinx.rpc.krpc.KrpcTransport
 import kotlinx.rpc.krpc.client.KrpcClient
 import kotlinx.rpc.krpc.ktor.KtorTransport
 import kotlinx.rpc.krpc.rpcClientConfig
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 /**
  * [RpcClient] implementation for Ktor, containing [webSocketSession] object,

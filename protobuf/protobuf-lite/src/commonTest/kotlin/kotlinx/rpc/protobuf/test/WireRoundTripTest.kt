@@ -122,9 +122,15 @@ class WireRoundTripTest {
         val builder = StringBuilder()
         repeat(random.nextInt(60)) {
             when (random.nextInt(4)) {
-                0 -> builder.append(random.nextInt(0x80).toChar())
-                1 -> builder.append(random.nextInt(0x80, 0x800).toChar())
-                2 -> builder.append(randomBmpChar(random))
+                0 -> {
+                    builder.append(random.nextInt(0x80).toChar())
+                }
+                1 -> {
+                    builder.append(random.nextInt(0x80, 0x800).toChar())
+                }
+                2 -> {
+                    builder.append(randomBmpChar(random))
+                }
                 else -> {
                     val codePoint = random.nextInt(0x10000, 0x110000)
                     builder.append((0xD800 + ((codePoint - 0x10000) shr 10)).toChar())
@@ -138,6 +144,10 @@ class WireRoundTripTest {
     /** A char from `U+0800` to `U+FFFF` that isn't a surrogate. */
     private fun randomBmpChar(random: Random): Char {
         val value = random.nextInt(0x800, 0x10000 - 0x800)
-        return (if (value >= 0xD800) value + 0x800 else value).toChar()
+        return (if (value >= 0xD800) {
+            value + 0x800
+        } else {
+            value
+        }).toChar()
     }
 }

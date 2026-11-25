@@ -13,7 +13,6 @@ import kotlinx.rpc.sample.messages.MessageService
 import kotlinx.rpc.sample.messages.ReceiveMessagesRequest
 import kotlinx.rpc.sample.messages.SendMessageRequest
 import kotlinx.rpc.sample.messages.SendMessageResponse
-import kotlinx.rpc.sample.messages.invoke
 
 class MessageServiceImpl: MessageService {
     private val bus = MutableSharedFlow<ChatEntry>(extraBufferCapacity = 64, replay = 0)

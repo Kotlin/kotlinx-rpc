@@ -1,0 +1,158 @@
+FILE: proto2RequiredFields.kt
+    @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/InternalRpcApi|), <getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|)) [evaluated = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/InternalRpcApi|), <getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|))])
+    package test.proto2_required_fields
+
+    @R|kotlinx/rpc/protobuf/internal/GeneratedProtoMessage|() public abstract interface RequiredMessage : R|kotlin/Any| {
+        public abstract val number: R|kotlin/Int|
+            public get(): R|kotlin/Int|
+
+        public abstract val text: R|kotlin/String|
+            public get(): R|kotlin/String|
+
+        public final companion object Companion : R|kotlin/Any| {
+            public final operator fun invoke(body: R|test/proto2_required_fields/RequiredMessage.Builder.() -> kotlin/Unit|): R|test/proto2_required_fields/RequiredMessage|
+
+        }
+
+        public abstract interface Builder : R|test/proto2_required_fields/RequiredMessage| {
+            public abstract override var number: R|kotlin/Int|
+                public get(): R|kotlin/Int|
+                public set(value: R|kotlin/Int|): R|kotlin/Unit|
+
+            public abstract override var text: R|kotlin/String|
+                public get(): R|kotlin/String|
+                public set(value: R|kotlin/String|): R|kotlin/Unit|
+
+        }
+
+    }
+    public final class RequiredMessageInternal : R|test/proto2_required_fields/RequiredMessage.Builder| {
+        public constructor(): R|test/proto2_required_fields/RequiredMessageInternal| {
+            super<R|kotlin/Any|>()
+        }
+
+        private final val presenceMask: R|kotlin/BooleanArray| = R|kotlin/BooleanArray.BooleanArray|(Int(2))
+            private get(): R|kotlin/BooleanArray|
+
+        public open override var number: R|kotlin/Int| = Int(0)
+            public get(): R|kotlin/Int|
+            public set(value: R|kotlin/Int|): R|kotlin/Unit| {
+                this@R|test/proto2_required_fields/RequiredMessageInternal|.F|test/proto2_required_fields/RequiredMessageInternal.number| = R|<local>/value|
+                this@R|test/proto2_required_fields/RequiredMessageInternal|.R|test/proto2_required_fields/RequiredMessageInternal.presenceMask|.R|kotlin/BooleanArray.set|(Int(0), Boolean(true))
+                Unit
+            }
+
+        public open override var text: R|kotlin/String| = String()
+            public get(): R|kotlin/String|
+            public set(value: R|kotlin/String|): R|kotlin/Unit| {
+                this@R|test/proto2_required_fields/RequiredMessageInternal|.F|test/proto2_required_fields/RequiredMessageInternal.text| = R|<local>/value|
+                this@R|test/proto2_required_fields/RequiredMessageInternal|.R|test/proto2_required_fields/RequiredMessageInternal.presenceMask|.R|kotlin/BooleanArray.set|(Int(1), Boolean(true))
+                Unit
+            }
+
+        @R|kotlinx/rpc/internal/utils/InternalRpcApi|() public final fun checkRequiredFields(): R|kotlin/Unit| {
+            when () {
+                this@R|test/proto2_required_fields/RequiredMessageInternal|.R|test/proto2_required_fields/RequiredMessageInternal.presenceMask|.R|kotlin/BooleanArray.get|(Int(0)).R|kotlin/Boolean.not|() ->  {
+                    throw Q|kotlinx/rpc/protobuf/ProtobufException|.R|kotlinx/rpc/protobuf/ProtobufException.Companion.missingRequiredField|(String(RequiredMessage), String(number))
+                }
+            }
+
+            when () {
+                this@R|test/proto2_required_fields/RequiredMessageInternal|.R|test/proto2_required_fields/RequiredMessageInternal.presenceMask|.R|kotlin/BooleanArray.get|(Int(1)).R|kotlin/Boolean.not|() ->  {
+                    throw Q|kotlinx/rpc/protobuf/ProtobufException|.R|kotlinx/rpc/protobuf/ProtobufException.Companion.missingRequiredField|(String(RequiredMessage), String(text))
+                }
+            }
+
+        }
+
+        public final object DESCRIPTOR : R|kotlinx/rpc/protobuf/internal/ProtoDescriptor<test/proto2_required_fields/RequiredMessage>| {
+            private constructor(): R|test/proto2_required_fields/RequiredMessageInternal.DESCRIPTOR| {
+                super<R|kotlin/Any|>()
+            }
+
+            public open override val fullName: R|kotlin/String| = String(test.proto2_required_fields.RequiredMessage)
+                public get(): R|kotlin/String|
+
+        }
+
+        public final object MARSHALLER : R|kotlinx/rpc/grpc/marshaller/GrpcMarshaller<test/proto2_required_fields/RequiredMessage>| {
+            private constructor(): R|test/proto2_required_fields/RequiredMessageInternal.MARSHALLER| {
+                super<R|kotlin/Any|>()
+            }
+
+            public open override fun prepare(value: R|test/proto2_required_fields/RequiredMessage|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|kotlinx/rpc/grpc/marshaller/GrpcEncodedMessage| {
+                R|kotlin/TODO|()
+            }
+
+            public open override fun decode(reader: R|kotlinx/rpc/grpc/marshaller/GrpcMessageReader|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|test/proto2_required_fields/RequiredMessage| {
+                R|kotlin/TODO|()
+            }
+
+        }
+
+    }
+    private final fun expectMissingRequiredField(fieldName: R|kotlin/String|, body: R|test/proto2_required_fields/RequiredMessage.Builder.() -> kotlin/Unit|): R|kotlin/String?| {
+        try {
+            Q|test/proto2_required_fields/RequiredMessage|.R|test/proto2_required_fields/RequiredMessage.Companion.invoke|(R|<local>/body|)
+        }
+        catch (exception: R|kotlinx/rpc/protobuf/ProtobufException|) {
+            lval expectedMessage: R|kotlin/String?| = Q|kotlinx/rpc/protobuf/ProtobufException|.R|kotlinx/rpc/protobuf/ProtobufException.Companion.missingRequiredField|(String(RequiredMessage), R|<local>/fieldName|).R|kotlin/Throwable.message|
+            ^expectMissingRequiredField when () {
+                ==(R|<local>/exception|.R|kotlin/Throwable.message|, R|<local>/expectedMessage|) ->  {
+                    Null(null)
+                }
+                else ->  {
+                    <strcat>(String(Fail: Unexpected exception: ), R|<local>/exception|)
+                }
+            }
+
+        }
+
+        ^expectMissingRequiredField <strcat>(String(Fail: Expected an exception for missing required field '), R|<local>/fieldName|, String('.))
+    }
+    public final fun box(): R|kotlin/String| {
+        R|test/proto2_required_fields/expectMissingRequiredField|(String(number), <L> = expectMissingRequiredField@fun R|test/proto2_required_fields/RequiredMessage.Builder|.<anonymous>(): R|kotlin/Unit| <inline=NoInline>  {
+            ^@expectMissingRequiredField Unit
+        }
+        )?.{ $subj$.R|kotlin/let|<R|kotlin/String|, R|kotlin/Nothing|>(<L> = let@fun <anonymous>(it: R|kotlin/String|): R|kotlin/Nothing| <inline=Inline, kind=EXACTLY_ONCE>  {
+            ^box R|<local>/it|
+        }
+        ) }
+        R|test/proto2_required_fields/expectMissingRequiredField|(String(text), <L> = expectMissingRequiredField@fun R|test/proto2_required_fields/RequiredMessage.Builder|.<anonymous>(): R|kotlin/Unit| <inline=NoInline>  {
+            this@R|special/anonymous|.R|test/proto2_required_fields/RequiredMessage.Builder.number| = Int(42)
+        }
+        )?.{ $subj$.R|kotlin/let|<R|kotlin/String|, R|kotlin/Nothing|>(<L> = let@fun <anonymous>(it: R|kotlin/String|): R|kotlin/Nothing| <inline=Inline, kind=EXACTLY_ONCE>  {
+            ^box R|<local>/it|
+        }
+        ) }
+        R|test/proto2_required_fields/expectMissingRequiredField|(String(number), <L> = expectMissingRequiredField@fun R|test/proto2_required_fields/RequiredMessage.Builder|.<anonymous>(): R|kotlin/Unit| <inline=NoInline>  {
+            this@R|special/anonymous|.R|test/proto2_required_fields/RequiredMessage.Builder.text| = String(initialized)
+        }
+        )?.{ $subj$.R|kotlin/let|<R|kotlin/String|, R|kotlin/Nothing|>(<L> = let@fun <anonymous>(it: R|kotlin/String|): R|kotlin/Nothing| <inline=Inline, kind=EXACTLY_ONCE>  {
+            ^box R|<local>/it|
+        }
+        ) }
+        lval message: R|test/proto2_required_fields/RequiredMessage| = Q|test/proto2_required_fields/RequiredMessage|.R|test/proto2_required_fields/RequiredMessage.Companion.invoke|(<L> = RequiredMessage@fun R|test/proto2_required_fields/RequiredMessage.Builder|.<anonymous>(): R|kotlin/Unit| <inline=NoInline>  {
+            this@R|special/anonymous|.R|test/proto2_required_fields/RequiredMessage.Builder.number| = Int(42)
+            this@R|special/anonymous|.R|test/proto2_required_fields/RequiredMessage.Builder.text| = String(initialized)
+        }
+        )
+        when () {
+            !=(R|<local>/message|.R|test/proto2_required_fields/RequiredMessage.number|, Int(42)) || !=(R|<local>/message|.R|test/proto2_required_fields/RequiredMessage.text|, String(initialized)) ->  {
+                ^box String(Fail: Initialized required fields have incorrect values.)
+            }
+        }
+
+        lval defaults: R|test/proto2_required_fields/RequiredMessage| = Q|test/proto2_required_fields/RequiredMessage|.R|test/proto2_required_fields/RequiredMessage.Companion.invoke|(<L> = RequiredMessage@fun R|test/proto2_required_fields/RequiredMessage.Builder|.<anonymous>(): R|kotlin/Unit| <inline=NoInline>  {
+            this@R|special/anonymous|.R|test/proto2_required_fields/RequiredMessage.Builder.number| = Int(0)
+            this@R|special/anonymous|.R|test/proto2_required_fields/RequiredMessage.Builder.text| = String()
+        }
+        )
+        when () {
+            !=(R|<local>/defaults|.R|test/proto2_required_fields/RequiredMessage.number|, Int(0)) || !=(R|<local>/defaults|.R|test/proto2_required_fields/RequiredMessage.text|, String()) ->  {
+                ^box String(Fail: Required fields initialized to defaults have incorrect values.)
+            }
+        }
+
+        ^box String(OK)
+    }

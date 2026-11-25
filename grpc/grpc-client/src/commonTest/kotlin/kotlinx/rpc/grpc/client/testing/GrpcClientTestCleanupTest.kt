@@ -5,14 +5,12 @@
 package kotlinx.rpc.grpc.client.testing
 
 import com.google.protobuf.kotlin.Empty
-import com.google.protobuf.kotlin.invoke
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.test.TestResult
 import kotlinx.rpc.grpc.client.internal.ManagedChannel
+import kotlinx.rpc.test.TestCleanup
 import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import kxrpc.testing.BarrierType
 import kxrpc.testing.EventType
@@ -29,43 +27,9 @@ import kotlin.time.Duration.Companion.seconds
 
 class GrpcClientTestCleanupTest {
     @Test
-    fun cleanupContinuesAfterFailures() = test {
-        val firstFailure = CleanupFailure("first")
-        val secondFailure = CleanupFailure("second")
-        val completedSteps = mutableListOf<String>()
-        val cleanup = GrpcClientTestCleanup()
-
-        cleanup.run {
-            completedSteps += "first"
-            throw firstFailure
-        }
-        cleanup.run {
-            completedSteps += "second"
-            throw secondFailure
-        }
-        cleanup.run { completedSteps += "third" }
-
-        assertEquals(listOf("first", "second", "third"), completedSteps)
-        assertSame(firstFailure, cleanup.failure())
-        assertEquals(listOf(secondFailure), firstFailure.suppressedExceptions)
-    }
-
-    @Test
-    fun timedOutCleanupDoesNotPreventFollowingSteps() = test {
-        val cleanup = GrpcClientTestCleanup(stepTimeout = 1.milliseconds)
-        var followingStepCompleted = false
-
-        cleanup.run { awaitCancellation() }
-        cleanup.run { followingStepCompleted = true }
-
-        assertTrue(followingStepCompleted)
-        assertIs<TimeoutCancellationException>(cleanup.failure())
-    }
-
-    @Test
     fun clientTerminationCanExceedTheDefaultStepTimeout() = test {
         val channel = CleanupTestChannel(terminates = true)
-        val cleanup = GrpcClientTestCleanup(stepTimeout = 50.milliseconds)
+        val cleanup = TestCleanup(stepTimeout = 50.milliseconds)
 
         cleanup.shutdownChannel(channel, terminationTimeout = 1.seconds)
 
@@ -78,7 +42,7 @@ class GrpcClientTestCleanupTest {
     @Test
     fun clientTerminationFailureDoesNotPreventFollowingSteps() = test {
         val channel = CleanupTestChannel(terminates = false)
-        val cleanup = GrpcClientTestCleanup()
+        val cleanup = TestCleanup()
         var followingStepCompleted = false
 
         cleanup.shutdownChannel(channel, terminationTimeout = 1.seconds)
@@ -88,15 +52,6 @@ class GrpcClientTestCleanupTest {
         assertFalse(channel.isTerminated)
         assertIs<AssertionError>(cleanup.failure())
         assertTrue(followingStepCompleted)
-    }
-
-    @Test
-    fun primaryFailureSuppressesCleanupFailure() {
-        val primaryFailure = CleanupFailure("primary")
-        val cleanupFailure = CleanupFailure("cleanup")
-
-        assertSame(primaryFailure, combineTestAndCleanupFailures(primaryFailure, cleanupFailure))
-        assertEquals(listOf(cleanupFailure), primaryFailure.suppressedExceptions)
     }
 
     @Test

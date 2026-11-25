@@ -34,8 +34,12 @@ internal class WireInput(private val segments: InputSegments, val size: Int) : A
 
     /** Limits the input to the next [length] bytes and returns the old limit. */
     fun pushLimit(length: Int): Int {
-        if (length < 0) throw ProtobufDecodingException.negativeSize()
-        if (length > bytesUntilLimit) throw ProtobufDecodingException.truncatedMessage()
+        if (length < 0) {
+            throw ProtobufDecodingException.negativeSize()
+        }
+        if (length > bytesUntilLimit) {
+            throw ProtobufDecodingException.truncatedMessage()
+        }
         val oldLimit = limit
         limit = position + length
         updateReadEnd()
@@ -250,7 +254,9 @@ internal class WireInput(private val segments: InputSegments, val size: Int) : A
         if (closed) {
             throw ProtobufDecodingException("The WireDecoder is used after its decoding scope ended.")
         }
-        if (position >= limit) throw ProtobufDecodingException.truncatedMessage()
+        if (position >= limit) {
+            throw ProtobufDecodingException.truncatedMessage()
+        }
         // Here pos == segmentLength, because position < limit.
         window.detach()
         bytesBeforeSegment += segmentLength
@@ -269,7 +275,11 @@ internal class WireInput(private val segments: InputSegments, val size: Int) : A
     }
 
     private fun checkCount(count: Int) {
-        if (count < 0) throw ProtobufDecodingException.negativeSize()
-        if (count > bytesUntilLimit) throw ProtobufDecodingException.truncatedMessage()
+        if (count < 0) {
+            throw ProtobufDecodingException.negativeSize()
+        }
+        if (count > bytesUntilLimit) {
+            throw ProtobufDecodingException.truncatedMessage()
+        }
     }
 }

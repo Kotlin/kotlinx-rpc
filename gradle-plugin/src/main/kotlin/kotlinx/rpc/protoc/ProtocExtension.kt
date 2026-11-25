@@ -4,12 +4,12 @@
 
 package kotlinx.rpc.protoc
 
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyExhaustive
+import kotlinx.library.watchdog.IntentionallyMutableCollection
 import kotlinx.rpc.buf.BufExtension
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
 
 /**
  * Configuration for the Protoc capabilities.

@@ -7,8 +7,8 @@ package kotlinx.rpc.grpc.client
 import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
 import kotlinx.rpc.grpc.client.internal.applyConfig
 import kotlinx.rpc.grpc.client.internal.toKotlin
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * Creates a gRPC client on the channel that [builder] builds.

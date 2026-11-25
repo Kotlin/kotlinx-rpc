@@ -5,9 +5,9 @@
 
 package kotlinx.rpc.grpc.server
 
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyExhaustive
 import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
 
 /**
  * Credentials used by a gRPC server to accept incoming connections. The same instance may be

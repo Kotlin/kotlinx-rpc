@@ -6,9 +6,9 @@
 
 package kotlinx.rpc.grpc
 
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyExhaustive
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
 
 /**
  * Defines the status of an operation by providing a standard [GrpcStatusCode] in conjunction with an

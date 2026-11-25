@@ -68,7 +68,9 @@ public abstract class BufLockTask @Inject internal constructor(
             super.exec()
 
             val generated = bufLockFile.get().asFile
-            if (!generated.exists()) return
+            if (!generated.exists()) {
+                return
+            }
 
             persistentLock.parentFile?.mkdirs()
             generated.copyTo(persistentLock)
@@ -88,7 +90,9 @@ internal fun Project.registerBufLockTask(
     lockFile: Property<String>,
     configure: BufLockTask.() -> Unit = {},
 ): TaskProvider<BufLockTask> {
-    return registerBufExecTask(BufLockTask::class, "${BufLockTask.NAME_PREFIX}$name", provider { workingDir }, properties) {
+    return registerBufExecTask(
+        BufLockTask::class, "${BufLockTask.NAME_PREFIX}$name", provider { workingDir }, properties
+    ) {
         bsrDeps.convention(bsrDependencies)
         persistentLockFilePath.convention(lockFile)
 

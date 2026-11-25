@@ -5,10 +5,8 @@
 package kotlinx.rpc.protobuf.test
 
 import UseImported
-import invoke
 import kotlin.test.Test
 import to.be.imported.IWantToBeImported
-import to.be.imported.invoke
 import kotlin.test.assertEquals
 
 class WithImportsTest {

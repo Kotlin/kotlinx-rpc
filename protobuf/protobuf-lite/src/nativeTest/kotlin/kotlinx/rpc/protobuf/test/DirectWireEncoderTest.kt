@@ -7,7 +7,6 @@ package kotlinx.rpc.protobuf.test
 import OneOfMsg
 import Other
 import References
-import invoke
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
@@ -19,9 +18,7 @@ import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.encodeTo
 import kotlinx.rpc.protobuf.internal.encodeWire
 import test.groups.WithGroups
-import test.groups.invoke
 import test.nested.NestedOuter
-import test.nested.invoke
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals

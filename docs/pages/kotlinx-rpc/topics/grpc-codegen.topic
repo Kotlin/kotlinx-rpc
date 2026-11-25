@@ -159,7 +159,6 @@
             import kotlinx.rpc.protobuf.ProtoConfig
             import kotlinx.rpc.withService
             import example.hello.HelloRequest
-            import example.hello.invoke
             import example.hello.copy
 
             val request = HelloRequest {

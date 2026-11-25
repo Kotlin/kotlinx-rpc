@@ -10,7 +10,6 @@ import io.grpc.testing.integration.PayloadType
 import io.grpc.testing.integration.ResponseParameters
 import io.grpc.testing.integration.StreamingOutputCallRequest
 import io.grpc.testing.integration.StreamingOutputCallResponse
-import io.grpc.testing.integration.invoke
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async

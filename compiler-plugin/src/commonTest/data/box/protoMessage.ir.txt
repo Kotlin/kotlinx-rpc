@@ -341,12 +341,12 @@ FILE fqName:test.my_message fileName:/module_main_protoMessage.kt
           VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessage.Builder
           VALUE_PARAMETER kind:Regular name:<set-?> index:1 type:kotlin.String
           correspondingProperty: PROPERTY GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageBuilderPropertyKey] name:text visibility:public modality:ABSTRACT [var]
-    CLASS GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlin.Any]
+    CLASS GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageCompanionObjectKey] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlin.Any]
       thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:test.my_message.MyMessage.Companion
       CONSTRUCTOR visibility:private returnType:test.my_message.MyMessage.Companion [primary]
         BLOCK_BODY
           DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
-          INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlin.Any]' type=kotlin.Unit
+          INSTANCE_INITIALIZER_CALL classDescriptor='CLASS GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageCompanionObjectKey] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlin.Any]' type=kotlin.Unit
       FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN returnType:kotlin.Boolean [fake_override,operator]
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
         VALUE_PARAMETER kind:Regular name:other index:1 type:kotlin.Any?
@@ -360,6 +360,17 @@ FILE fqName:test.my_message fileName:/module_main_protoMessage.kt
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
         overridden:
           public open fun toString (): kotlin.String declared in kotlin.Any
+      FUN GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageCompanionObjectFunctionKey] name:invoke visibility:public modality:FINAL returnType:test.my_message.MyMessage [operator]
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessage.Companion
+        VALUE_PARAMETER GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageCompanionObjectFunctionKey] kind:Regular name:body index:1 type:@[ExtensionFunctionType] kotlin.Function1<test.my_message.MyMessage.Builder, kotlin.Unit>
+        BLOCK_BODY
+          VAR IR_TEMPORARY_VARIABLE name:tmp_0 type:test.my_message.MyMessageInternal [val]
+            CONSTRUCTOR_CALL 'public constructor <init> () declared in test.my_message.MyMessageInternal' type=test.my_message.MyMessageInternal origin=null
+          CALL 'public abstract fun invoke (p1: P1 of kotlin.Function1): R of kotlin.Function1 declared in kotlin.Function1' type=kotlin.Unit origin=null
+            ARG <this>: GET_VAR 'body: @[ExtensionFunctionType] kotlin.Function1<test.my_message.MyMessage.Builder, kotlin.Unit> declared in test.my_message.MyMessage.Companion.invoke' type=@[ExtensionFunctionType] kotlin.Function1<test.my_message.MyMessage.Builder, kotlin.Unit> origin=null
+            ARG p1: GET_VAR 'val tmp_0: test.my_message.MyMessageInternal declared in test.my_message.MyMessage.Companion.invoke' type=test.my_message.MyMessageInternal origin=null
+          RETURN type=kotlin.Nothing from='public final fun invoke (body: @[ExtensionFunctionType] kotlin.Function1<test.my_message.MyMessage.Builder, kotlin.Unit>): test.my_message.MyMessage declared in test.my_message.MyMessage.Companion'
+            GET_VAR 'val tmp_0: test.my_message.MyMessageInternal declared in test.my_message.MyMessage.Companion.invoke' type=test.my_message.MyMessageInternal origin=null
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN returnType:kotlin.Boolean [fake_override,operator]
       VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
       VALUE_PARAMETER kind:Regular name:other index:1 type:kotlin.Any?

@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.grpc.test.integration
 
-import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.annotations.Grpc
 import kotlinx.rpc.grpc.test.EchoRequest

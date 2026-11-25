@@ -14,7 +14,6 @@ import kxrpc.testing.BarrierType
 import kxrpc.testing.CallTrace
 import kxrpc.testing.EventType
 import kxrpc.testing.ScenarioDiagnostics
-import kxrpc.testing.invoke
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue

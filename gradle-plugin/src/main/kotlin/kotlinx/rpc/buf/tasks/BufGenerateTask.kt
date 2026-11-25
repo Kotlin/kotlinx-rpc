@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.buf.tasks
 
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 import kotlinx.rpc.buf.BufGenerateExtension
 import kotlinx.rpc.protoc.DefaultProtocExtension
 import kotlinx.rpc.protoc.PROTO_GROUP
@@ -28,8 +30,6 @@ import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.TaskProvider
 import java.io.File
 import javax.inject.Inject
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * Buf `generate` command.
@@ -188,7 +188,9 @@ internal fun Project.registerBufGenerateTask(
     properties: ProtoTask.Properties,
     configure: BufGenerateTask.() -> Unit = {},
 ): TaskProvider<BufGenerateTask> {
-    return registerBufExecTask<BufGenerateTask>("${BufGenerateTask.NAME_PREFIX}$name", provider { workingDir }, properties) {
+    return registerBufExecTask<BufGenerateTask>(
+        "${BufGenerateTask.NAME_PREFIX}$name", provider { workingDir }, properties
+    ) {
         group = PROTO_GROUP
         description = "Generates code from .proto files using 'buf generate'"
 

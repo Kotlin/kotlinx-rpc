@@ -7,7 +7,6 @@ package kotlinx.rpc.grpc.test.integration
 import Other
 import ReferenceTestService
 import References
-import invoke
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.test.AllPrimitives
@@ -27,7 +26,6 @@ import kotlinx.rpc.grpc.test.TestMap
 import kotlinx.rpc.grpc.test.UsingEnum
 import kotlinx.rpc.grpc.test.ageOrNull
 import kotlinx.rpc.grpc.test.inner1OrNull
-import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.grpc.test.nameOrNull
 import kotlinx.rpc.grpc.test.recursionOrNull
 import kotlinx.rpc.grpc.test.reference21OrNull

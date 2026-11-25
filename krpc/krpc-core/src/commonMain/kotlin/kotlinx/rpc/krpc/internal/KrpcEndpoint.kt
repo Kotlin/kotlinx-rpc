@@ -10,10 +10,7 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
-@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 public interface KrpcEndpoint {
     @InternalRpcApi
     public val sender: KrpcMessageSender

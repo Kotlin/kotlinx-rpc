@@ -6333,6 +6333,177 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
     }
 
     @InternalRpcApi
+    fun checkRequiredFields() {
+        if (!presenceMask[PresenceIndices.requiredInt32]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredInt32")
+        }
+
+        if (!presenceMask[PresenceIndices.requiredInt64]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredInt64")
+        }
+
+        if (!presenceMask[PresenceIndices.requiredUint32]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredUint32")
+        }
+
+        if (!presenceMask[PresenceIndices.requiredUint64]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredUint64")
+        }
+
+        if (!presenceMask[PresenceIndices.requiredSint32]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredSint32")
+        }
+
+        if (!presenceMask[PresenceIndices.requiredSint64]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredSint64")
+        }
+
+        if (!presenceMask[PresenceIndices.requiredFixed32]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredFixed32")
+        }
+
+        if (!presenceMask[PresenceIndices.requiredFixed64]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredFixed64")
+        }
+
+        if (!presenceMask[PresenceIndices.requiredSfixed32]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredSfixed32")
+        }
+
+        if (!presenceMask[PresenceIndices.requiredSfixed64]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredSfixed64")
+        }
+
+        if (!presenceMask[PresenceIndices.requiredFloat]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredFloat")
+        }
+
+        if (!presenceMask[PresenceIndices.requiredDouble]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredDouble")
+        }
+
+        if (!presenceMask[PresenceIndices.requiredBool]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredBool")
+        }
+
+        if (!presenceMask[PresenceIndices.requiredString]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredString")
+        }
+
+        if (!presenceMask[PresenceIndices.requiredBytes]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredBytes")
+        }
+
+        if (!presenceMask[PresenceIndices.requiredNestedMessage]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredNestedMessage")
+        }
+
+        if (!presenceMask[PresenceIndices.requiredForeignMessage]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredForeignMessage")
+        }
+
+        if (!presenceMask[PresenceIndices.requiredNestedEnum]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredNestedEnum")
+        }
+
+        if (!presenceMask[PresenceIndices.requiredForeignEnum]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredForeignEnum")
+        }
+
+        if (!presenceMask[PresenceIndices.requiredStringPiece]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredStringPiece")
+        }
+
+        if (!presenceMask[PresenceIndices.requiredCord]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredCord")
+        }
+
+        if (!presenceMask[PresenceIndices.recursiveMessage]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "recursiveMessage")
+        }
+
+        if (!presenceMask[PresenceIndices.data]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "data")
+        }
+
+        if (!presenceMask[PresenceIndices.defaultInt32]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultInt32")
+        }
+
+        if (!presenceMask[PresenceIndices.defaultInt64]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultInt64")
+        }
+
+        if (!presenceMask[PresenceIndices.defaultUint32]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultUint32")
+        }
+
+        if (!presenceMask[PresenceIndices.defaultUint64]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultUint64")
+        }
+
+        if (!presenceMask[PresenceIndices.defaultSint32]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultSint32")
+        }
+
+        if (!presenceMask[PresenceIndices.defaultSint64]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultSint64")
+        }
+
+        if (!presenceMask[PresenceIndices.defaultFixed32]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultFixed32")
+        }
+
+        if (!presenceMask[PresenceIndices.defaultFixed64]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultFixed64")
+        }
+
+        if (!presenceMask[PresenceIndices.defaultSfixed32]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultSfixed32")
+        }
+
+        if (!presenceMask[PresenceIndices.defaultSfixed64]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultSfixed64")
+        }
+
+        if (!presenceMask[PresenceIndices.defaultFloat]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultFloat")
+        }
+
+        if (!presenceMask[PresenceIndices.defaultDouble]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultDouble")
+        }
+
+        if (!presenceMask[PresenceIndices.defaultBool]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultBool")
+        }
+
+        if (!presenceMask[PresenceIndices.defaultString]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultString")
+        }
+
+        if (!presenceMask[PresenceIndices.defaultBytes]) {
+            throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultBytes")
+        }
+
+        if (presenceMask[15]) {
+            this.requiredNestedMessage.asInternal().checkRequiredFields()
+        }
+
+        if (presenceMask[21]) {
+            this.recursiveMessage.asInternal().checkRequiredFields()
+        }
+
+        if (presenceMask[22]) {
+            this.optionalRecursiveMessage.asInternal().checkRequiredFields()
+        }
+
+        if (presenceMask[23]) {
+            this.data.asInternal().checkRequiredFields()
+        }
+    }
+
+    @InternalRpcApi
     class NestedMessageInternal: TestAllRequiredTypesProto2.NestedMessage.Builder, InternalMessage(fieldsWithPresence = 3) {
         @InternalRpcApi
         internal object PresenceIndices {
@@ -6452,6 +6623,25 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
             copy.apply(body)
             this._unknownFields.copyTo(copy._unknownFields)
             return copy
+        }
+
+        @InternalRpcApi
+        fun checkRequiredFields() {
+            if (!presenceMask[PresenceIndices.a]) {
+                throw ProtobufException.missingRequiredField("NestedMessage", "a")
+            }
+
+            if (!presenceMask[PresenceIndices.corecursive]) {
+                throw ProtobufException.missingRequiredField("NestedMessage", "corecursive")
+            }
+
+            if (presenceMask[1]) {
+                this.corecursive.asInternal().checkRequiredFields()
+            }
+
+            if (presenceMask[2]) {
+                this.optionalCorecursive.asInternal().checkRequiredFields()
+            }
         }
 
         @InternalRpcApi
@@ -6594,6 +6784,17 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
             copy.apply(body)
             this._unknownFields.copyTo(copy._unknownFields)
             return copy
+        }
+
+        @InternalRpcApi
+        fun checkRequiredFields() {
+            if (!presenceMask[PresenceIndices.groupInt32]) {
+                throw ProtobufException.missingRequiredField("Data", "groupInt32")
+            }
+
+            if (!presenceMask[PresenceIndices.groupUint32]) {
+                throw ProtobufException.missingRequiredField("Data", "groupUint32")
+            }
         }
 
         @InternalRpcApi
@@ -6813,6 +7014,13 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         }
 
         @InternalRpcApi
+        fun checkRequiredFields() {
+            if (!presenceMask[PresenceIndices.str]) {
+                throw ProtobufException.missingRequiredField("MessageSetCorrectExtension1", "str")
+            }
+        }
+
+        @InternalRpcApi
         object MARSHALLER: ProtoGrpcMarshaller<TestAllRequiredTypesProto2.MessageSetCorrectExtension1, MessageSetCorrectExtension1Internal>() {
             override fun asInternal(
                 value: TestAllRequiredTypesProto2.MessageSetCorrectExtension1,
@@ -6933,6 +7141,13 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
             copy.apply(body)
             this._unknownFields.copyTo(copy._unknownFields)
             return copy
+        }
+
+        @InternalRpcApi
+        fun checkRequiredFields() {
+            if (!presenceMask[PresenceIndices.i]) {
+                throw ProtobufException.missingRequiredField("MessageSetCorrectExtension2", "i")
+            }
         }
 
         @InternalRpcApi
@@ -10898,177 +11113,6 @@ fun ProtoWithKeywords.asInternal(): ProtoWithKeywordsInternal {
 }
 
 @InternalRpcApi
-fun TestAllRequiredTypesProto2Internal.checkRequiredFields() {
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredInt32]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredInt32")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredInt64]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredInt64")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredUint32]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredUint32")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredUint64]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredUint64")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredSint32]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredSint32")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredSint64]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredSint64")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredFixed32]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredFixed32")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredFixed64]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredFixed64")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredSfixed32]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredSfixed32")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredSfixed64]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredSfixed64")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredFloat]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredFloat")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredDouble]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredDouble")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredBool]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredBool")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredString]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredString")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredBytes]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredBytes")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredNestedMessage]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredNestedMessage")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredForeignMessage]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredForeignMessage")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredNestedEnum]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredNestedEnum")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredForeignEnum]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredForeignEnum")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredStringPiece]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredStringPiece")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredCord]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "requiredCord")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.recursiveMessage]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "recursiveMessage")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.data]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "data")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.defaultInt32]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultInt32")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.defaultInt64]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultInt64")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.defaultUint32]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultUint32")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.defaultUint64]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultUint64")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.defaultSint32]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultSint32")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.defaultSint64]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultSint64")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.defaultFixed32]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultFixed32")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.defaultFixed64]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultFixed64")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.defaultSfixed32]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultSfixed32")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.defaultSfixed64]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultSfixed64")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.defaultFloat]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultFloat")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.defaultDouble]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultDouble")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.defaultBool]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultBool")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.defaultString]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultString")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.defaultBytes]) {
-        throw ProtobufException.missingRequiredField("TestAllRequiredTypesProto2", "defaultBytes")
-    }
-
-    if (presenceMask[15]) {
-        this.requiredNestedMessage.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[21]) {
-        this.recursiveMessage.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[22]) {
-        this.optionalRecursiveMessage.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[23]) {
-        this.data.asInternal().checkRequiredFields()
-    }
-}
-
-@InternalRpcApi
 fun TestAllRequiredTypesProto2Internal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (presenceMask[TestAllRequiredTypesProto2Internal.PresenceIndices.requiredInt32]) {
         encoder.writeInt32(fieldNr = 1, value = this.requiredInt32)
@@ -13844,25 +13888,6 @@ fun UnknownToTestAllTypes.OptionalGroup.asInternal(): UnknownToTestAllTypesInter
 }
 
 @InternalRpcApi
-fun TestAllRequiredTypesProto2Internal.NestedMessageInternal.checkRequiredFields() {
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.NestedMessageInternal.PresenceIndices.a]) {
-        throw ProtobufException.missingRequiredField("NestedMessage", "a")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.NestedMessageInternal.PresenceIndices.corecursive]) {
-        throw ProtobufException.missingRequiredField("NestedMessage", "corecursive")
-    }
-
-    if (presenceMask[1]) {
-        this.corecursive.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[2]) {
-        this.optionalCorecursive.asInternal().checkRequiredFields()
-    }
-}
-
-@InternalRpcApi
 fun TestAllRequiredTypesProto2Internal.NestedMessageInternal.encodeWith(
     encoder: WireEncoder,
     config: ProtoConfig?,
@@ -13948,17 +13973,6 @@ private fun TestAllRequiredTypesProto2Internal.NestedMessageInternal.computeSize
 @InternalRpcApi
 fun TestAllRequiredTypesProto2.NestedMessage.asInternal(): TestAllRequiredTypesProto2Internal.NestedMessageInternal {
     return this as? TestAllRequiredTypesProto2Internal.NestedMessageInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
-}
-
-@InternalRpcApi
-fun TestAllRequiredTypesProto2Internal.DataInternal.checkRequiredFields() {
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.DataInternal.PresenceIndices.groupInt32]) {
-        throw ProtobufException.missingRequiredField("Data", "groupInt32")
-    }
-
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.DataInternal.PresenceIndices.groupUint32]) {
-        throw ProtobufException.missingRequiredField("Data", "groupUint32")
-    }
 }
 
 @InternalRpcApi
@@ -14110,13 +14124,6 @@ fun TestAllRequiredTypesProto2.MessageSetCorrect.asInternal(): TestAllRequiredTy
 }
 
 @InternalRpcApi
-fun TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal.checkRequiredFields() {
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal.PresenceIndices.str]) {
-        throw ProtobufException.missingRequiredField("MessageSetCorrectExtension1", "str")
-    }
-}
-
-@InternalRpcApi
 fun TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal.encodeWith(
     encoder: WireEncoder,
     config: ProtoConfig?,
@@ -14178,13 +14185,6 @@ private fun TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Intern
 @InternalRpcApi
 fun TestAllRequiredTypesProto2.MessageSetCorrectExtension1.asInternal(): TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal {
     return this as? TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
-}
-
-@InternalRpcApi
-fun TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal.checkRequiredFields() {
-    if (!presenceMask[TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal.PresenceIndices.i]) {
-        throw ProtobufException.missingRequiredField("MessageSetCorrectExtension2", "i")
-    }
 }
 
 @InternalRpcApi

@@ -6,6 +6,10 @@
 
 package kotlinx.rpc.grpc
 
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyWithoutEquals
+import kotlinx.library.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
+import kotlinx.library.watchdog.IntentionallyWithoutHashCode
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
 import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
@@ -13,10 +17,6 @@ import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.grpc.marshaller.decodeFromByteArray
 import kotlinx.rpc.grpc.marshaller.encodeToByteArray
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEquals
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutHashCode
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 

@@ -36,6 +36,7 @@ kotlin {
                 implementation(libs.kotlin.test)
                 implementation(libs.coroutines.test)
                 implementation(projects.tests.testProtos)
+                implementation(projects.tests.testUtils)
                 protoImport(project(path = projects.tests.testProtos.path, configuration = "importedProtoElements"))
             }
         }

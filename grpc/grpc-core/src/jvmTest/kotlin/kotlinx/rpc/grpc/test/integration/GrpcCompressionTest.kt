@@ -18,7 +18,6 @@ import kotlinx.rpc.grpc.test.Runtime
 import kotlinx.rpc.grpc.test.assertContainsAll
 import kotlinx.rpc.grpc.test.assertGrpcFailure
 import kotlinx.rpc.grpc.test.captureGrpcLogs
-import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.grpc.test.runtime
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService

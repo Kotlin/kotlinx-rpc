@@ -7,6 +7,7 @@ package kotlinx.rpc.protobuf.test
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
 import kotlinx.rpc.protobuf.ProtobufDecodingException
+import kotlinx.rpc.protobuf.ProtobufEncodingException
 import kotlinx.rpc.protobuf.internal.BooleanArrayList
 import kotlinx.rpc.protobuf.internal.DoubleArrayList
 import kotlinx.rpc.protobuf.internal.FloatArrayList
@@ -383,9 +384,9 @@ class WireMarshallerTest {
             encoder
         }
 
-        assertFailsWith<IllegalStateException> { escaped.writeBool(2, true) }
-        assertFailsWith<IllegalStateException> { escaped.flush() }
-        assertFailsWith<IllegalStateException> { escaped.writeRawBytes(Buffer()) }
+        assertFailsWith<ProtobufEncodingException> { escaped.writeBool(2, true) }
+        assertFailsWith<ProtobufEncodingException> { escaped.flush() }
+        assertFailsWith<ProtobufEncodingException> { escaped.writeRawBytes(Buffer()) }
         assertContentEquals(bytes(0x08, 0x01), buffer.readByteArray())
     }
 
@@ -406,9 +407,9 @@ class WireMarshallerTest {
         }
 
         assertSame(failure, thrown)
-        assertFailsWith<IllegalStateException> { escaped!!.writeBool(4, true) }
-        assertFailsWith<IllegalStateException> { escaped!!.flush() }
-        assertFailsWith<IllegalStateException> { escaped!!.writeRawBytes(Buffer()) }
+        assertFailsWith<ProtobufEncodingException> { escaped!!.writeBool(4, true) }
+        assertFailsWith<ProtobufEncodingException> { escaped!!.flush() }
+        assertFailsWith<ProtobufEncodingException> { escaped!!.writeRawBytes(Buffer()) }
         encodeWire(buffer) { it.writeBool(4, false) }
         assertContentEquals(bytes(0x08, 0x01, 0x10, 0x2A, 0x20, 0x00), buffer.readByteArray())
     }

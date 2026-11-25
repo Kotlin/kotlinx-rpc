@@ -5,10 +5,10 @@
 package kotlinx.rpc.grpc.marshaller
 
 import kotlinx.io.Source
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyMutableCollection
+import kotlinx.library.watchdog.IntentionallyOpen
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 /**
  * A bounded view of one received gRPC message, supplied by a gRPC runtime.

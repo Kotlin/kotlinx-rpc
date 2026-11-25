@@ -9,7 +9,12 @@ import java.io.File
 
 internal object OS {
     internal val javaExePath: String by lazy {
-        val java = File(System.getProperty("java.home"), if (isWindows) "bin/java.exe" else "bin/java")
+        val executable = if (isWindows) {
+            "java.exe"
+        } else {
+            "java"
+        }
+        val java = File(File(System.getProperty("java.home"), "bin"), executable)
 
         if (!java.exists()) {
             throw GradleException("Could not find java executable at " + java.path)

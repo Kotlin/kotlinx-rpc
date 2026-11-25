@@ -16,7 +16,6 @@ import com.google.protobuf.conformance.FailureSet
 import com.google.protobuf.conformance.FailureSetInternal
 import com.google.protobuf.conformance.TestCategory
 import com.google.protobuf.conformance.WireFormat.*
-import com.google.protobuf.conformance.invoke
 import com.google.protobuf.conformance.payload
 import com.google.protobuf.conformance.result
 import com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal

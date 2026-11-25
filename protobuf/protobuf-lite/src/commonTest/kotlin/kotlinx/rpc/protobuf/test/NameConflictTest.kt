@@ -24,7 +24,6 @@ import name_conflicts.whenChoice
 import name_conflicts.whenValue
 import name_conflicts.NestedWithKeywords
 import name_conflicts.copy
-import name_conflicts.invoke
 import name_conflicts.presence
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlin.test.Test

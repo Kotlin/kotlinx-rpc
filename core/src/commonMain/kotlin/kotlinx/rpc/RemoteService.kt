@@ -4,9 +4,9 @@
 
 package kotlinx.rpc
 
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyOpen
 import kotlinx.rpc.annotations.Rpc
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 /**
  * Marker interface for an RPC service.

@@ -8,20 +8,6 @@ import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
- * Constructs a new message.
- * ```
- * val message = FileDescriptorSet {
- *    file = ...
- * }
- * ```
- */
-public operator fun FileDescriptorSet.Companion.invoke(
-    body: FileDescriptorSet.Builder.() -> Unit,
-): FileDescriptorSet {
-    return FileDescriptorSetInternal().apply(body).apply(FileDescriptorSetInternal::checkRequiredFields)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -39,20 +25,6 @@ public fun FileDescriptorSet.copy(
  * Returns the field-presence view for this [FileDescriptorSet] instance.
  */
 public val FileDescriptorSet.presence: FileDescriptorSetPresence get() = this.asInternal()._presence
-
-/**
- * Constructs a new message.
- * ```
- * val message = FileDescriptorProto {
- *    name = ...
- * }
- * ```
- */
-public operator fun FileDescriptorProto.Companion.invoke(
-    body: FileDescriptorProto.Builder.() -> Unit,
-): FileDescriptorProto {
-    return FileDescriptorProtoInternal().apply(body).apply(FileDescriptorProtoInternal::checkRequiredFields)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -104,20 +76,6 @@ public val FileDescriptorProto.syntaxOrNull: String? get() = if (this.presence.h
 public val FileDescriptorProto.editionOrNull: Edition? get() = if (this.presence.hasEdition) this.edition else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = DescriptorProto {
- *    name = ...
- * }
- * ```
- */
-public operator fun DescriptorProto.Companion.invoke(
-    body: DescriptorProto.Builder.() -> Unit,
-): DescriptorProto {
-    return DescriptorProtoInternal().apply(body).apply(DescriptorProtoInternal::checkRequiredFields)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -150,20 +108,6 @@ public val DescriptorProto.optionsOrNull: MessageOptions? get() = if (this.prese
 public val DescriptorProto.visibilityOrNull: SymbolVisibility? get() = if (this.presence.hasVisibility) this.visibility else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = ExtensionRangeOptions {
- *    uninterpretedOption = ...
- * }
- * ```
- */
-public operator fun ExtensionRangeOptions.Companion.invoke(
-    body: ExtensionRangeOptions.Builder.() -> Unit,
-): ExtensionRangeOptions {
-    return ExtensionRangeOptionsInternal().apply(body).apply(ExtensionRangeOptionsInternal::checkRequiredFields)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -191,20 +135,6 @@ public val ExtensionRangeOptions.featuresOrNull: FeatureSet? get() = if (this.pr
  * Returns the value of the `verification` field if present, otherwise null.
  */
 public val ExtensionRangeOptions.verificationOrNull: ExtensionRangeOptions.VerificationState? get() = if (this.presence.hasVerification) this.verification else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = FieldDescriptorProto {
- *    name = ...
- * }
- * ```
- */
-public operator fun FieldDescriptorProto.Companion.invoke(
-    body: FieldDescriptorProto.Builder.() -> Unit,
-): FieldDescriptorProto {
-    return FieldDescriptorProtoInternal().apply(body).apply(FieldDescriptorProtoInternal::checkRequiredFields)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -281,20 +211,6 @@ public val FieldDescriptorProto.optionsOrNull: FieldOptions? get() = if (this.pr
 public val FieldDescriptorProto.proto3OptionalOrNull: Boolean? get() = if (this.presence.hasProto3Optional) this.proto3Optional else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = OneofDescriptorProto {
- *    name = ...
- * }
- * ```
- */
-public operator fun OneofDescriptorProto.Companion.invoke(
-    body: OneofDescriptorProto.Builder.() -> Unit,
-): OneofDescriptorProto {
-    return OneofDescriptorProtoInternal().apply(body).apply(OneofDescriptorProtoInternal::checkRequiredFields)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -322,20 +238,6 @@ public val OneofDescriptorProto.nameOrNull: String? get() = if (this.presence.ha
  * Returns the value of the `options` field if present, otherwise null.
  */
 public val OneofDescriptorProto.optionsOrNull: OneofOptions? get() = if (this.presence.hasOptions) this.options else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = EnumDescriptorProto {
- *    name = ...
- * }
- * ```
- */
-public operator fun EnumDescriptorProto.Companion.invoke(
-    body: EnumDescriptorProto.Builder.() -> Unit,
-): EnumDescriptorProto {
-    return EnumDescriptorProtoInternal().apply(body).apply(EnumDescriptorProtoInternal::checkRequiredFields)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -372,20 +274,6 @@ public val EnumDescriptorProto.optionsOrNull: EnumOptions? get() = if (this.pres
 public val EnumDescriptorProto.visibilityOrNull: SymbolVisibility? get() = if (this.presence.hasVisibility) this.visibility else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = EnumValueDescriptorProto {
- *    name = ...
- * }
- * ```
- */
-public operator fun EnumValueDescriptorProto.Companion.invoke(
-    body: EnumValueDescriptorProto.Builder.() -> Unit,
-): EnumValueDescriptorProto {
-    return EnumValueDescriptorProtoInternal().apply(body).apply(EnumValueDescriptorProtoInternal::checkRequiredFields)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -420,20 +308,6 @@ public val EnumValueDescriptorProto.numberOrNull: Int? get() = if (this.presence
 public val EnumValueDescriptorProto.optionsOrNull: EnumValueOptions? get() = if (this.presence.hasOptions) this.options else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = ServiceDescriptorProto {
- *    name = ...
- * }
- * ```
- */
-public operator fun ServiceDescriptorProto.Companion.invoke(
-    body: ServiceDescriptorProto.Builder.() -> Unit,
-): ServiceDescriptorProto {
-    return ServiceDescriptorProtoInternal().apply(body).apply(ServiceDescriptorProtoInternal::checkRequiredFields)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -461,20 +335,6 @@ public val ServiceDescriptorProto.nameOrNull: String? get() = if (this.presence.
  * Returns the value of the `options` field if present, otherwise null.
  */
 public val ServiceDescriptorProto.optionsOrNull: ServiceOptions? get() = if (this.presence.hasOptions) this.options else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = MethodDescriptorProto {
- *    name = ...
- * }
- * ```
- */
-public operator fun MethodDescriptorProto.Companion.invoke(
-    body: MethodDescriptorProto.Builder.() -> Unit,
-): MethodDescriptorProto {
-    return MethodDescriptorProtoInternal().apply(body).apply(MethodDescriptorProtoInternal::checkRequiredFields)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -524,20 +384,6 @@ public val MethodDescriptorProto.clientStreamingOrNull: Boolean? get() = if (thi
  * Returns the value of the `serverStreaming` field if present, otherwise null.
  */
 public val MethodDescriptorProto.serverStreamingOrNull: Boolean? get() = if (this.presence.hasServerStreaming) this.serverStreaming else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = FileOptions {
- *    javaPackage = ...
- * }
- * ```
- */
-public operator fun FileOptions.Companion.invoke(
-    body: FileOptions.Builder.() -> Unit,
-): FileOptions {
-    return FileOptionsInternal().apply(body).apply(FileOptionsInternal::checkRequiredFields)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -657,20 +503,6 @@ public val FileOptions.rubyPackageOrNull: String? get() = if (this.presence.hasR
 public val FileOptions.featuresOrNull: FeatureSet? get() = if (this.presence.hasFeatures) this.features else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = MessageOptions {
- *    messageSetWireFormat = ...
- * }
- * ```
- */
-public operator fun MessageOptions.Companion.invoke(
-    body: MessageOptions.Builder.() -> Unit,
-): MessageOptions {
-    return MessageOptionsInternal().apply(body).apply(MessageOptionsInternal::checkRequiredFields)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -716,20 +548,6 @@ public val MessageOptions.deprecatedLegacyJsonFieldConflictsOrNull: Boolean? get
  * Returns the value of the `features` field if present, otherwise null.
  */
 public val MessageOptions.featuresOrNull: FeatureSet? get() = if (this.presence.hasFeatures) this.features else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = FieldOptions {
- *    ctype = ...
- * }
- * ```
- */
-public operator fun FieldOptions.Companion.invoke(
-    body: FieldOptions.Builder.() -> Unit,
-): FieldOptions {
-    return FieldOptionsInternal().apply(body).apply(FieldOptionsInternal::checkRequiredFields)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -804,20 +622,6 @@ public val FieldOptions.featuresOrNull: FeatureSet? get() = if (this.presence.ha
 public val FieldOptions.featureSupportOrNull: FieldOptions.FeatureSupport? get() = if (this.presence.hasFeatureSupport) this.featureSupport else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = OneofOptions {
- *    features = ...
- * }
- * ```
- */
-public operator fun OneofOptions.Companion.invoke(
-    body: OneofOptions.Builder.() -> Unit,
-): OneofOptions {
-    return OneofOptionsInternal().apply(body).apply(OneofOptionsInternal::checkRequiredFields)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -838,20 +642,6 @@ public val OneofOptions.presence: OneofOptionsPresence get() = this.asInternal()
  * Returns the value of the `features` field if present, otherwise null.
  */
 public val OneofOptions.featuresOrNull: FeatureSet? get() = if (this.presence.hasFeatures) this.features else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = EnumOptions {
- *    allowAlias = ...
- * }
- * ```
- */
-public operator fun EnumOptions.Companion.invoke(
-    body: EnumOptions.Builder.() -> Unit,
-): EnumOptions {
-    return EnumOptionsInternal().apply(body).apply(EnumOptionsInternal::checkRequiredFields)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -891,20 +681,6 @@ public val EnumOptions.deprecatedLegacyJsonFieldConflictsOrNull: Boolean? get() 
 public val EnumOptions.featuresOrNull: FeatureSet? get() = if (this.presence.hasFeatures) this.features else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = EnumValueOptions {
- *    deprecated = ...
- * }
- * ```
- */
-public operator fun EnumValueOptions.Companion.invoke(
-    body: EnumValueOptions.Builder.() -> Unit,
-): EnumValueOptions {
-    return EnumValueOptionsInternal().apply(body).apply(EnumValueOptionsInternal::checkRequiredFields)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -942,20 +718,6 @@ public val EnumValueOptions.debugRedactOrNull: Boolean? get() = if (this.presenc
 public val EnumValueOptions.featureSupportOrNull: FieldOptions.FeatureSupport? get() = if (this.presence.hasFeatureSupport) this.featureSupport else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = ServiceOptions {
- *    features = ...
- * }
- * ```
- */
-public operator fun ServiceOptions.Companion.invoke(
-    body: ServiceOptions.Builder.() -> Unit,
-): ServiceOptions {
-    return ServiceOptionsInternal().apply(body).apply(ServiceOptionsInternal::checkRequiredFields)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -981,20 +743,6 @@ public val ServiceOptions.featuresOrNull: FeatureSet? get() = if (this.presence.
  * Returns the value of the `deprecated` field if present, otherwise null.
  */
 public val ServiceOptions.deprecatedOrNull: Boolean? get() = if (this.presence.hasDeprecated) this.deprecated else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = MethodOptions {
- *    deprecated = ...
- * }
- * ```
- */
-public operator fun MethodOptions.Companion.invoke(
-    body: MethodOptions.Builder.() -> Unit,
-): MethodOptions {
-    return MethodOptionsInternal().apply(body).apply(MethodOptionsInternal::checkRequiredFields)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -1027,20 +775,6 @@ public val MethodOptions.idempotencyLevelOrNull: MethodOptions.IdempotencyLevel?
  * Returns the value of the `features` field if present, otherwise null.
  */
 public val MethodOptions.featuresOrNull: FeatureSet? get() = if (this.presence.hasFeatures) this.features else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = UninterpretedOption {
- *    name = ...
- * }
- * ```
- */
-public operator fun UninterpretedOption.Companion.invoke(
-    body: UninterpretedOption.Builder.() -> Unit,
-): UninterpretedOption {
-    return UninterpretedOptionInternal().apply(body).apply(UninterpretedOptionInternal::checkRequiredFields)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -1090,18 +824,6 @@ public val UninterpretedOption.stringValueOrNull: ByteString? get() = if (this.p
  * Returns the value of the `aggregateValue` field if present, otherwise null.
  */
 public val UninterpretedOption.aggregateValueOrNull: String? get() = if (this.presence.hasAggregateValue) this.aggregateValue else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = FeatureSet {
- *    fieldPresence = ...
- * }
- * ```
- */
-public operator fun FeatureSet.Companion.invoke(body: FeatureSet.Builder.() -> Unit): FeatureSet {
-    return FeatureSetInternal().apply(body)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -1166,20 +888,6 @@ public val FeatureSet.defaultSymbolVisibilityOrNull: FeatureSet.VisibilityFeatur
 public val FeatureSet.enforceProtoLimitsOrNull: FeatureSet.ProtoLimitsFeature.EnforceProtoLimits? get() = if (this.presence.hasEnforceProtoLimits) this.enforceProtoLimits else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = FeatureSetDefaults {
- *    defaults = ...
- * }
- * ```
- */
-public operator fun FeatureSetDefaults.Companion.invoke(
-    body: FeatureSetDefaults.Builder.() -> Unit,
-): FeatureSetDefaults {
-    return FeatureSetDefaultsInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -1209,20 +917,6 @@ public val FeatureSetDefaults.minimumEditionOrNull: Edition? get() = if (this.pr
 public val FeatureSetDefaults.maximumEditionOrNull: Edition? get() = if (this.presence.hasMaximumEdition) this.maximumEdition else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = SourceCodeInfo {
- *    location = ...
- * }
- * ```
- */
-public operator fun SourceCodeInfo.Companion.invoke(
-    body: SourceCodeInfo.Builder.() -> Unit,
-): SourceCodeInfo {
-    return SourceCodeInfoInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -1240,20 +934,6 @@ public fun SourceCodeInfo.copy(body: SourceCodeInfo.Builder.() -> Unit = {}): So
 public val SourceCodeInfo.presence: SourceCodeInfoPresence get() = this.asInternal()._presence
 
 /**
- * Constructs a new message.
- * ```
- * val message = GeneratedCodeInfo {
- *    annotation = ...
- * }
- * ```
- */
-public operator fun GeneratedCodeInfo.Companion.invoke(
-    body: GeneratedCodeInfo.Builder.() -> Unit,
-): GeneratedCodeInfo {
-    return GeneratedCodeInfoInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -1265,20 +945,6 @@ public fun GeneratedCodeInfo.copy(
     body: GeneratedCodeInfo.Builder.() -> Unit = {},
 ): GeneratedCodeInfo {
     return this.asInternal().copyInternal(body)
-}
-
-/**
- * Constructs a new message.
- * ```
- * val message = ExtensionRange {
- *    start = ...
- * }
- * ```
- */
-public operator fun DescriptorProto.ExtensionRange.Companion.invoke(
-    body: DescriptorProto.ExtensionRange.Builder.() -> Unit,
-): DescriptorProto.ExtensionRange {
-    return DescriptorProtoInternal.ExtensionRangeInternal().apply(body).apply(DescriptorProtoInternal.ExtensionRangeInternal::checkRequiredFields)
 }
 
 /**
@@ -1316,20 +982,6 @@ public val DescriptorProto.ExtensionRange.endOrNull: Int? get() = if (this.prese
 public val DescriptorProto.ExtensionRange.optionsOrNull: ExtensionRangeOptions? get() = if (this.presence.hasOptions) this.options else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = ReservedRange {
- *    start = ...
- * }
- * ```
- */
-public operator fun DescriptorProto.ReservedRange.Companion.invoke(
-    body: DescriptorProto.ReservedRange.Builder.() -> Unit,
-): DescriptorProto.ReservedRange {
-    return DescriptorProtoInternal.ReservedRangeInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -1357,20 +1009,6 @@ public val DescriptorProto.ReservedRange.startOrNull: Int? get() = if (this.pres
  * Returns the value of the `end` field if present, otherwise null.
  */
 public val DescriptorProto.ReservedRange.endOrNull: Int? get() = if (this.presence.hasEnd) this.end else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = Declaration {
- *    number = ...
- * }
- * ```
- */
-public operator fun ExtensionRangeOptions.Declaration.Companion.invoke(
-    body: ExtensionRangeOptions.Declaration.Builder.() -> Unit,
-): ExtensionRangeOptions.Declaration {
-    return ExtensionRangeOptionsInternal.DeclarationInternal().apply(body)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -1417,20 +1055,6 @@ public val ExtensionRangeOptions.Declaration.reservedOrNull: Boolean? get() = if
 public val ExtensionRangeOptions.Declaration.repeatedOrNull: Boolean? get() = if (this.presence.hasRepeated) this.repeated else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = EnumReservedRange {
- *    start = ...
- * }
- * ```
- */
-public operator fun EnumDescriptorProto.EnumReservedRange.Companion.invoke(
-    body: EnumDescriptorProto.EnumReservedRange.Builder.() -> Unit,
-): EnumDescriptorProto.EnumReservedRange {
-    return EnumDescriptorProtoInternal.EnumReservedRangeInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -1460,20 +1084,6 @@ public val EnumDescriptorProto.EnumReservedRange.startOrNull: Int? get() = if (t
 public val EnumDescriptorProto.EnumReservedRange.endOrNull: Int? get() = if (this.presence.hasEnd) this.end else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = EditionDefault {
- *    edition = ...
- * }
- * ```
- */
-public operator fun FieldOptions.EditionDefault.Companion.invoke(
-    body: FieldOptions.EditionDefault.Builder.() -> Unit,
-): FieldOptions.EditionDefault {
-    return FieldOptionsInternal.EditionDefaultInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -1501,20 +1111,6 @@ public val FieldOptions.EditionDefault.editionOrNull: Edition? get() = if (this.
  * Returns the value of the `value` field if present, otherwise null.
  */
 public val FieldOptions.EditionDefault.valueOrNull: String? get() = if (this.presence.hasValue) this.value else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = FeatureSupport {
- *    editionIntroduced = ...
- * }
- * ```
- */
-public operator fun FieldOptions.FeatureSupport.Companion.invoke(
-    body: FieldOptions.FeatureSupport.Builder.() -> Unit,
-): FieldOptions.FeatureSupport {
-    return FieldOptionsInternal.FeatureSupportInternal().apply(body)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -1561,20 +1157,6 @@ public val FieldOptions.FeatureSupport.editionRemovedOrNull: Edition? get() = if
 public val FieldOptions.FeatureSupport.removalErrorOrNull: String? get() = if (this.presence.hasRemovalError) this.removalError else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = NamePart {
- *    namePart = ...
- * }
- * ```
- */
-public operator fun UninterpretedOption.NamePart.Companion.invoke(
-    body: UninterpretedOption.NamePart.Builder.() -> Unit,
-): UninterpretedOption.NamePart {
-    return UninterpretedOptionInternal.NamePartInternal().apply(body).apply(UninterpretedOptionInternal.NamePartInternal::checkRequiredFields)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -1594,18 +1176,6 @@ public fun UninterpretedOption.NamePart.copy(
 public val UninterpretedOption.NamePart.presence: UninterpretedOptionPresence.NamePart get() = this.asInternal()._presence
 
 /**
- * Constructs a new message.
- * ```
- * val message = VisibilityFeature { }
- * ```
- */
-public operator fun FeatureSet.VisibilityFeature.Companion.invoke(
-    body: FeatureSet.VisibilityFeature.Builder.() -> Unit,
-): FeatureSet.VisibilityFeature {
-    return FeatureSetInternal.VisibilityFeatureInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy()
@@ -1618,18 +1188,6 @@ public fun FeatureSet.VisibilityFeature.copy(
 }
 
 /**
- * Constructs a new message.
- * ```
- * val message = ProtoLimitsFeature { }
- * ```
- */
-public operator fun FeatureSet.ProtoLimitsFeature.Companion.invoke(
-    body: FeatureSet.ProtoLimitsFeature.Builder.() -> Unit,
-): FeatureSet.ProtoLimitsFeature {
-    return FeatureSetInternal.ProtoLimitsFeatureInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy()
@@ -1639,20 +1197,6 @@ public fun FeatureSet.ProtoLimitsFeature.copy(
     body: FeatureSet.ProtoLimitsFeature.Builder.() -> Unit = {},
 ): FeatureSet.ProtoLimitsFeature {
     return this.asInternal().copyInternal(body)
-}
-
-/**
- * Constructs a new message.
- * ```
- * val message = FeatureSetEditionDefault {
- *    edition = ...
- * }
- * ```
- */
-public operator fun FeatureSetDefaults.FeatureSetEditionDefault.Companion.invoke(
-    body: FeatureSetDefaults.FeatureSetEditionDefault.Builder.() -> Unit,
-): FeatureSetDefaults.FeatureSetEditionDefault {
-    return FeatureSetDefaultsInternal.FeatureSetEditionDefaultInternal().apply(body)
 }
 
 /**
@@ -1690,20 +1234,6 @@ public val FeatureSetDefaults.FeatureSetEditionDefault.overridableFeaturesOrNull
 public val FeatureSetDefaults.FeatureSetEditionDefault.fixedFeaturesOrNull: FeatureSet? get() = if (this.presence.hasFixedFeatures) this.fixedFeatures else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = Location {
- *    path = ...
- * }
- * ```
- */
-public operator fun SourceCodeInfo.Location.Companion.invoke(
-    body: SourceCodeInfo.Location.Builder.() -> Unit,
-): SourceCodeInfo.Location {
-    return SourceCodeInfoInternal.LocationInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -1731,20 +1261,6 @@ public val SourceCodeInfo.Location.leadingCommentsOrNull: String? get() = if (th
  * Returns the value of the `trailingComments` field if present, otherwise null.
  */
 public val SourceCodeInfo.Location.trailingCommentsOrNull: String? get() = if (this.presence.hasTrailingComments) this.trailingComments else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = Annotation {
- *    path = ...
- * }
- * ```
- */
-public operator fun GeneratedCodeInfo.Annotation.Companion.invoke(
-    body: GeneratedCodeInfo.Annotation.Builder.() -> Unit,
-): GeneratedCodeInfo.Annotation {
-    return GeneratedCodeInfoInternal.AnnotationInternal().apply(body)
-}
 
 /**
  * Copies the original message, including unknown fields.

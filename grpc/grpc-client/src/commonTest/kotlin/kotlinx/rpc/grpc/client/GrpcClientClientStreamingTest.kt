@@ -7,7 +7,6 @@ package kotlinx.rpc.grpc.client
 import io.grpc.testing.integration.Payload
 import io.grpc.testing.integration.PayloadType
 import io.grpc.testing.integration.StreamingInputCallRequest
-import io.grpc.testing.integration.invoke
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.flow

@@ -54,7 +54,6 @@ import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.status
 import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
-import kotlinx.rpc.sample.messages.invoke
 import kotlinx.rpc.sample.messages.ChatEntry
 import kotlinx.rpc.sample.messages.MessageService
 import kotlinx.rpc.sample.messages.ReceiveMessagesRequest

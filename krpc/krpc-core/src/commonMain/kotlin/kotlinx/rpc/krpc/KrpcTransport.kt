@@ -5,11 +5,11 @@
 package kotlinx.rpc.krpc
 
 import kotlinx.coroutines.CoroutineScope
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyExhaustive
+import kotlinx.library.watchdog.IntentionallyMutableCollection
+import kotlinx.library.watchdog.IntentionallyOpen
+import kotlinx.library.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * A single message that can be transferred from one RPC endpoint to another.

@@ -8,8 +8,8 @@ package kotlinx.rpc.grpc.server
 
 import io.grpc.HandlerRegistry
 import io.grpc.util.MutableHandlerRegistry
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyOpen
 
 /**
  * Registry of services and their methods used by servers to dispatching incoming calls.

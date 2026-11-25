@@ -16,6 +16,8 @@ FILE: module_main_protoMessage.kt
             public get(): R|kotlin/Int|
 
         public final companion object Companion : R|kotlin/Any| {
+            public final operator fun invoke(body: R|test/my_message/MyMessage.Builder.() -> kotlin/Unit|): R|test/my_message/MyMessage|
+
         }
 
         public abstract interface Builder : R|test/my_message/MyMessage| {

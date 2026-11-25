@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.grpc.client.testing
 
+import kotlinx.rpc.test.environmentVariable
+
 /**
  * Connection and metadata constants shared with the Gradle-managed reference server.
  *
@@ -32,6 +34,3 @@ internal object GrpcClientTestServer {
      */
     const val CALL_ID_METADATA_KEY: String = "kxrpc-test-call-id"
 }
-
-/** Returns the value of the environment variable [name] of the test process, or `null` if it isn't set. */
-internal expect fun environmentVariable(name: String): String?

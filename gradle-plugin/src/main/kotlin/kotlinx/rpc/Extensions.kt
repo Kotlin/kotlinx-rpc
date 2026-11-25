@@ -6,6 +6,9 @@
 
 package kotlinx.rpc
 
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyExhaustive
+import kotlinx.library.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 import kotlinx.rpc.protoc.DefaultProtocExtension
 import kotlinx.rpc.protoc.ProtocExtension
 import org.gradle.api.Action
@@ -18,9 +21,6 @@ import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.property
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 internal fun Project.rpcExtensionOrNull(): RpcExtension? = extensions.findByType<RpcExtension>()
 

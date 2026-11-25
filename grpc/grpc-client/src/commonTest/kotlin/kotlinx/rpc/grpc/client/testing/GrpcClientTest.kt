@@ -8,6 +8,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.test.TestResult
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
+import kotlinx.rpc.test.combineFailures
 import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import kxrpc.testing.Barrier
 import kxrpc.testing.ConfigureScenarioRequest
@@ -73,24 +74,5 @@ internal suspend fun executeGrpcClientTest(
     }
 
     val cleanupFailure = withContext(NonCancellable) { fixture.close(testFailure) }
-    combineTestAndCleanupFailures(testFailure, cleanupFailure)?.let { throw it }
-}
-
-/**
- * Selects the failure that a test reports when its body, its teardown, or both fail.
- *
- * The body failure has priority, because a teardown failure is usually a consequence of it.
- *
- * @return [testFailure] with [cleanupFailure] suppressed, [cleanupFailure] if the body succeeded,
- *   or `null` if neither failed.
- */
-internal fun combineTestAndCleanupFailures(
-    testFailure: Throwable?,
-    cleanupFailure: Throwable?,
-): Throwable? {
-    if (testFailure == null) {
-        return cleanupFailure
-    }
-    cleanupFailure?.let(testFailure::addSuppressed)
-    return testFailure
+    combineFailures(testFailure, cleanupFailure)?.let { throw it }
 }

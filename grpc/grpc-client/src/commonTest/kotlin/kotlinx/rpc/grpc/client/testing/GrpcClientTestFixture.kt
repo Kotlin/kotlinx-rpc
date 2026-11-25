@@ -6,16 +6,14 @@ package kotlinx.rpc.grpc.client.testing
 
 import io.grpc.testing.integration.TestService
 import io.grpc.testing.integration.UnimplementedService
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
 import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.client.GrpcClientCallScope
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
 import kotlinx.rpc.grpc.client.GrpcClientInterceptor
 import kotlinx.rpc.grpc.client.internal.ManagedChannel
+import kotlinx.rpc.test.TestCleanup
 import kotlinx.rpc.withService
 import kxrpc.testing.AllowInboundReadsRequest
 import kxrpc.testing.AwaitEventRequest
@@ -34,7 +32,6 @@ import kxrpc.testing.ReleaseBarrierRequest
 import kxrpc.testing.ScenarioDiagnostics
 import kxrpc.testing.StartDisposableEndpointRequest
 import kxrpc.testing.StopDisposableEndpointRequest
-import kxrpc.testing.invoke
 import kotlin.random.Random
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -393,7 +390,7 @@ internal class GrpcClientTestFixture(
      * @return The first cleanup failure with the other failures suppressed, or `null`.
      */
     internal suspend fun close(testFailure: Throwable?): Throwable? {
-        val cleanup = GrpcClientTestCleanup()
+        val cleanup = TestCleanup()
 
         if (testFailure == null) {
             if (disposableEndpointStarted) {
@@ -480,58 +477,15 @@ private class CallIdInterceptor(
     }
 }
 
-/**
- * Runs teardown steps independently of each other. If a step fails or hangs, the cleanup records the
- * failure and runs the next steps.
- *
- * Steps run on [Dispatchers.Default], so [stepTimeout] counts real time also when the test body runs
- * in the virtual time of `runTest`.
- *
- * ```kotlin
- * val cleanup = GrpcClientTestCleanup()
- * cleanup.shutdownChannel(client.channel)
- * cleanup.failure()?.let { throw it }
- * ```
- *
- * @param stepTimeout Default real-time limit of each step. The cleanup records a step over the limit as failed.
- */
-internal class GrpcClientTestCleanup(
-    private val stepTimeout: Duration = 3.seconds,
-) {
-    private val failures = mutableListOf<Throwable>()
-
-    /**
-     * Runs one teardown step with the [timeout] limit.
-     *
-     * Never throws. The cleanup records each failure of [block], its timeout included, and [failure] reports it.
-     */
-    internal suspend fun run(timeout: Duration = stepTimeout, block: suspend () -> Unit) {
-        try {
-            withContext(Dispatchers.Default) {
-                withTimeout(timeout) { block() }
-            }
-        } catch (error: Throwable) {
-            failures += error
-        }
-    }
-
-    internal suspend fun shutdownChannel(channel: ManagedChannel, terminationTimeout: Duration = 15.seconds) {
-        run { channel.shutdownNow() }
-        // The JVM wait blocks, so the step timeout must exceed the channel timeout.
-        // A loaded CI agent can stall the JVM for seconds, so the default tolerates such stalls.
-        run(timeout = terminationTimeout + stepTimeout) {
-            assertTrue(
-                channel.awaitTermination(terminationTimeout),
-                "The gRPC channel did not terminate within $terminationTimeout",
-            )
-        }
-    }
-
-    /** Returns the first recorded failure with the later ones suppressed, or `null` if every step succeeded. */
-    internal fun failure(): Throwable? {
-        val first = failures.firstOrNull() ?: return null
-        failures.drop(1).forEach(first::addSuppressed)
-        return first
+/** Closes a gRPC channel with extra time for its blocking termination wait. */
+internal suspend fun TestCleanup.shutdownChannel(channel: ManagedChannel, terminationTimeout: Duration = 15.seconds) {
+    run { channel.shutdownNow() }
+    // The JVM wait blocks, so its step timeout includes extra time if the scheduler stalls.
+    run(timeout = terminationTimeout + stepTimeout) {
+        assertTrue(
+            channel.awaitTermination(terminationTimeout),
+            "The gRPC channel didn't terminate within $terminationTimeout",
+        )
     }
 }
 

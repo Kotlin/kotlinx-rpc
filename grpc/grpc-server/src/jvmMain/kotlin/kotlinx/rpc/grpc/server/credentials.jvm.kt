@@ -4,8 +4,8 @@
 
 package kotlinx.rpc.grpc.server
 
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyOpen
 
 @IntentionallyOpen(reason = ExemptionReason.INTEROP, description = "grpc-java type")
 public actual typealias GrpcServerCredentials = io.grpc.ServerCredentials

@@ -11,20 +11,6 @@ import kotlinx.rpc.protobuf.internal.GeneratedProtoDeclaration
 import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 
 /**
- * Constructs a new message.
- * ```
- * val message = ComplexMessage {
- *    d = ...
- * }
- * ```
- */
-operator fun ComplexMessage.Companion.invoke(
-    body: ComplexMessage.Builder.() -> Unit,
-): ComplexMessage {
-    return ComplexMessageInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -45,20 +31,6 @@ val ComplexMessage.presence: ComplexMessagePresence get() = this.asInternal()._p
  * Returns the value of the `d` field if present, otherwise null.
  */
 val ComplexMessage.dOrNull: Int? get() = if (this.presence.hasD) this.d else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = TestAllTypesEdition2023 {
- *    optionalInt32 = ...
- * }
- * ```
- */
-operator fun TestAllTypesEdition2023.Companion.invoke(
-    body: TestAllTypesEdition2023.Builder.() -> Unit,
-): TestAllTypesEdition2023 {
-    return TestAllTypesEdition2023Internal().apply(body)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -280,20 +252,6 @@ inline fun <R> TestAllTypesEdition2023.whenOneofField(
 }
 
 /**
- * Constructs a new message.
- * ```
- * val message = ForeignMessageEdition2023 {
- *    c = ...
- * }
- * ```
- */
-operator fun ForeignMessageEdition2023.Companion.invoke(
-    body: ForeignMessageEdition2023.Builder.() -> Unit,
-): ForeignMessageEdition2023 {
-    return ForeignMessageEdition2023Internal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -318,18 +276,6 @@ val ForeignMessageEdition2023.presence: ForeignMessageEdition2023Presence get() 
 val ForeignMessageEdition2023.cOrNull: Int? get() = if (this.presence.hasC) this.c else null
 
 /**
- * Constructs a new message.
- * ```
- * val message = GroupLikeType {
- *    c = ...
- * }
- * ```
- */
-operator fun GroupLikeType.Companion.invoke(body: GroupLikeType.Builder.() -> Unit): GroupLikeType {
-    return GroupLikeTypeInternal().apply(body)
-}
-
-/**
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
@@ -350,20 +296,6 @@ val GroupLikeType.presence: GroupLikeTypePresence get() = this.asInternal()._pre
  * Returns the value of the `c` field if present, otherwise null.
  */
 val GroupLikeType.cOrNull: Int? get() = if (this.presence.hasC) this.c else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = NestedMessage {
- *    a = ...
- * }
- * ```
- */
-operator fun TestAllTypesEdition2023.NestedMessage.Companion.invoke(
-    body: TestAllTypesEdition2023.NestedMessage.Builder.() -> Unit,
-): TestAllTypesEdition2023.NestedMessage {
-    return TestAllTypesEdition2023Internal.NestedMessageInternal().apply(body)
-}
 
 /**
  * Copies the original message, including unknown fields.
@@ -393,20 +325,6 @@ val TestAllTypesEdition2023.NestedMessage.aOrNull: Int? get() = if (this.presenc
  * Returns the value of the `corecursive` field if present, otherwise null.
  */
 val TestAllTypesEdition2023.NestedMessage.corecursiveOrNull: TestAllTypesEdition2023? get() = if (this.presence.hasCorecursive) this.corecursive else null
-
-/**
- * Constructs a new message.
- * ```
- * val message = GroupLikeType {
- *    groupInt32 = ...
- * }
- * ```
- */
-operator fun TestAllTypesEdition2023.GroupLikeType.Companion.invoke(
-    body: TestAllTypesEdition2023.GroupLikeType.Builder.() -> Unit,
-): TestAllTypesEdition2023.GroupLikeType {
-    return TestAllTypesEdition2023Internal.GroupLikeTypeInternal().apply(body)
-}
 
 /**
  * Copies the original message, including unknown fields.
