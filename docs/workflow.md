@@ -11,7 +11,7 @@ For troubleshooting, see [troubleshooting](../docs/troubleshooting.md).
 
 ### How to commit
 
-Make changes granularly, each commit should make sense on its onw.
+Make changes granularly, each commit should make sense on its own.
 
 Add YouTrack issue code or GitHub issue number when possible.
 
@@ -232,7 +232,7 @@ Then use IntelliJ 'Attach to Process' feature to attach to the process on port 5
 
 ### How to add a new public package repository
 
-We have repositories like `https://redirector.kotlinlang.org/maven/kxrpc-for-ide/` that users can comsume from.
+We have repositories like `https://redirector.kotlinlang.org/maven/kxrpc-for-ide/` that users can consume from.
 
 Follow KT-A-723 Repository Alias (redirector) guide to add a new repository.
 
