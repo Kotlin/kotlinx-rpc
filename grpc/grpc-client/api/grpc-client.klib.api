@@ -42,9 +42,9 @@ abstract interface kotlinx.rpc.grpc.client/GrpcClientInterceptor { // kotlinx.rp
     abstract fun <#A1: kotlin/Any?, #B1: kotlin/Any?> (kotlinx.rpc.grpc.client/GrpcClientCallScope<#A1, #B1>).intercept(kotlinx.coroutines.flow/Flow<#A1>): kotlinx.coroutines.flow/Flow<#B1> // kotlinx.rpc.grpc.client/GrpcClientInterceptor.intercept|intercept@kotlinx.rpc.grpc.client.GrpcClientCallScope<0:0,0:1>(kotlinx.coroutines.flow.Flow<0:0>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
 }
 
-abstract interface kotlinx.rpc.grpc.client/GrpcTlsClientCredentialsBuilder { // kotlinx.rpc.grpc.client/GrpcTlsClientCredentialsBuilder|null[0]
-    abstract fun keyManager(kotlin/String, kotlin/String): kotlinx.rpc.grpc.client/GrpcTlsClientCredentialsBuilder // kotlinx.rpc.grpc.client/GrpcTlsClientCredentialsBuilder.keyManager|keyManager(kotlin.String;kotlin.String){}[0]
-    abstract fun trustManager(kotlin/String): kotlinx.rpc.grpc.client/GrpcTlsClientCredentialsBuilder // kotlinx.rpc.grpc.client/GrpcTlsClientCredentialsBuilder.trustManager|trustManager(kotlin.String){}[0]
+abstract interface kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentialsBuilder { // kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentialsBuilder|null[0]
+    abstract fun keyManager(kotlin/String, kotlin/String): kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentialsBuilder // kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentialsBuilder.keyManager|keyManager(kotlin.String;kotlin.String){}[0]
+    abstract fun trustManager(kotlin/String): kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentialsBuilder // kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentialsBuilder.trustManager|trustManager(kotlin.String){}[0]
 }
 
 abstract interface kotlinx.rpc.grpc.client/GrpcTransportCredentials : kotlinx.rpc.grpc.client/GrpcClientCredentials // kotlinx.rpc.grpc.client/GrpcTransportCredentials|null[0]
@@ -83,15 +83,15 @@ final class kotlinx.rpc.grpc.client/GrpcClientConfiguration : kotlinx.rpc.grpc.c
         final fun <set-credentials>(kotlinx.rpc.grpc.client/GrpcClientCredentials) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.credentials.<set-credentials>|<set-credentials>(kotlinx.rpc.grpc.client.GrpcClientCredentials){}[0]
 
     final fun plaintext(): kotlinx.rpc.grpc.client/GrpcTransportCredentials // kotlinx.rpc.grpc.client/GrpcClientConfiguration.plaintext|plaintext(){}[0]
-    final fun tls(kotlin/Function1<kotlinx.rpc.grpc.client/GrpcTlsClientCredentialsBuilder, kotlin/Unit>): kotlinx.rpc.grpc.client/GrpcTransportCredentials // kotlinx.rpc.grpc.client/GrpcClientConfiguration.tls|tls(kotlin.Function1<kotlinx.rpc.grpc.client.GrpcTlsClientCredentialsBuilder,kotlin.Unit>){}[0]
+    final fun tls(kotlin/Function1<kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentialsBuilder, kotlin/Unit>): kotlinx.rpc.grpc.client/GrpcTransportCredentials // kotlinx.rpc.grpc.client/GrpcClientConfiguration.tls|tls(kotlin.Function1<kotlinx.rpc.grpc.client.GrpcTlsClientTransportCredentialsBuilder,kotlin.Unit>){}[0]
 }
 
-final class kotlinx.rpc.grpc.client/GrpcInsecureClientCredentials : kotlinx.rpc.grpc.client/GrpcTransportCredentials { // kotlinx.rpc.grpc.client/GrpcInsecureClientCredentials|null[0]
-    constructor <init>() // kotlinx.rpc.grpc.client/GrpcInsecureClientCredentials.<init>|<init>(){}[0]
+final class kotlinx.rpc.grpc.client/GrpcInsecureClientTransportCredentials : kotlinx.rpc.grpc.client/GrpcTransportCredentials { // kotlinx.rpc.grpc.client/GrpcInsecureClientTransportCredentials|null[0]
+    constructor <init>() // kotlinx.rpc.grpc.client/GrpcInsecureClientTransportCredentials.<init>|<init>(){}[0]
 }
 
-final class kotlinx.rpc.grpc.client/GrpcTlsClientCredentials : kotlinx.rpc.grpc.client/GrpcTransportCredentials { // kotlinx.rpc.grpc.client/GrpcTlsClientCredentials|null[0]
-    constructor <init>(kotlin/Function1<kotlinx.rpc.grpc.client/GrpcTlsClientCredentialsBuilder, kotlin/Unit> = ...) // kotlinx.rpc.grpc.client/GrpcTlsClientCredentials.<init>|<init>(kotlin.Function1<kotlinx.rpc.grpc.client.GrpcTlsClientCredentialsBuilder,kotlin.Unit>){}[0]
+final class kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentials : kotlinx.rpc.grpc.client/GrpcTransportCredentials { // kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentials|null[0]
+    constructor <init>(kotlin/Function1<kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentialsBuilder, kotlin/Unit> = ...) // kotlinx.rpc.grpc.client/GrpcTlsClientTransportCredentials.<init>|<init>(kotlin.Function1<kotlinx.rpc.grpc.client.GrpcTlsClientTransportCredentialsBuilder,kotlin.Unit>){}[0]
 }
 
 open class kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration { // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration|null[0]
@@ -136,10 +136,10 @@ open class kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration { // kotlinx.rpc.
     }
 }
 
-final object kotlinx.rpc.grpc.client/GrpcDefaultClientCredentials : kotlinx.rpc.grpc.client/GrpcTransportCredentials { // kotlinx.rpc.grpc.client/GrpcDefaultClientCredentials|null[0]
-    final fun equals(kotlin/Any?): kotlin/Boolean // kotlinx.rpc.grpc.client/GrpcDefaultClientCredentials.equals|equals(kotlin.Any?){}[0]
-    final fun hashCode(): kotlin/Int // kotlinx.rpc.grpc.client/GrpcDefaultClientCredentials.hashCode|hashCode(){}[0]
-    final fun toString(): kotlin/String // kotlinx.rpc.grpc.client/GrpcDefaultClientCredentials.toString|toString(){}[0]
+final object kotlinx.rpc.grpc.client/GrpcDefaultClientTransportCredentials : kotlinx.rpc.grpc.client/GrpcTransportCredentials { // kotlinx.rpc.grpc.client/GrpcDefaultClientTransportCredentials|null[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // kotlinx.rpc.grpc.client/GrpcDefaultClientTransportCredentials.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // kotlinx.rpc.grpc.client/GrpcDefaultClientTransportCredentials.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // kotlinx.rpc.grpc.client/GrpcDefaultClientTransportCredentials.toString|toString(){}[0]
 }
 
 final object kotlinx.rpc.grpc.client/GrpcEmptyCallCredentials : kotlinx.rpc.grpc.client/GrpcCallCredentials { // kotlinx.rpc.grpc.client/GrpcEmptyCallCredentials|null[0]
