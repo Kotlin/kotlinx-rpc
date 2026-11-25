@@ -5,14 +5,14 @@
 
 package kotlinx.rpc.krpc
 
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyExhaustive
+import kotlinx.library.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 import kotlinx.rpc.krpc.serialization.KrpcSerialFormat
 import kotlinx.rpc.krpc.serialization.KrpcSerialFormatBuilder
 import kotlinx.rpc.krpc.serialization.KrpcSerialFormatConfiguration
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * Builder for [KrpcConfig]. Provides DSL to configure parameters for KrpcClient and/or KrpcServer.

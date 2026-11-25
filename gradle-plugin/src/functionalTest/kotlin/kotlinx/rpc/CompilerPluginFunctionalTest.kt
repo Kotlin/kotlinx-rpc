@@ -144,11 +144,8 @@ private class RpcProject(private vararg val files: Pair<String, String>) : Abstr
 
     override fun repositories(defaults: List<Repository>): Repositories {
         return super.repositories(
-            defaults +
-                // The build repository with the libraries of this build.
-                Repository.ofMaven(System.getProperty("kotlinx.rpc.functionalTest.repository")) +
-                // The libraries and the Gradle plugin depend on the API watchdog annotations. Only kt-lib/eap has them.
-                Repository.ofMaven("https://packages.jetbrains.team/maven/p/kt-lib/eap")
+            // The build repository with the libraries of this build.
+            defaults + Repository.ofMaven(System.getProperty("kotlinx.rpc.functionalTest.repository"))
         )
     }
 

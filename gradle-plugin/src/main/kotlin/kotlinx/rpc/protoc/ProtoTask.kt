@@ -4,14 +4,14 @@
 
 package kotlinx.rpc.protoc
 
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyOpen
+import kotlinx.library.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 import kotlinx.rpc.internal.InternalForSubclassingRpcApi
 import org.gradle.api.DefaultTask
 import org.gradle.api.Task
 import org.gradle.api.tasks.Internal
 import org.gradle.work.DisableCachingByDefault
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * Abstract base interface for tasks that work with .proto files.

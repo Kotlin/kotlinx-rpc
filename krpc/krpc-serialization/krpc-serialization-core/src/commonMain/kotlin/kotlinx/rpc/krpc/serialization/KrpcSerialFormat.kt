@@ -4,15 +4,15 @@
 
 package kotlinx.rpc.krpc.serialization
 
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyExhaustive
+import kotlinx.library.watchdog.IntentionallyOpen
+import kotlinx.library.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.modules.SerializersModule
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * [KrpcSerialFormat] interface defines an object which helps kRPC protocol to work with various serialization formats

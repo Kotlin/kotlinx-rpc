@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.protoc
 
+import kotlinx.library.watchdog.IntentionallyExhaustive
+import kotlinx.library.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 import kotlinx.rpc.protoc.ProtocPlugin.Companion.GRPC_KOTLIN_MULTIPLATFORM
 import kotlinx.rpc.protoc.ProtocPlugin.Companion.KOTLIN_MULTIPLATFORM
 import kotlinx.rpc.buf.tasks.BufGenerateTask
@@ -20,8 +22,6 @@ import org.gradle.kotlin.dsl.listProperty
 import org.gradle.kotlin.dsl.mapProperty
 import org.gradle.kotlin.dsl.property
 import java.io.File
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * Access to the `kotlin-multiplatform` protoc plugin.

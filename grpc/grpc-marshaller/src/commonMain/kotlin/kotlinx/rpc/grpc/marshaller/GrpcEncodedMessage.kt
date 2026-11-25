@@ -5,12 +5,12 @@
 package kotlinx.rpc.grpc.marshaller
 
 import kotlinx.io.Buffer
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyMutableCollection
+import kotlinx.library.watchdog.IntentionallyOpen
 import kotlinx.rpc.grpc.marshaller.internal.BufferEncodedMessage
 import kotlinx.rpc.grpc.marshaller.internal.ByteArrayEncodedMessage
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 /**
  * An encoded gRPC message whose exact [size] is known before it is written.

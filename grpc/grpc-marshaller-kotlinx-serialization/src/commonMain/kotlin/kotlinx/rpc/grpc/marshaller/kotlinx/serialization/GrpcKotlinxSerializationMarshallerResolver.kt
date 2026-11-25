@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.grpc.marshaller.kotlinx.serialization
 
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 import kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
@@ -16,8 +18,6 @@ import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.serializerOrNull
 import kotlin.reflect.KType
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
 @ExperimentalRpcApi

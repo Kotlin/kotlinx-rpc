@@ -5,11 +5,11 @@
 package kotlinx.rpc.grpc
 
 import io.grpc.Metadata
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.decodeFromByteArray
 import kotlinx.rpc.grpc.marshaller.encodeToByteArray
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 public actual typealias GrpcMetadata = Metadata
 

@@ -4,10 +4,10 @@
 
 package kotlinx.rpc.grpc.descriptor
 
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyExhaustive
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
 
 public expect class GrpcMethodDescriptor<Request, Response> {
     public fun getFullMethodName(): String

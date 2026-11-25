@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.internal
 
-import org.jetbrains.kotlinx.library.api.watchdog.InternalAnnotationMarker
+import kotlinx.library.watchdog.InternalAnnotationMarker
 
 /**
  * Marks API that has no compatibility guarantees.

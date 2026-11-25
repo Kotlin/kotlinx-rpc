@@ -1,0 +1,10 @@
+{
+  "servers": {
+    "intellij-server": {
+      "languages": [
+        "java",
+        "kotlin"
+      ]
+    }
+  }
+}

@@ -5,16 +5,16 @@
 package kotlinx.rpc.descriptor
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyExhaustive
+import kotlinx.library.watchdog.IntentionallyMutableCollection
+import kotlinx.library.watchdog.IntentionallyOpen
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.internal.*
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 @ExperimentalRpcApi
 public inline fun <@Rpc reified Service : Any> serviceDescriptorOf(): RpcServiceDescriptor<Service> {

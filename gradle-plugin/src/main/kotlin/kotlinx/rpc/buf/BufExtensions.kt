@@ -4,6 +4,10 @@
 
 package kotlinx.rpc.buf
 
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyExhaustive
+import kotlinx.library.watchdog.IntentionallyMutableCollection
+import kotlinx.library.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 import kotlinx.rpc.buf.tasks.BufExecTask
 import kotlinx.rpc.protoc.ProtoTasks
 import kotlinx.rpc.protoc.ProtocPlugin
@@ -19,10 +23,6 @@ import java.io.File
 import javax.inject.Inject
 import kotlin.reflect.KClass
 import kotlin.time.Duration
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * Options for the Buf tasks.

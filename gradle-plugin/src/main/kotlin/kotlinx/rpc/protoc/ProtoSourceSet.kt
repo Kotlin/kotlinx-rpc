@@ -4,6 +4,9 @@
 
 package kotlinx.rpc.protoc
 
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyExhaustive
+import kotlinx.library.watchdog.IntentionallyMutableCollection
 import kotlinx.rpc.buf.BufDepsExtension
 import org.gradle.api.Action
 import org.gradle.api.Named
@@ -19,9 +22,6 @@ import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.SourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
 
 /**
  * Container for [ProtoSourceSet]s.

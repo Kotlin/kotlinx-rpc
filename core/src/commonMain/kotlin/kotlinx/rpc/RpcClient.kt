@@ -5,8 +5,8 @@
 package kotlinx.rpc
 
 import kotlinx.coroutines.flow.Flow
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyOpen
 
 /**
  * [RpcClient] represents an abstraction of an RPC client, that can handle requests from several RPC services,

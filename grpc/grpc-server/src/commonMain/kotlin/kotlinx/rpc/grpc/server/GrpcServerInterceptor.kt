@@ -6,13 +6,13 @@ package kotlinx.rpc.grpc.server
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyOpen
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatus
 import kotlinx.rpc.grpc.server.internal.GrpcContext
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 /**
  * The scope of a single incoming gRPC server call observed by a [GrpcServerInterceptor].

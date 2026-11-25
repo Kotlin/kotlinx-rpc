@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.buf.tasks
 
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyOpen
 import kotlinx.rpc.buf.BUF_EXECUTABLE_CONFIGURATION
 import kotlinx.rpc.buf.BufExtension
 import kotlinx.rpc.buf.execBuf
@@ -31,8 +33,6 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.work.DisableCachingByDefault
 import javax.inject.Inject
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 /**
  * Abstract base class for `buf` tasks.

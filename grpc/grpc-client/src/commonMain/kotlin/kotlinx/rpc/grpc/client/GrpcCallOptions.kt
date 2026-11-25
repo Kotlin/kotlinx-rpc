@@ -4,10 +4,10 @@
 
 package kotlinx.rpc.grpc.client
 
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 import kotlinx.rpc.grpc.GrpcCompression
 import kotlin.time.Duration
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * The collection of runtime options for a new gRPC call.

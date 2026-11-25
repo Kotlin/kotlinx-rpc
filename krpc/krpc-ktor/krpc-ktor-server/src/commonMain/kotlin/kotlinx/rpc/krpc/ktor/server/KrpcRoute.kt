@@ -5,12 +5,12 @@
 package kotlinx.rpc.krpc.ktor.server
 
 import io.ktor.server.websocket.*
+import kotlinx.library.watchdog.ExemptionReason
+import kotlinx.library.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.KrpcConfigBuilder
 import kotlin.reflect.KClass
-import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * [KrpcRoute] class represents an RPC server mounted in Ktor routing.
