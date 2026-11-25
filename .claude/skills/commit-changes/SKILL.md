@@ -5,7 +5,7 @@ description: Commit message format of kotlinx-rpc. Use before each `git commit` 
 
 # Commit messages
 
-A commit message is one line:
+A commit message is one line, and `Co-Authored-By` trailers when the commit has co-authors:
 
 ```
 KXRPC-<N>: <Summary> (#<GitHub issue>)
@@ -17,7 +17,8 @@ KXRPC-<N>: <Summary> (#<GitHub issue>)
 | `<Summary>` | English, imperative mood, first word capitalized, no period at the end. The whole line has about 72 characters at most. |
 | `(#<GitHub issue>)` | Only when the YouTrack issue links to an original GitHub issue. Never the PR number: the squash-merge adds it. |
 
-- Don't write a body. Context goes into the YouTrack issue or the PR description. Pass one `-m` with one line.
+- Don't write a body. Context goes into the YouTrack issue or the PR description.
+- `Co-Authored-By` trailers are the only lines after the first line. Pass the first line in one `-m` and all trailers in a second `-m`.
 - Don't write a module prefix (`grpc:`, `pb:`). Older commits have one. The summary names the changed area.
 - The squash-merge makes the PR title the commit subject, so a PR title has the same format.
 - Commit regenerated files separately from hand-written code.
