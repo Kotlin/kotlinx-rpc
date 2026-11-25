@@ -79,8 +79,8 @@ final class kotlinx.rpc.grpc.client/GrpcClient : kotlinx.rpc/RpcClient { // kotl
 
 final class kotlinx.rpc.grpc.client/GrpcClientConfiguration : kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration { // kotlinx.rpc.grpc.client/GrpcClientConfiguration|null[0]
     final var credentials // kotlinx.rpc.grpc.client/GrpcClientConfiguration.credentials|{}credentials[0]
-        final fun <get-credentials>(): kotlinx.rpc.grpc.client/GrpcClientCredentials? // kotlinx.rpc.grpc.client/GrpcClientConfiguration.credentials.<get-credentials>|<get-credentials>(){}[0]
-        final fun <set-credentials>(kotlinx.rpc.grpc.client/GrpcClientCredentials?) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.credentials.<set-credentials>|<set-credentials>(kotlinx.rpc.grpc.client.GrpcClientCredentials?){}[0]
+        final fun <get-credentials>(): kotlinx.rpc.grpc.client/GrpcClientCredentials // kotlinx.rpc.grpc.client/GrpcClientConfiguration.credentials.<get-credentials>|<get-credentials>(){}[0]
+        final fun <set-credentials>(kotlinx.rpc.grpc.client/GrpcClientCredentials) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.credentials.<set-credentials>|<set-credentials>(kotlinx.rpc.grpc.client.GrpcClientCredentials){}[0]
 
     final fun plaintext(): kotlinx.rpc.grpc.client/GrpcTransportCredentials // kotlinx.rpc.grpc.client/GrpcClientConfiguration.plaintext|plaintext(){}[0]
     final fun tls(kotlin/Function1<kotlinx.rpc.grpc.client/GrpcTlsClientCredentialsBuilder, kotlin/Unit>): kotlinx.rpc.grpc.client/GrpcTransportCredentials // kotlinx.rpc.grpc.client/GrpcClientConfiguration.tls|tls(kotlin.Function1<kotlinx.rpc.grpc.client.GrpcTlsClientCredentialsBuilder,kotlin.Unit>){}[0]
@@ -134,6 +134,12 @@ open class kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration { // kotlinx.rpc.
             final fun <get-withoutCalls>(): kotlin/Boolean // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive.withoutCalls.<get-withoutCalls>|<get-withoutCalls>(){}[0]
             final fun <set-withoutCalls>(kotlin/Boolean) // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive.withoutCalls.<set-withoutCalls>|<set-withoutCalls>(kotlin.Boolean){}[0]
     }
+}
+
+final object kotlinx.rpc.grpc.client/GrpcDefaultClientCredentials : kotlinx.rpc.grpc.client/GrpcTransportCredentials { // kotlinx.rpc.grpc.client/GrpcDefaultClientCredentials|null[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // kotlinx.rpc.grpc.client/GrpcDefaultClientCredentials.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // kotlinx.rpc.grpc.client/GrpcDefaultClientCredentials.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // kotlinx.rpc.grpc.client/GrpcDefaultClientCredentials.toString|toString(){}[0]
 }
 
 final object kotlinx.rpc.grpc.client/GrpcEmptyCallCredentials : kotlinx.rpc.grpc.client/GrpcCallCredentials { // kotlinx.rpc.grpc.client/GrpcEmptyCallCredentials|null[0]

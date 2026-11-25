@@ -122,6 +122,13 @@ public final class kotlinx/rpc/grpc/client/GrpcClient_jvmKt {
 	public static synthetic fun GrpcClient$default (Lio/grpc/ManagedChannelBuilder;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/grpc/client/GrpcClient;
 }
 
+public final class kotlinx/rpc/grpc/client/GrpcDefaultClientCredentials : kotlinx/rpc/grpc/client/GrpcTransportCredentials {
+	public static final field INSTANCE Lkotlinx/rpc/grpc/client/GrpcDefaultClientCredentials;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class kotlinx/rpc/grpc/client/GrpcEmptyCallCredentials : kotlinx/rpc/grpc/client/GrpcCallCredentials {
 	public static final field INSTANCE Lkotlinx/rpc/grpc/client/GrpcEmptyCallCredentials;
 	public fun getRequestMetadata (Lkotlinx/rpc/grpc/client/GrpcCallCredentials$Context;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;

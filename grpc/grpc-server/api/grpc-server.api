@@ -3,6 +3,13 @@ public final class kotlinx/rpc/grpc/server/CredentialsKt {
 	public static synthetic fun GrpcTlsServerCredentials$default (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lio/grpc/ServerCredentials;
 }
 
+public final class kotlinx/rpc/grpc/server/GrpcDefaultServerCredentials : io/grpc/ServerCredentials {
+	public static final field INSTANCE Lkotlinx/rpc/grpc/server/GrpcDefaultServerCredentials;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public abstract interface class kotlinx/rpc/grpc/server/GrpcServer : kotlinx/rpc/RpcServer {
 	public abstract fun awaitTermination-VtjQ1oo (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public static synthetic fun awaitTermination-VtjQ1oo$default (Lkotlinx/rpc/grpc/server/GrpcServer;JLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
