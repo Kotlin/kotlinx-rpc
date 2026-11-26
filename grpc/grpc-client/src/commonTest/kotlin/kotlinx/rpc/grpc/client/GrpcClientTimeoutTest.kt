@@ -173,6 +173,7 @@ class GrpcClientTimeoutTest {
             }
         }
         return timeoutTest(
+            barrier = serverBarrier(BarrierType.DELIVER_CLIENT_HALF_CLOSE),
             clientConfig = { intercept(replacingRequestInterceptor(hangingRequestFlow)) },
         ) { callbackEvents ->
             // The call starts before its request is ready, so the deadline also bounds the request.
