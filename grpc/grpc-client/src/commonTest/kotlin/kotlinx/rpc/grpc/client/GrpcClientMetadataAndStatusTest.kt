@@ -386,6 +386,7 @@ class GrpcClientMetadataAndStatusTest {
             testService.emptyCall(Empty {})
         }
         assertEquals(code.name, assertNotNull(failure.trailers).getAll(STATUS_TRAILER_KEY).single())
+        awaitServerEvent(EventType.CALL_CLOSED)
         val trace = serverTrace()
         assertEquals(
             listOf(EventType.CALL_ACCEPTED, EventType.CALL_CLOSED),

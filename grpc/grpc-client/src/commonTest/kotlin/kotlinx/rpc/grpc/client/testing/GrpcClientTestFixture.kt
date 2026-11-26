@@ -140,6 +140,10 @@ internal class GrpcClientTestFixture(
         return awaitServerEventOneOf(setOf(event), occurrence)
     }
 
+    internal suspend fun awaitServerCallTermination(): CallEvent {
+        return awaitServerEventOneOf(TERMINAL_SERVER_EVENTS)
+    }
+
     /**
      * Waits until the server records the first event that has one of [events] and the one-based [occurrence] of
      * its type.
@@ -323,7 +327,7 @@ internal class GrpcClientTestFixture(
     internal suspend fun assertServerTraceWithEitherTerminal(
         expectedBeforeTerminal: List<ExpectedServerEvent>,
     ) {
-        awaitServerEventOneOf(TERMINAL_SERVER_EVENTS)
+        awaitServerCallTermination()
         serverTrace().assertEventsWithEitherTerminal(callId, expectedBeforeTerminal)
     }
 
@@ -437,7 +441,7 @@ internal class GrpcClientTestFixture(
      * - The server holds no state for the scenario.
      */
     private suspend fun assertScenarioCompleted() {
-        awaitServerEventOneOf(TERMINAL_SERVER_EVENTS)
+        awaitServerCallTermination()
         val trace = serverTrace()
         val failureMessage = "call_id='$callId', server trace:\n${trace.render()}"
         val acceptedCallCount = trace.events.count { it.type == EventType.CALL_ACCEPTED }

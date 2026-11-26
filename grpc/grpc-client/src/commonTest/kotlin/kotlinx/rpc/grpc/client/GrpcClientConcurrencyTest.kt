@@ -64,6 +64,7 @@ class GrpcClientConcurrencyTest {
             }
             assertTrue(closeEvents.tryReceive().isFailure, "a unary call emitted a duplicate close callback")
 
+            awaitServerEvent(EventType.CALL_CLOSED, occurrence = UNARY_CALL_COUNT.toUInt())
             val trace = serverTrace()
             assertEquals(UNARY_CALL_COUNT, trace.events.count { it.type == EventType.CALL_ACCEPTED })
             assertEquals(UNARY_CALL_COUNT, trace.events.count { it.type == EventType.CALL_CLOSED })
@@ -97,6 +98,7 @@ class GrpcClientConcurrencyTest {
             assertEquals(listOf(29, 31), bidirectional.await().map { it.payload.body.size })
         }
 
+        awaitServerEvent(EventType.CALL_CLOSED, occurrence = 4U)
         val trace = serverTrace()
         assertEquals(4, trace.events.count { it.type == EventType.CALL_ACCEPTED })
         assertEquals(4, trace.events.count { it.type == EventType.CALL_CLOSED })
@@ -135,6 +137,7 @@ class GrpcClientConcurrencyTest {
                 )
             }
 
+            awaitServerEvent(EventType.CALL_CLOSED)
             val trace = serverTrace()
             assertEquals(2, trace.events.count { it.type == EventType.CALL_ACCEPTED })
             assertEquals(1, trace.events.count { it.type == EventType.CLIENT_CANCELLED })
