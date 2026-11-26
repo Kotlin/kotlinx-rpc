@@ -9,7 +9,7 @@ description: Updates the kotlinx-rpc documentation, such as Writerside topics, K
 |---|---|---|
 | User docs | `docs/pages/kotlinx-rpc/` | Writerside |
 | API reference | KDoc in the sources | Dokka writes `docs/pages/api/`. Never edit that directory. |
-| `README.md` | Repository root | A PR to `main` can change it only from a `release-*` branch. `.github/workflows/readme.yml` fails other PRs. |
+| `README.md` | Repository root | A PR to `main` can change it only from a `release/*` branch. `.github/workflows/readme.yml` fails other PRs. |
 | Agent docs | `CLAUDE.md`, `.claude/skills/` | |
 | Docs for people | `docs/environment.md`, `docs/workflow.md`, `docs/troubleshooting.md` | Edit them on request. Don't use them as a source for agent work. |
 
