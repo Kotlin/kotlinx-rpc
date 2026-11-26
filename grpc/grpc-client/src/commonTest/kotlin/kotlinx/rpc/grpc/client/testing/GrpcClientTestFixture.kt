@@ -434,9 +434,10 @@ internal class GrpcClientTestFixture(
 
     private suspend fun assertScenarioCompleted(allowNoAcceptedCalls: Boolean) {
         if (allowNoAcceptedCalls) {
+            val diagnostics = serverDiagnostics()
             val trace = serverTrace()
-            if (trace.events.isEmpty()) {
-                serverDiagnostics().assertNoLeaks(callId, trace)
+            if (diagnostics.activeCallCount == 0U && trace.events.isEmpty()) {
+                diagnostics.assertNoLeaks(callId, trace)
                 return
             }
         }
