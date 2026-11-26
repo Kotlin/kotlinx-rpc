@@ -1,6 +1,6 @@
 # Version bumps in the docs
 
-Change `README.md` only on a `release-*` branch.
+Change `README.md` only on a `release/*` branch.
 
 ## Kotlin version
 
