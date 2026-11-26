@@ -140,6 +140,10 @@ internal class GrpcClientTestFixture(
         return awaitServerEventOneOf(setOf(event), occurrence)
     }
 
+    internal suspend fun awaitServerCallTermination(): CallEvent {
+        return awaitServerEventOneOf(TERMINAL_SERVER_EVENTS)
+    }
+
     /**
      * Waits until the server records the first event that has one of [events] and the one-based [occurrence] of
      * its type.
@@ -323,7 +327,7 @@ internal class GrpcClientTestFixture(
     internal suspend fun assertServerTraceWithEitherTerminal(
         expectedBeforeTerminal: List<ExpectedServerEvent>,
     ) {
-        awaitServerEventOneOf(TERMINAL_SERVER_EVENTS)
+        awaitServerCallTermination()
         serverTrace().assertEventsWithEitherTerminal(callId, expectedBeforeTerminal)
     }
 
@@ -389,7 +393,7 @@ internal class GrpcClientTestFixture(
      * @param testFailure The test-body failure, or `null` after success.
      * @return The first cleanup failure with the other failures suppressed, or `null`.
      */
-    internal suspend fun close(testFailure: Throwable?): Throwable? {
+    internal suspend fun close(testFailure: Throwable?, allowNoAcceptedCalls: Boolean = false): Throwable? {
         val cleanup = TestCleanup()
 
         if (testFailure == null) {
@@ -397,7 +401,7 @@ internal class GrpcClientTestFixture(
                 cleanup.run { stopDisposableEndpoint() }
             }
             if (scenarioConfigured) {
-                cleanup.run { assertScenarioCompleted() }
+                cleanup.run { assertScenarioCompleted(allowNoAcceptedCalls) }
             }
         } else {
             cleanup.run { dataClient.shutdownNow() }
@@ -428,16 +432,16 @@ internal class GrpcClientTestFixture(
         return cleanup.failure()
     }
 
-    /**
-     * Waits for a server close or a client cancellation, then checks that the scenario ended cleanly.
-     *
-     * The checks:
-     * - Every accepted data-plane call ended with a server close or a client cancellation.
-     * - The trace ends with a server close or a client cancellation.
-     * - The server holds no state for the scenario.
-     */
-    private suspend fun assertScenarioCompleted() {
-        awaitServerEventOneOf(TERMINAL_SERVER_EVENTS)
+    private suspend fun assertScenarioCompleted(allowNoAcceptedCalls: Boolean) {
+        if (allowNoAcceptedCalls) {
+            val diagnostics = serverDiagnostics()
+            val trace = serverTrace()
+            if (diagnostics.activeCallCount == 0U && trace.events.isEmpty()) {
+                diagnostics.assertNoLeaks(callId, trace)
+                return
+            }
+        }
+        awaitServerCallTermination()
         val trace = serverTrace()
         val failureMessage = "call_id='$callId', server trace:\n${trace.render()}"
         val acceptedCallCount = trace.events.count { it.type == EventType.CALL_ACCEPTED }

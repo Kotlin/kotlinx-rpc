@@ -515,6 +515,7 @@ class GrpcClientInterceptorTest {
             assertNotSame(callScopes[0], callScopes[1])
             assertEquals(listOf(GrpcStatusCode.OK, GrpcStatusCode.OK), terminalStatuses)
 
+            awaitServerEvent(EventType.CALL_CLOSED, occurrence = 2U)
             val trace = serverTrace()
             assertEquals(2, trace.events.count { it.type == EventType.CALL_ACCEPTED })
             assertEquals(2, trace.events.count { it.type == EventType.CALL_CLOSED })

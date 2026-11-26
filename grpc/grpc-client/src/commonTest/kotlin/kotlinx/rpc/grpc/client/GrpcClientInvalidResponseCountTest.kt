@@ -12,10 +12,13 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.client.testing.ExpectedServerEvent
+import kotlinx.rpc.grpc.client.testing.GrpcClientTestFixture
 import kotlinx.rpc.grpc.client.testing.RequestFlowCompletion
 import kotlinx.rpc.grpc.client.testing.RequestFlowProbe
 import kotlinx.rpc.grpc.client.testing.assertGrpcStatusCode
 import kotlinx.rpc.grpc.client.testing.grpcClientTest
+import kotlinx.rpc.grpc.client.testing.serverBarrier
+import kxrpc.testing.BarrierType
 import kxrpc.testing.EchoRequest
 import kxrpc.testing.EventType
 import kxrpc.testing.InvalidResponseCount
@@ -45,6 +48,44 @@ class GrpcClientInvalidResponseCountTest {
         InvalidResponseCount.DUPLICATE_RESPONSE,
     )
 
+    @Test
+    fun unaryDuplicateResponseCancelsBeforeServerClose() = grpcClientTest(
+        barriers = listOf(serverBarrier(BarrierType.CLOSE_CALL)),
+        scenario = { invalidResponseCount = InvalidResponseCount.DUPLICATE_RESPONSE },
+    ) {
+        try {
+            assertGrpcStatusCode(GrpcStatusCode.INTERNAL) {
+                invalidResponseCountService.unaryCall(request(UNARY_PAYLOAD))
+            }
+            assertEquals(EventType.CLIENT_CANCELLED, awaitServerCallTermination().type)
+            assertServerTraceWithEitherTerminal(
+                expectedInvalidResponseCountEvents(InvalidResponseCount.DUPLICATE_RESPONSE, requestCount = 1)
+            )
+        } finally {
+            releaseServerBarrier(BarrierType.CLOSE_CALL)
+        }
+    }
+
+    @Test
+    fun clientStreamingDuplicateResponseCancelsBeforeServerClose() = grpcClientTest(
+        barriers = listOf(serverBarrier(BarrierType.CLOSE_CALL)),
+        scenario = { invalidResponseCount = InvalidResponseCount.DUPLICATE_RESPONSE },
+    ) {
+        try {
+            val requests = RequestFlowProbe(flowOf(request(FIRST_PAYLOAD), request(SECOND_PAYLOAD)))
+            assertGrpcStatusCode(GrpcStatusCode.INTERNAL) {
+                invalidResponseCountService.streamingInputCall(requests.flow)
+            }
+            assertEquals(RequestFlowCompletion.Completed, requests.awaitCompletion())
+            assertEquals(EventType.CLIENT_CANCELLED, awaitServerCallTermination().type)
+            assertServerTraceWithEitherTerminal(
+                expectedInvalidResponseCountEvents(InvalidResponseCount.DUPLICATE_RESPONSE, requestCount = 2)
+            )
+        } finally {
+            releaseServerBarrier(BarrierType.CLOSE_CALL)
+        }
+    }
+
     /**
      * Calls the unary method of the invalid-response-count service, whose server answers with zero or two responses
      * as set by [responseCount], and expects the client to fail the call with `INTERNAL`.
@@ -57,7 +98,7 @@ class GrpcClientInvalidResponseCountTest {
         assertGrpcStatusCode(GrpcStatusCode.INTERNAL) {
             invalidResponseCountService.unaryCall(request(UNARY_PAYLOAD))
         }
-        assertServerTrace(expectedInvalidResponseCountEvents(responseCount, requestCount = 1))
+        assertInvalidResponseCountTrace(responseCount, requestCount = 1)
     }
 
     /**
@@ -91,7 +132,19 @@ class GrpcClientInvalidResponseCountTest {
         }
 
         assertEquals(RequestFlowCompletion.Completed, requests.awaitCompletion())
-        assertServerTrace(expectedInvalidResponseCountEvents(responseCount, requestCount = 2))
+        assertInvalidResponseCountTrace(responseCount, requestCount = 2)
+    }
+
+    private suspend fun GrpcClientTestFixture.assertInvalidResponseCountTrace(
+        responseCount: InvalidResponseCount,
+        requestCount: Int,
+    ) {
+        val expectedEvents = expectedInvalidResponseCountEvents(responseCount, requestCount)
+        if (responseCount == InvalidResponseCount.DUPLICATE_RESPONSE) {
+            assertServerTraceWithEitherTerminal(expectedEvents)
+        } else {
+            assertServerTrace(expectedEvents + ExpectedServerEvent(EventType.CALL_CLOSED))
+        }
     }
 
     private companion object {
@@ -152,7 +205,6 @@ class GrpcClientInvalidResponseCountTest {
                 add(ExpectedServerEvent(EventType.RESPONSE_MESSAGE_SENT))
                 add(ExpectedServerEvent(EventType.RESPONSE_MESSAGE_SENT, occurrence = 2U))
             }
-            add(ExpectedServerEvent(EventType.CALL_CLOSED))
         }
     }
 }

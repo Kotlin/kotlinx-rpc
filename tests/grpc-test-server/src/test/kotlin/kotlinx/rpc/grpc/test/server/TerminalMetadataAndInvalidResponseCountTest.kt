@@ -80,6 +80,7 @@ class TerminalMetadataAndInvalidResponseCountTest {
         )
         assertEquals(listOf("done", ""), assertNotNull(responseTrailers.get()).asciiValues("x-trailer-value"))
 
+        fixture.awaitEvent(callId, EventType.CALL_CLOSED)
         val trace = fixture.trace(callId)
         val accepted = trace.eventsList.single { it.type == EventType.CALL_ACCEPTED }
         assertEquals(
@@ -238,7 +239,11 @@ class TerminalMetadataAndInvalidResponseCountTest {
             }
 
             assertFalse(error.status.isOk)
-            fixture.awaitEvent(callId, EventType.CALL_CLOSED)
+            if (invalidCount == InvalidResponseCount.OMIT_RESPONSE) {
+                fixture.awaitEvent(callId, EventType.CALL_CLOSED)
+            } else {
+                fixture.awaitCallTermination(callId)
+            }
             val responseCount = fixture.trace(callId).eventsList
                 .count { it.type == EventType.RESPONSE_MESSAGE_SENT }
             assertEquals(
@@ -252,6 +257,30 @@ class TerminalMetadataAndInvalidResponseCountTest {
             fixture.assertNoLeaks(callId)
             fixture.discard(callId)
         }
+    }
+
+    @Test
+    fun unaryDuplicateResponseCanCancelBeforeServerClose() = withFixture { fixture ->
+        val callId = "unary-duplicate-response-cancel-before-close"
+        fixture.configure(
+            scenario(callId)
+                .setInvalidResponseCount(InvalidResponseCount.DUPLICATE_RESPONSE)
+                .addBarriers(barrier(BarrierType.CLOSE_CALL))
+                .build()
+        )
+
+        val error = assertFailsWith<StatusRuntimeException> {
+            fixture.invalidResponseCountClient(callId).unaryCall(EchoRequest.getDefaultInstance())
+        }
+
+        assertFalse(error.status.isOk)
+        fixture.awaitCallTermination(callId)
+        val events = fixture.trace(callId).eventsList
+        assertEquals(2, events.count { it.type == EventType.RESPONSE_MESSAGE_SENT })
+        assertEquals(EventType.CLIENT_CANCELLED, events.last().type)
+        fixture.release(callId, BarrierType.CLOSE_CALL)
+        fixture.assertNoLeaks(callId)
+        fixture.discard(callId)
     }
 
     @Test
@@ -289,7 +318,11 @@ class TerminalMetadataAndInvalidResponseCountTest {
                 assertEquals(1, events.count { it is ObserverEvent.Value })
                 assertTrue(events.last() is ObserverEvent.Error)
             }
-            fixture.awaitEvent(callId, EventType.CALL_CLOSED)
+            if (invalidCount == InvalidResponseCount.OMIT_RESPONSE) {
+                fixture.awaitEvent(callId, EventType.CALL_CLOSED)
+            } else {
+                fixture.awaitCallTermination(callId)
+            }
             val responseCount = fixture.trace(callId).eventsList
                 .count { it.type == EventType.RESPONSE_MESSAGE_SENT }
             assertEquals(

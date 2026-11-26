@@ -61,10 +61,18 @@ internal class ScenarioTestFixture : AutoCloseable {
     }
 
     fun awaitEvent(callId: String, type: EventType, occurrence: Int = 1) {
+        awaitEvent(callId, listOf(type), occurrence)
+    }
+
+    fun awaitCallTermination(callId: String) {
+        awaitEvent(callId, listOf(EventType.CALL_CLOSED, EventType.CLIENT_CANCELLED))
+    }
+
+    private fun awaitEvent(callId: String, types: List<EventType>, occurrence: Int = 1) {
         control.awaitEvent(
             AwaitEventRequest.newBuilder()
                 .setCallId(callId)
-                .addEvents(type)
+                .addAllEvents(types)
                 .setOccurrence(occurrence)
                 .build()
         )

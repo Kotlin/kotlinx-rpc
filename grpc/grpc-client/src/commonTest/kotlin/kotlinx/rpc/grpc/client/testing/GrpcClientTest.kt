@@ -46,9 +46,10 @@ internal fun grpcClientTest(
     configureScenario: Boolean = true,
     barriers: List<Barrier> = emptyList(),
     scenario: ConfigureScenarioRequest.Builder.() -> Unit = {},
+    allowNoAcceptedCalls: Boolean = false,
     block: suspend GrpcClientTestFixture.() -> Unit,
 ): TestResult = runTestWithCoroutinesProbes(timeout = 60.seconds) {
-    executeGrpcClientTest(clientConfig, configureScenario, barriers, scenario, block)
+    executeGrpcClientTest(clientConfig, configureScenario, barriers, scenario, allowNoAcceptedCalls, block)
 }
 
 internal suspend fun executeGrpcClientTest(
@@ -56,6 +57,7 @@ internal suspend fun executeGrpcClientTest(
     configureScenario: Boolean = true,
     barriers: List<Barrier> = emptyList(),
     scenario: ConfigureScenarioRequest.Builder.() -> Unit = {},
+    allowNoAcceptedCalls: Boolean = false,
     block: suspend GrpcClientTestFixture.() -> Unit,
 ) {
     require(configureScenario || barriers.isEmpty()) {
@@ -73,6 +75,6 @@ internal suspend fun executeGrpcClientTest(
         testFailure = error
     }
 
-    val cleanupFailure = withContext(NonCancellable) { fixture.close(testFailure) }
+    val cleanupFailure = withContext(NonCancellable) { fixture.close(testFailure, allowNoAcceptedCalls) }
     combineFailures(testFailure, cleanupFailure)?.let { throw it }
 }
