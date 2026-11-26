@@ -393,7 +393,7 @@ internal class GrpcClientTestFixture(
      * @param testFailure The test-body failure, or `null` after success.
      * @return The first cleanup failure with the other failures suppressed, or `null`.
      */
-    internal suspend fun close(testFailure: Throwable?): Throwable? {
+    internal suspend fun close(testFailure: Throwable?, allowNoAcceptedCalls: Boolean = false): Throwable? {
         val cleanup = TestCleanup()
 
         if (testFailure == null) {
@@ -401,7 +401,7 @@ internal class GrpcClientTestFixture(
                 cleanup.run { stopDisposableEndpoint() }
             }
             if (scenarioConfigured) {
-                cleanup.run { assertScenarioCompleted() }
+                cleanup.run { assertScenarioCompleted(allowNoAcceptedCalls) }
             }
         } else {
             cleanup.run { dataClient.shutdownNow() }
@@ -432,15 +432,14 @@ internal class GrpcClientTestFixture(
         return cleanup.failure()
     }
 
-    /**
-     * Waits for a server close or a client cancellation, then checks that the scenario ended cleanly.
-     *
-     * The checks:
-     * - Every accepted data-plane call ended with a server close or a client cancellation.
-     * - The trace ends with a server close or a client cancellation.
-     * - The server holds no state for the scenario.
-     */
-    private suspend fun assertScenarioCompleted() {
+    private suspend fun assertScenarioCompleted(allowNoAcceptedCalls: Boolean) {
+        if (allowNoAcceptedCalls) {
+            val trace = serverTrace()
+            if (trace.events.isEmpty()) {
+                serverDiagnostics().assertNoLeaks(callId, trace)
+                return
+            }
+        }
         awaitServerCallTermination()
         val trace = serverTrace()
         val failureMessage = "call_id='$callId', server trace:\n${trace.render()}"

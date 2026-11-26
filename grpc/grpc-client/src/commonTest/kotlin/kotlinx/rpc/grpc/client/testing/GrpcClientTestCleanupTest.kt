@@ -27,6 +27,25 @@ import kotlin.time.Duration.Companion.seconds
 
 class GrpcClientTestCleanupTest {
     @Test
+    fun scenarioWithoutCallsCanCompleteWhenAllowed() = grpcClientTest(allowNoAcceptedCalls = true) {
+        assertTrue(serverTrace().events.isEmpty())
+    }
+
+    @Test
+    fun scenarioWithoutCallsStillRejectsOutstandingBarriers() = test {
+        val failure = runCatching {
+            executeGrpcClientTest(
+                barriers = listOf(serverBarrier(BarrierType.SEND_INITIAL_HEADERS)),
+                allowNoAcceptedCalls = true,
+            ) {
+                assertTrue(serverTrace().events.isEmpty())
+            }
+        }.exceptionOrNull()
+
+        assertIs<AssertionError>(failure)
+    }
+
+    @Test
     fun clientTerminationCanExceedTheDefaultStepTimeout() = test {
         val channel = CleanupTestChannel(terminates = true)
         val cleanup = TestCleanup(stepTimeout = 50.milliseconds)

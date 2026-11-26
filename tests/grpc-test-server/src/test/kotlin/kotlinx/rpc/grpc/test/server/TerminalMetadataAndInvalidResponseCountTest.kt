@@ -239,7 +239,11 @@ class TerminalMetadataAndInvalidResponseCountTest {
             }
 
             assertFalse(error.status.isOk)
-            fixture.awaitCallTermination(callId)
+            if (invalidCount == InvalidResponseCount.OMIT_RESPONSE) {
+                fixture.awaitEvent(callId, EventType.CALL_CLOSED)
+            } else {
+                fixture.awaitCallTermination(callId)
+            }
             val responseCount = fixture.trace(callId).eventsList
                 .count { it.type == EventType.RESPONSE_MESSAGE_SENT }
             assertEquals(
@@ -314,7 +318,11 @@ class TerminalMetadataAndInvalidResponseCountTest {
                 assertEquals(1, events.count { it is ObserverEvent.Value })
                 assertTrue(events.last() is ObserverEvent.Error)
             }
-            fixture.awaitCallTermination(callId)
+            if (invalidCount == InvalidResponseCount.OMIT_RESPONSE) {
+                fixture.awaitEvent(callId, EventType.CALL_CLOSED)
+            } else {
+                fixture.awaitCallTermination(callId)
+            }
             val responseCount = fixture.trace(callId).eventsList
                 .count { it.type == EventType.RESPONSE_MESSAGE_SENT }
             assertEquals(

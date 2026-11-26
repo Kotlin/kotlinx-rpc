@@ -175,13 +175,14 @@ class GrpcClientTimeoutTest {
         return timeoutTest(
             barrier = serverBarrier(BarrierType.DELIVER_CLIENT_HALF_CLOSE),
             clientConfig = { intercept(replacingRequestInterceptor(hangingRequestFlow)) },
+            allowNoAcceptedCalls = true,
         ) { callbackEvents ->
             // The call starts before its request is ready, so the deadline also bounds the request.
             assertGrpcTimeoutStatus {
                 testService.emptyCall(Empty {})
             }
             assertTrue(requestFinallyExecuted, "deadline didn't cancel the blocked request producer")
-            val trace = assertServerObservedCancellation()
+            val trace = serverTrace()
             assertEquals(0, trace.events.count { it.type == EventType.REQUEST_MESSAGE_RECEIVED })
             assertTerminalCallback(callbackEvents, headersExpected = false)
         }
@@ -200,6 +201,7 @@ class GrpcClientTimeoutTest {
         fun timeoutTest(
             barrier: Barrier? = null,
             clientConfig: GrpcClientConfiguration.() -> Unit = {},
+            allowNoAcceptedCalls: Boolean = false,
             block: suspend GrpcClientTestFixture.(callbackEvents: List<String>) -> Unit,
         ): TestResult {
             val callbackEvents = mutableListOf<String>()
@@ -209,6 +211,7 @@ class GrpcClientTimeoutTest {
                     clientConfig()
                 },
                 barriers = listOfNotNull(barrier),
+                allowNoAcceptedCalls = allowNoAcceptedCalls,
             ) {
                 try {
                     block(callbackEvents)

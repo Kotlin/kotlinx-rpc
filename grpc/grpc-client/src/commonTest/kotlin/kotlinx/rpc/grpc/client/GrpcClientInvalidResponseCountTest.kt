@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.client.testing.ExpectedServerEvent
+import kotlinx.rpc.grpc.client.testing.GrpcClientTestFixture
 import kotlinx.rpc.grpc.client.testing.RequestFlowCompletion
 import kotlinx.rpc.grpc.client.testing.RequestFlowProbe
 import kotlinx.rpc.grpc.client.testing.assertGrpcStatusCode
@@ -97,7 +98,7 @@ class GrpcClientInvalidResponseCountTest {
         assertGrpcStatusCode(GrpcStatusCode.INTERNAL) {
             invalidResponseCountService.unaryCall(request(UNARY_PAYLOAD))
         }
-        assertServerTraceWithEitherTerminal(expectedInvalidResponseCountEvents(responseCount, requestCount = 1))
+        assertInvalidResponseCountTrace(responseCount, requestCount = 1)
     }
 
     /**
@@ -131,7 +132,19 @@ class GrpcClientInvalidResponseCountTest {
         }
 
         assertEquals(RequestFlowCompletion.Completed, requests.awaitCompletion())
-        assertServerTraceWithEitherTerminal(expectedInvalidResponseCountEvents(responseCount, requestCount = 2))
+        assertInvalidResponseCountTrace(responseCount, requestCount = 2)
+    }
+
+    private suspend fun GrpcClientTestFixture.assertInvalidResponseCountTrace(
+        responseCount: InvalidResponseCount,
+        requestCount: Int,
+    ) {
+        val expectedEvents = expectedInvalidResponseCountEvents(responseCount, requestCount)
+        if (responseCount == InvalidResponseCount.DUPLICATE_RESPONSE) {
+            assertServerTraceWithEitherTerminal(expectedEvents)
+        } else {
+            assertServerTrace(expectedEvents + ExpectedServerEvent(EventType.CALL_CLOSED))
+        }
     }
 
     private companion object {
