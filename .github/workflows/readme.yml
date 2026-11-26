@@ -20,15 +20,20 @@ jobs:
         env:
           TARGET_BRANCH: ${{ github.base_ref }}
           PR_BRANCH: ${{ github.head_ref }}
+          TARGET_REPOSITORY_ID: ${{ github.event.pull_request.base.repo.id }}
+          PR_REPOSITORY_ID: ${{ github.event.pull_request.head.repo.id }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
-          if [[ "$TARGET_BRANCH" != "main" || "$PR_BRANCH" =~ ^release/ ]]; then
+          if [[ "$TARGET_BRANCH" != "main" ]]; then
+            exit 0
+          fi
+          if [[ "$PR_REPOSITORY_ID" == "$TARGET_REPOSITORY_ID" && "$PR_BRANCH" =~ ^release/ ]]; then
             exit 0
           fi
           changed_readme=$(git diff --name-only "$BASE_SHA...$HEAD_SHA" -- README.md)
           if [[ -n "$changed_readme" ]]; then
-            echo "The PR changes README.md. A PR to main can change README.md only from a release/* branch."
+            echo "The PR changes README.md. A PR to main can change README.md only from a release/* branch of this repository."
             exit 1
           fi
