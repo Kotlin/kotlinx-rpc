@@ -9,6 +9,7 @@ import kotlinx.rpc.protoc.DefaultProtoTask
 import kotlinx.rpc.protoc.PROTO_FILES_DIR
 import kotlinx.rpc.protoc.ProtoTask
 import kotlinx.rpc.protoc.ProtocPlugin
+import kotlinx.rpc.protoc.isBundled
 import kotlinx.rpc.util.ensureRegularFileExists
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFileProperty
@@ -33,6 +34,7 @@ internal data class ResolvedGrpcPlugin(
     val locator: List<String>,
     val out: String,
     val options: Map<String, Any>,
+    val isBundled: Boolean,
     val strategy: String?,
     val includeImports: Boolean?,
     val includeWkt: Boolean?,
@@ -83,6 +85,14 @@ public abstract class GenerateBufGenYaml @Inject internal constructor(
         // in the caller is skipped; creating it defensively lets `bufferedWriter()` succeed.
         file.parentFile.mkdirs()
 
+        val ignoreFiles by lazy {
+            importedProtocIgnoreFileDirectories.get()
+                .flatMap { it.walk().toList() }
+                .filter { it.isFile }
+                .flatMap { it.readLines() }
+                .distinct()
+        }
+
         file.bufferedWriter().use { writer ->
             writer.appendLine("version: v2")
             writer.appendLine("clean: true")
@@ -102,16 +112,10 @@ public abstract class GenerateBufGenYaml @Inject internal constructor(
                     }
                 }
 
-                val ignoreFiles = importedProtocIgnoreFileDirectories.get()
-                    .flatMap { it.walk().toList() }
-                    .filter { it.isFile }
-                    .flatMap { it.readLines() }
-                    .distinct()
-
-                val options = plugin.options + if (ignoreFiles.isNotEmpty()) {
-                    mapOf("ignoreFiles" to ignoreFiles.joinToString("\u0000"))
+                val options = if (plugin.isBundled && ignoreFiles.isNotEmpty()) {
+                    plugin.options + ("ignoreFiles" to ignoreFiles.joinToString("\u0000"))
                 } else {
-                    emptyMap()
+                    plugin.options
                 }
 
                 writer.appendLine("  - ${plugin.type.name}: $locatorLine")
@@ -201,6 +205,7 @@ internal fun Project.registerGenerateBufGenYamlTask(
                     },
                     locator = locator,
                     options = plugin.options.get(),
+                    isBundled = plugin.isBundled,
                     out = plugin.name,
                     strategy = plugin.strategy.orNull?.name?.lowercase(),
                     includeImports = plugin.includeImports.orNull,
