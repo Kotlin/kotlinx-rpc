@@ -5,7 +5,7 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <org.jetbrains.kotlinx:krpc-core>
+// Library unique name: <org.jetbrains.kotlinx:kotlinx-rpc-krpc-core>
 abstract interface kotlinx.rpc.krpc/KrpcTransport : kotlinx.coroutines/CoroutineScope { // kotlinx.rpc.krpc/KrpcTransport|null[0]
     abstract suspend fun receive(): kotlinx.rpc.krpc/KrpcTransportMessage // kotlinx.rpc.krpc/KrpcTransport.receive|receive(){}[0]
     abstract suspend fun send(kotlinx.rpc.krpc/KrpcTransportMessage) // kotlinx.rpc.krpc/KrpcTransport.send|send(kotlinx.rpc.krpc.KrpcTransportMessage){}[0]

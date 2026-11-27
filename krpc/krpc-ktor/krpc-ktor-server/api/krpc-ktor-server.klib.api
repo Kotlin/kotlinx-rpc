@@ -5,7 +5,7 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <org.jetbrains.kotlinx:krpc-ktor-server>
+// Library unique name: <org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-server>
 final class kotlinx.rpc.krpc.ktor.server/KrpcRoute : io.ktor.server.websocket/DefaultWebSocketServerSession { // kotlinx.rpc.krpc.ktor.server/KrpcRoute|null[0]
     constructor <init>(io.ktor.server.websocket/DefaultWebSocketServerSession) // kotlinx.rpc.krpc.ktor.server/KrpcRoute.<init>|<init>(io.ktor.server.websocket.DefaultWebSocketServerSession){}[0]
 

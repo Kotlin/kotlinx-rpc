@@ -5,7 +5,7 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <org.jetbrains.kotlinx:grpc-client>
+// Library unique name: <org.jetbrains.kotlinx:kotlinx-rpc-grpc-client>
 abstract interface <#A: kotlin/Any?, #B: kotlin/Any?> kotlinx.rpc.grpc.client/GrpcClientCallScope { // kotlinx.rpc.grpc.client/GrpcClientCallScope|null[0]
     abstract val callOptions // kotlinx.rpc.grpc.client/GrpcClientCallScope.callOptions|{}callOptions[0]
         abstract fun <get-callOptions>(): kotlinx.rpc.grpc.client/GrpcCallOptions // kotlinx.rpc.grpc.client/GrpcClientCallScope.callOptions.<get-callOptions>|<get-callOptions>(){}[0]

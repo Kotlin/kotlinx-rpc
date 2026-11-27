@@ -5,5 +5,5 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <org.jetbrains.kotlinx:krpc-serialization-protobuf>
+// Library unique name: <org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-protobuf>
 final fun (kotlinx.rpc.krpc.serialization/KrpcSerialFormatConfiguration).kotlinx.rpc.krpc.serialization.protobuf/protobuf(kotlinx.serialization.protobuf/ProtoBuf = ..., kotlin/Function1<kotlinx.serialization.protobuf/ProtoBufBuilder, kotlin/Unit> = ...) // kotlinx.rpc.krpc.serialization.protobuf/protobuf|protobuf@kotlinx.rpc.krpc.serialization.KrpcSerialFormatConfiguration(kotlinx.serialization.protobuf.ProtoBuf;kotlin.Function1<kotlinx.serialization.protobuf.ProtoBufBuilder,kotlin.Unit>){}[0]

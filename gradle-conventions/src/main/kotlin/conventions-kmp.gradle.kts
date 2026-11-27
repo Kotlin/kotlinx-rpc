@@ -11,6 +11,7 @@ import util.applyCrashbtShimToNativeTests
 import util.other.isPublicModule
 import util.targets.configureJs
 import util.targets.configureJvm
+import util.targets.configureKlibNames
 import util.targets.configureKotlinExtension
 import util.targets.configureWasm
 import util.targets.withKmpConfig
@@ -31,6 +32,10 @@ apiWatchdog {
 
 kotlin {
     explicitApi()
+
+    if (isPublicModule) {
+        configureKlibNames(project)
+    }
 
     if (enableAbiValidation) {
         abiValidation {

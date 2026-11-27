@@ -5,7 +5,7 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <org.jetbrains.kotlinx:grpc-marshaller>
+// Library unique name: <org.jetbrains.kotlinx:kotlinx-rpc-grpc-marshaller>
 open annotation class kotlinx.rpc.grpc.marshaller/HasWithGrpcMarshaller : kotlin/Annotation { // kotlinx.rpc.grpc.marshaller/HasWithGrpcMarshaller|null[0]
     constructor <init>() // kotlinx.rpc.grpc.marshaller/HasWithGrpcMarshaller.<init>|<init>(){}[0]
 }

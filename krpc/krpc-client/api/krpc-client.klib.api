@@ -5,7 +5,7 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <org.jetbrains.kotlinx:krpc-client>
+// Library unique name: <org.jetbrains.kotlinx:kotlinx-rpc-krpc-client>
 abstract class kotlinx.rpc.krpc.client/InitializedKrpcClient : kotlinx.rpc.krpc.client/KrpcClient { // kotlinx.rpc.krpc.client/InitializedKrpcClient|null[0]
     constructor <init>(kotlinx.rpc.krpc/KrpcConfig.Client, kotlinx.rpc.krpc/KrpcTransport) // kotlinx.rpc.krpc.client/InitializedKrpcClient.<init>|<init>(kotlinx.rpc.krpc.KrpcConfig.Client;kotlinx.rpc.krpc.KrpcTransport){}[0]
 

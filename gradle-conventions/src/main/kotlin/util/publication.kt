@@ -20,6 +20,10 @@ const val KOTLINX_RPC_PREFIX = "kotlinx-rpc"
 const val PROTOC_GEN = "protoc-gen"
 const val PROTOC_GEN_KOTLIN_MULTIPLATFORM = "kotlin-multiplatform"
 
+internal fun String.withRpcArtifactPrefix(): String {
+    return if (startsWith(KOTLINX_RPC_PREFIX)) this else "$KOTLINX_RPC_PREFIX-$this"
+}
+
 /**
  * Important to configure inside [KotlinTarget.mavenPublication]
  * AND in [PublishingExtension.configurePublication] in the conventions-publishing.gradle.kts file.
@@ -36,9 +40,12 @@ fun MavenPublication.setPublicArtifactId(project: Project) {
         }
         publication.artifactId = "$PROTOC_GEN-$middle$PROTOC_GEN_KOTLIN_MULTIPLATFORM"
         project.logger.info("Altered artifactId for $name publication: $artifactId")
-    } else if (!publication.artifactId.startsWith(KOTLINX_RPC_PREFIX)) {
-        publication.artifactId = "$KOTLINX_RPC_PREFIX-$artifactId"
-        project.logger.info("Altered artifactId for $name publication: $artifactId")
+    } else {
+        val publicArtifactId = artifactId.withRpcArtifactPrefix()
+        if (publicArtifactId != artifactId) {
+            publication.artifactId = publicArtifactId
+            project.logger.info("Altered artifactId for $name publication: $artifactId")
+        }
     }
 }
 

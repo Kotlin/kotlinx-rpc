@@ -5,7 +5,7 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <org.jetbrains.kotlinx:krpc-server>
+// Library unique name: <org.jetbrains.kotlinx:kotlinx-rpc-krpc-server>
 abstract class kotlinx.rpc.krpc.server/KrpcServer : kotlinx.rpc.krpc.internal/KrpcEndpoint, kotlinx.rpc/RpcServer { // kotlinx.rpc.krpc.server/KrpcServer|null[0]
     constructor <init>(kotlinx.rpc.krpc/KrpcConfig.Server, kotlinx.rpc.krpc/KrpcTransport) // kotlinx.rpc.krpc.server/KrpcServer.<init>|<init>(kotlinx.rpc.krpc.KrpcConfig.Server;kotlinx.rpc.krpc.KrpcTransport){}[0]
 
