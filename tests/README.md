@@ -28,4 +28,4 @@ Never edit generated code by hand. Regenerate it:
 
 | Generated files | Task | When |
 |---|---|---|
-| `protobuf-conformance/src/commonMain/generated-code/` | `:tests:protobuf-conformance:bufGenerateCommonMain` | After a change in `protoc-gen/` |
+| `protobuf-conformance/src/commonMain/generated-code/` | `:tests:protobuf-conformance:protobufGenerateCommonMain` | After a change in `protoc-gen/` |

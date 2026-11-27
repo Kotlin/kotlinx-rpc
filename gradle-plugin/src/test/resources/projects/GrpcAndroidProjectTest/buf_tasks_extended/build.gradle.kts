@@ -83,94 +83,94 @@ tasks.register("test_tasks") {
             "gen all", genTasks,
 
             // android test
-            "bufGenerateAndroidTestArmFreeappDebug",
-            "bufGenerateAndroidTestArmRetailappDebug",
-            "bufGenerateAndroidTestX86FreeappDebug",
-            "bufGenerateAndroidTestX86RetailappDebug",
+            "protobufGenerateAndroidTestArmFreeappDebug",
+            "protobufGenerateAndroidTestArmRetailappDebug",
+            "protobufGenerateAndroidTestX86FreeappDebug",
+            "protobufGenerateAndroidTestX86RetailappDebug",
 
             // test arm
-            "bufGenerateTestArmFreeappDebug",
-            "bufGenerateTestArmFreeappRelease",
-            "bufGenerateTestArmRetailappDebug",
-            "bufGenerateTestArmRetailappRelease",
+            "protobufGenerateTestArmFreeappDebug",
+            "protobufGenerateTestArmFreeappRelease",
+            "protobufGenerateTestArmRetailappDebug",
+            "protobufGenerateTestArmRetailappRelease",
 
             // test x86
-            "bufGenerateTestX86FreeappDebug",
-            "bufGenerateTestX86FreeappRelease",
-            "bufGenerateTestX86RetailappDebug",
-            "bufGenerateTestX86RetailappRelease",
+            "protobufGenerateTestX86FreeappDebug",
+            "protobufGenerateTestX86FreeappRelease",
+            "protobufGenerateTestX86RetailappDebug",
+            "protobufGenerateTestX86RetailappRelease",
 
             // arm
-            "bufGenerateArmFreeappDebug",
-            "bufGenerateArmFreeappRelease",
-            "bufGenerateArmRetailappDebug",
-            "bufGenerateArmRetailappRelease",
+            "protobufGenerateArmFreeappDebug",
+            "protobufGenerateArmFreeappRelease",
+            "protobufGenerateArmRetailappDebug",
+            "protobufGenerateArmRetailappRelease",
 
             // x86
-            "bufGenerateX86FreeappDebug",
-            "bufGenerateX86FreeappRelease",
-            "bufGenerateX86RetailappDebug",
-            "bufGenerateX86RetailappRelease",
+            "protobufGenerateX86FreeappDebug",
+            "protobufGenerateX86FreeappRelease",
+            "protobufGenerateX86RetailappDebug",
+            "protobufGenerateX86RetailappRelease",
         )
 
         assertTasks(
             "testTasks", genTasks.testTasks(),
             // android test
-            "bufGenerateAndroidTestArmFreeappDebug",
-            "bufGenerateAndroidTestArmRetailappDebug",
-            "bufGenerateAndroidTestX86FreeappDebug",
-            "bufGenerateAndroidTestX86RetailappDebug",
+            "protobufGenerateAndroidTestArmFreeappDebug",
+            "protobufGenerateAndroidTestArmRetailappDebug",
+            "protobufGenerateAndroidTestX86FreeappDebug",
+            "protobufGenerateAndroidTestX86RetailappDebug",
 
             // test arm
-            "bufGenerateTestArmFreeappDebug",
-            "bufGenerateTestArmFreeappRelease",
-            "bufGenerateTestArmRetailappDebug",
-            "bufGenerateTestArmRetailappRelease",
+            "protobufGenerateTestArmFreeappDebug",
+            "protobufGenerateTestArmFreeappRelease",
+            "protobufGenerateTestArmRetailappDebug",
+            "protobufGenerateTestArmRetailappRelease",
 
             // test x86
-            "bufGenerateTestX86FreeappDebug",
-            "bufGenerateTestX86FreeappRelease",
-            "bufGenerateTestX86RetailappDebug",
-            "bufGenerateTestX86RetailappRelease",
+            "protobufGenerateTestX86FreeappDebug",
+            "protobufGenerateTestX86FreeappRelease",
+            "protobufGenerateTestX86RetailappDebug",
+            "protobufGenerateTestX86RetailappRelease",
         )
 
         assertTasks(
             "unit test tasks", genTasks.androidUnitTestTasks(),
             // test arm
-            "bufGenerateTestArmFreeappDebug",
-            "bufGenerateTestArmFreeappRelease",
-            "bufGenerateTestArmRetailappDebug",
-            "bufGenerateTestArmRetailappRelease",
+            "protobufGenerateTestArmFreeappDebug",
+            "protobufGenerateTestArmFreeappRelease",
+            "protobufGenerateTestArmRetailappDebug",
+            "protobufGenerateTestArmRetailappRelease",
 
             // test x86
-            "bufGenerateTestX86FreeappDebug",
-            "bufGenerateTestX86FreeappRelease",
-            "bufGenerateTestX86RetailappDebug",
-            "bufGenerateTestX86RetailappRelease",
+            "protobufGenerateTestX86FreeappDebug",
+            "protobufGenerateTestX86FreeappRelease",
+            "protobufGenerateTestX86RetailappDebug",
+            "protobufGenerateTestX86RetailappRelease",
         )
 
         assertTasks(
             "instrumented test tasks", genTasks.androidInstrumentedTestTasks(),
             // android test
-            "bufGenerateAndroidTestArmFreeappDebug",
-            "bufGenerateAndroidTestArmRetailappDebug",
-            "bufGenerateAndroidTestX86FreeappDebug",
-            "bufGenerateAndroidTestX86RetailappDebug",
+            "protobufGenerateAndroidTestArmFreeappDebug",
+            "protobufGenerateAndroidTestArmRetailappDebug",
+            "protobufGenerateAndroidTestX86FreeappDebug",
+            "protobufGenerateAndroidTestX86RetailappDebug",
         )
 
         assertTasks(
             "nonTestTasks", genTasks.nonTestTasks(),
             // arm
-            "bufGenerateArmFreeappDebug",
-            "bufGenerateArmFreeappRelease",
-            "bufGenerateArmRetailappDebug",
-            "bufGenerateArmRetailappRelease",
+            "protobufGenerateArmFreeappDebug",
+            "protobufGenerateArmFreeappRelease",
+            "protobufGenerateArmRetailappDebug",
+            "protobufGenerateArmRetailappRelease",
 
             // x86
-            "bufGenerateX86FreeappDebug",
-            "bufGenerateX86FreeappRelease",
-            "bufGenerateX86RetailappDebug",
-            "bufGenerateX86RetailappRelease",
+            "protobufGenerateX86FreeappDebug",
+            "protobufGenerateX86FreeappRelease",
+            "protobufGenerateX86RetailappDebug",
+            "protobufGenerateX86RetailappRelease",
         )
 
         assertTasks("nonTestTasks testTasks", genTasks.nonTestTasks().testTasks())
@@ -178,239 +178,239 @@ tasks.register("test_tasks") {
         assertTasks(
             "matchingSourceSet main", genTasks.matchingSourceSet("main"),
 
-            "bufGenerateArmFreeappDebug",
-            "bufGenerateArmFreeappRelease",
-            "bufGenerateArmRetailappDebug",
-            "bufGenerateArmRetailappRelease",
+            "protobufGenerateArmFreeappDebug",
+            "protobufGenerateArmFreeappRelease",
+            "protobufGenerateArmRetailappDebug",
+            "protobufGenerateArmRetailappRelease",
 
-            "bufGenerateX86FreeappDebug",
-            "bufGenerateX86FreeappRelease",
-            "bufGenerateX86RetailappDebug",
-            "bufGenerateX86RetailappRelease",
+            "protobufGenerateX86FreeappDebug",
+            "protobufGenerateX86FreeappRelease",
+            "protobufGenerateX86RetailappDebug",
+            "protobufGenerateX86RetailappRelease",
         )
 
         assertTasks(
             "matchingSourceSet freeapp", genTasks.matchingSourceSet("freeapp"),
 
-            "bufGenerateArmFreeappDebug",
-            "bufGenerateArmFreeappRelease",
+            "protobufGenerateArmFreeappDebug",
+            "protobufGenerateArmFreeappRelease",
 
-            "bufGenerateX86FreeappDebug",
-            "bufGenerateX86FreeappRelease",
+            "protobufGenerateX86FreeappDebug",
+            "protobufGenerateX86FreeappRelease",
         )
 
         assertTasks(
             "matchingSourceSet arm", genTasks.matchingSourceSet("arm"),
 
-            "bufGenerateArmFreeappDebug",
-            "bufGenerateArmFreeappRelease",
-            "bufGenerateArmRetailappDebug",
-            "bufGenerateArmRetailappRelease",
+            "protobufGenerateArmFreeappDebug",
+            "protobufGenerateArmFreeappRelease",
+            "protobufGenerateArmRetailappDebug",
+            "protobufGenerateArmRetailappRelease",
         )
 
         assertTasks(
             "matchingSourceSet x86", genTasks.matchingSourceSet("x86"),
 
-            "bufGenerateX86FreeappDebug",
-            "bufGenerateX86FreeappRelease",
-            "bufGenerateX86RetailappDebug",
-            "bufGenerateX86RetailappRelease",
+            "protobufGenerateX86FreeappDebug",
+            "protobufGenerateX86FreeappRelease",
+            "protobufGenerateX86RetailappDebug",
+            "protobufGenerateX86RetailappRelease",
         )
 
         assertTasks(
             "matchingSourceSet test", genTasks.matchingSourceSet("test"),
 
-            "bufGenerateTestArmFreeappDebug",
-            "bufGenerateTestArmFreeappRelease",
-            "bufGenerateTestArmRetailappDebug",
-            "bufGenerateTestArmRetailappRelease",
+            "protobufGenerateTestArmFreeappDebug",
+            "protobufGenerateTestArmFreeappRelease",
+            "protobufGenerateTestArmRetailappDebug",
+            "protobufGenerateTestArmRetailappRelease",
 
-            "bufGenerateTestX86FreeappDebug",
-            "bufGenerateTestX86FreeappRelease",
-            "bufGenerateTestX86RetailappDebug",
-            "bufGenerateTestX86RetailappRelease",
+            "protobufGenerateTestX86FreeappDebug",
+            "protobufGenerateTestX86FreeappRelease",
+            "protobufGenerateTestX86RetailappDebug",
+            "protobufGenerateTestX86RetailappRelease",
         )
 
         assertTasks(
             "matchingSourceSet armFreeapp", genTasks.matchingSourceSet("armFreeapp"),
 
-            "bufGenerateArmFreeappDebug",
-            "bufGenerateArmFreeappRelease",
+            "protobufGenerateArmFreeappDebug",
+            "protobufGenerateArmFreeappRelease",
         )
 
         assertTasks(
             "matchingSourceSet androidTest", genTasks.matchingSourceSet("androidTest"),
 
-            "bufGenerateAndroidTestArmFreeappDebug",
-            "bufGenerateAndroidTestArmRetailappDebug",
+            "protobufGenerateAndroidTestArmFreeappDebug",
+            "protobufGenerateAndroidTestArmRetailappDebug",
 
-            "bufGenerateAndroidTestX86FreeappDebug",
-            "bufGenerateAndroidTestX86RetailappDebug",
+            "protobufGenerateAndroidTestX86FreeappDebug",
+            "protobufGenerateAndroidTestX86RetailappDebug",
         )
 
         assertTasks(
             "gen all android", genTasks.androidTasks(),
 
             // android test
-            "bufGenerateAndroidTestArmFreeappDebug",
-            "bufGenerateAndroidTestArmRetailappDebug",
-            "bufGenerateAndroidTestX86FreeappDebug",
-            "bufGenerateAndroidTestX86RetailappDebug",
+            "protobufGenerateAndroidTestArmFreeappDebug",
+            "protobufGenerateAndroidTestArmRetailappDebug",
+            "protobufGenerateAndroidTestX86FreeappDebug",
+            "protobufGenerateAndroidTestX86RetailappDebug",
 
             // test arm
-            "bufGenerateTestArmFreeappDebug",
-            "bufGenerateTestArmFreeappRelease",
-            "bufGenerateTestArmRetailappDebug",
-            "bufGenerateTestArmRetailappRelease",
+            "protobufGenerateTestArmFreeappDebug",
+            "protobufGenerateTestArmFreeappRelease",
+            "protobufGenerateTestArmRetailappDebug",
+            "protobufGenerateTestArmRetailappRelease",
 
             // test x86
-            "bufGenerateTestX86FreeappDebug",
-            "bufGenerateTestX86FreeappRelease",
-            "bufGenerateTestX86RetailappDebug",
-            "bufGenerateTestX86RetailappRelease",
+            "protobufGenerateTestX86FreeappDebug",
+            "protobufGenerateTestX86FreeappRelease",
+            "protobufGenerateTestX86RetailappDebug",
+            "protobufGenerateTestX86RetailappRelease",
 
             // arm
-            "bufGenerateArmFreeappDebug",
-            "bufGenerateArmFreeappRelease",
-            "bufGenerateArmRetailappDebug",
-            "bufGenerateArmRetailappRelease",
+            "protobufGenerateArmFreeappDebug",
+            "protobufGenerateArmFreeappRelease",
+            "protobufGenerateArmRetailappDebug",
+            "protobufGenerateArmRetailappRelease",
 
             // x86
-            "bufGenerateX86FreeappDebug",
-            "bufGenerateX86FreeappRelease",
-            "bufGenerateX86RetailappDebug",
-            "bufGenerateX86RetailappRelease",
+            "protobufGenerateX86FreeappDebug",
+            "protobufGenerateX86FreeappRelease",
+            "protobufGenerateX86RetailappDebug",
+            "protobufGenerateX86RetailappRelease",
         )
 
         assertTasks(
             "matchingSourceSet armFreeappDebug",
             genTasks.matchingSourceSet("armFreeappDebug"),
-            "bufGenerateArmFreeappDebug",
+            "protobufGenerateArmFreeappDebug",
         )
 
         assertTasks(
             "matchingSourceSet testArmFreeappDebug",
             genTasks.matchingSourceSet("testArmFreeappDebug"),
-            "bufGenerateTestArmFreeappDebug",
+            "protobufGenerateTestArmFreeappDebug",
         )
 
         assertTasks(
             "matchingSourceSet androidTestArmFreeappDebug",
             genTasks.matchingSourceSet("androidTestArmFreeappDebug"),
-            "bufGenerateAndroidTestArmFreeappDebug",
+            "protobufGenerateAndroidTestArmFreeappDebug",
         )
 
         assertTasks(
             "matchingAndroidFlavor freeapp", genTasks.matchingAndroidFlavor("freeapp"),
 
             // android test
-            "bufGenerateAndroidTestArmFreeappDebug",
-            "bufGenerateAndroidTestX86FreeappDebug",
+            "protobufGenerateAndroidTestArmFreeappDebug",
+            "protobufGenerateAndroidTestX86FreeappDebug",
 
             // test arm
-            "bufGenerateTestArmFreeappDebug",
-            "bufGenerateTestArmFreeappRelease",
+            "protobufGenerateTestArmFreeappDebug",
+            "protobufGenerateTestArmFreeappRelease",
 
             // test x86
-            "bufGenerateTestX86FreeappDebug",
-            "bufGenerateTestX86FreeappRelease",
+            "protobufGenerateTestX86FreeappDebug",
+            "protobufGenerateTestX86FreeappRelease",
 
             // arm
-            "bufGenerateArmFreeappDebug",
-            "bufGenerateArmFreeappRelease",
+            "protobufGenerateArmFreeappDebug",
+            "protobufGenerateArmFreeappRelease",
 
             // x86
-            "bufGenerateX86FreeappDebug",
-            "bufGenerateX86FreeappRelease",
+            "protobufGenerateX86FreeappDebug",
+            "protobufGenerateX86FreeappRelease",
         )
 
         assertTasks(
             "matchingAndroidFlavor arm", genTasks.matchingAndroidFlavor("arm"),
 
             // android test
-            "bufGenerateAndroidTestArmFreeappDebug",
-            "bufGenerateAndroidTestArmRetailappDebug",
+            "protobufGenerateAndroidTestArmFreeappDebug",
+            "protobufGenerateAndroidTestArmRetailappDebug",
 
             // test arm
-            "bufGenerateTestArmFreeappDebug",
-            "bufGenerateTestArmFreeappRelease",
-            "bufGenerateTestArmRetailappDebug",
-            "bufGenerateTestArmRetailappRelease",
+            "protobufGenerateTestArmFreeappDebug",
+            "protobufGenerateTestArmFreeappRelease",
+            "protobufGenerateTestArmRetailappDebug",
+            "protobufGenerateTestArmRetailappRelease",
 
             // arm
-            "bufGenerateArmFreeappDebug",
-            "bufGenerateArmFreeappRelease",
-            "bufGenerateArmRetailappDebug",
-            "bufGenerateArmRetailappRelease",
+            "protobufGenerateArmFreeappDebug",
+            "protobufGenerateArmFreeappRelease",
+            "protobufGenerateArmRetailappDebug",
+            "protobufGenerateArmRetailappRelease",
         )
 
         assertTasks(
             "matchingAndroidBuildType debug", genTasks.matchingAndroidBuildType("debug"),
 
             // android test
-            "bufGenerateAndroidTestArmFreeappDebug",
-            "bufGenerateAndroidTestArmRetailappDebug",
-            "bufGenerateAndroidTestX86FreeappDebug",
-            "bufGenerateAndroidTestX86RetailappDebug",
+            "protobufGenerateAndroidTestArmFreeappDebug",
+            "protobufGenerateAndroidTestArmRetailappDebug",
+            "protobufGenerateAndroidTestX86FreeappDebug",
+            "protobufGenerateAndroidTestX86RetailappDebug",
 
             // test arm
-            "bufGenerateTestArmFreeappDebug",
-            "bufGenerateTestArmRetailappDebug",
+            "protobufGenerateTestArmFreeappDebug",
+            "protobufGenerateTestArmRetailappDebug",
 
             // test x86
-            "bufGenerateTestX86FreeappDebug",
-            "bufGenerateTestX86RetailappDebug",
+            "protobufGenerateTestX86FreeappDebug",
+            "protobufGenerateTestX86RetailappDebug",
 
             // arm
-            "bufGenerateArmFreeappDebug",
-            "bufGenerateArmRetailappDebug",
+            "protobufGenerateArmFreeappDebug",
+            "protobufGenerateArmRetailappDebug",
 
             // x86
-            "bufGenerateX86FreeappDebug",
-            "bufGenerateX86RetailappDebug",
+            "protobufGenerateX86FreeappDebug",
+            "protobufGenerateX86RetailappDebug",
         )
 
         assertTasks(
             "matchingAndroidBuildType relase", genTasks.matchingAndroidBuildType("release"),
 
             // test arm
-            "bufGenerateTestArmFreeappRelease",
-            "bufGenerateTestArmRetailappRelease",
+            "protobufGenerateTestArmFreeappRelease",
+            "protobufGenerateTestArmRetailappRelease",
 
             // test x86
-            "bufGenerateTestX86FreeappRelease",
-            "bufGenerateTestX86RetailappRelease",
+            "protobufGenerateTestX86FreeappRelease",
+            "protobufGenerateTestX86RetailappRelease",
 
             // arm
-            "bufGenerateArmFreeappRelease",
-            "bufGenerateArmRetailappRelease",
+            "protobufGenerateArmFreeappRelease",
+            "protobufGenerateArmRetailappRelease",
 
             // x86
-            "bufGenerateX86FreeappRelease",
-            "bufGenerateX86RetailappRelease",
+            "protobufGenerateX86FreeappRelease",
+            "protobufGenerateX86RetailappRelease",
         )
 
         assertTasks(
             "matchingAndroidVariant armFreeappDebug", genTasks.matchingAndroidVariant("armFreeappDebug"),
 
             // android test
-            "bufGenerateAndroidTestArmFreeappDebug",
+            "protobufGenerateAndroidTestArmFreeappDebug",
 
             // test arm
-            "bufGenerateTestArmFreeappDebug",
+            "protobufGenerateTestArmFreeappDebug",
 
             // arm
-            "bufGenerateArmFreeappDebug",
+            "protobufGenerateArmFreeappDebug",
         )
 
         assertTasks(
             "matchingAndroidVariant armFreeappDebug udet tests", genTasks.matchingAndroidVariant("armFreeappDebug").androidUnitTestTasks(),
-            "bufGenerateTestArmFreeappDebug",
+            "protobufGenerateTestArmFreeappDebug",
         )
 
         assertTasks(
             "armFreeappDebug armFreeappDebug android tests", genTasks.matchingAndroidVariant("armFreeappDebug").androidInstrumentedTestTasks(),
-            "bufGenerateAndroidTestArmFreeappDebug",
+            "protobufGenerateAndroidTestArmFreeappDebug",
         )
 
         val allTasks = protoTasks.buf
@@ -418,34 +418,34 @@ tasks.register("test_tasks") {
         assertTasks(
             "all", allTasks,
             // android test
-            "bufGenerateAndroidTestArmFreeappDebug",
-            "bufGenerateAndroidTestArmRetailappDebug",
-            "bufGenerateAndroidTestX86FreeappDebug",
-            "bufGenerateAndroidTestX86RetailappDebug",
+            "protobufGenerateAndroidTestArmFreeappDebug",
+            "protobufGenerateAndroidTestArmRetailappDebug",
+            "protobufGenerateAndroidTestX86FreeappDebug",
+            "protobufGenerateAndroidTestX86RetailappDebug",
 
             // test arm
-            "bufGenerateTestArmFreeappDebug",
-            "bufGenerateTestArmFreeappRelease",
-            "bufGenerateTestArmRetailappDebug",
-            "bufGenerateTestArmRetailappRelease",
+            "protobufGenerateTestArmFreeappDebug",
+            "protobufGenerateTestArmFreeappRelease",
+            "protobufGenerateTestArmRetailappDebug",
+            "protobufGenerateTestArmRetailappRelease",
 
             // test x86
-            "bufGenerateTestX86FreeappDebug",
-            "bufGenerateTestX86FreeappRelease",
-            "bufGenerateTestX86RetailappDebug",
-            "bufGenerateTestX86RetailappRelease",
+            "protobufGenerateTestX86FreeappDebug",
+            "protobufGenerateTestX86FreeappRelease",
+            "protobufGenerateTestX86RetailappDebug",
+            "protobufGenerateTestX86RetailappRelease",
 
             // arm
-            "bufGenerateArmFreeappDebug",
-            "bufGenerateArmFreeappRelease",
-            "bufGenerateArmRetailappDebug",
-            "bufGenerateArmRetailappRelease",
+            "protobufGenerateArmFreeappDebug",
+            "protobufGenerateArmFreeappRelease",
+            "protobufGenerateArmRetailappDebug",
+            "protobufGenerateArmRetailappRelease",
 
             // x86
-            "bufGenerateX86FreeappDebug",
-            "bufGenerateX86FreeappRelease",
-            "bufGenerateX86RetailappDebug",
-            "bufGenerateX86RetailappRelease",
+            "protobufGenerateX86FreeappDebug",
+            "protobufGenerateX86FreeappRelease",
+            "protobufGenerateX86RetailappDebug",
+            "protobufGenerateX86RetailappRelease",
 
             // android test
             "bufLintAndroidTestArmFreeappDebug",
@@ -510,36 +510,36 @@ tasks.register("test_tasks") {
 
         assertTasks(
             "all by type generate",
-            allTasks.matchingType<BufGenerateTask>(),
+            allTasks.matchingType<ProtobufGenerateTask>(),
             // android test
-            "bufGenerateAndroidTestArmFreeappDebug",
-            "bufGenerateAndroidTestArmRetailappDebug",
-            "bufGenerateAndroidTestX86FreeappDebug",
-            "bufGenerateAndroidTestX86RetailappDebug",
+            "protobufGenerateAndroidTestArmFreeappDebug",
+            "protobufGenerateAndroidTestArmRetailappDebug",
+            "protobufGenerateAndroidTestX86FreeappDebug",
+            "protobufGenerateAndroidTestX86RetailappDebug",
 
             // test arm
-            "bufGenerateTestArmFreeappDebug",
-            "bufGenerateTestArmFreeappRelease",
-            "bufGenerateTestArmRetailappDebug",
-            "bufGenerateTestArmRetailappRelease",
+            "protobufGenerateTestArmFreeappDebug",
+            "protobufGenerateTestArmFreeappRelease",
+            "protobufGenerateTestArmRetailappDebug",
+            "protobufGenerateTestArmRetailappRelease",
 
             // test x86
-            "bufGenerateTestX86FreeappDebug",
-            "bufGenerateTestX86FreeappRelease",
-            "bufGenerateTestX86RetailappDebug",
-            "bufGenerateTestX86RetailappRelease",
+            "protobufGenerateTestX86FreeappDebug",
+            "protobufGenerateTestX86FreeappRelease",
+            "protobufGenerateTestX86RetailappDebug",
+            "protobufGenerateTestX86RetailappRelease",
 
             // arm
-            "bufGenerateArmFreeappDebug",
-            "bufGenerateArmFreeappRelease",
-            "bufGenerateArmRetailappDebug",
-            "bufGenerateArmRetailappRelease",
+            "protobufGenerateArmFreeappDebug",
+            "protobufGenerateArmFreeappRelease",
+            "protobufGenerateArmRetailappDebug",
+            "protobufGenerateArmRetailappRelease",
 
             // x86
-            "bufGenerateX86FreeappDebug",
-            "bufGenerateX86FreeappRelease",
-            "bufGenerateX86RetailappDebug",
-            "bufGenerateX86RetailappRelease",
+            "protobufGenerateX86FreeappDebug",
+            "protobufGenerateX86FreeappRelease",
+            "protobufGenerateX86RetailappDebug",
+            "protobufGenerateX86RetailappRelease",
         )
 
         assertTasks(
@@ -580,7 +580,7 @@ tasks.register("test_tasks") {
             "all matchingSourceSet armFreeappDebug",
             allTasks.matchingSourceSet("armFreeappDebug"),
             "bufLockArmFreeappDebug",
-            "bufGenerateArmFreeappDebug",
+            "protobufGenerateArmFreeappDebug",
             "bufLintArmFreeappDebug",
         )
 
@@ -588,7 +588,7 @@ tasks.register("test_tasks") {
             "all matchingSourceSet testArmFreeappDebug",
             allTasks.matchingSourceSet("testArmFreeappDebug"),
             "bufLockTestArmFreeappDebug",
-            "bufGenerateTestArmFreeappDebug",
+            "protobufGenerateTestArmFreeappDebug",
             "bufLintTestArmFreeappDebug",
         )
 
@@ -596,7 +596,7 @@ tasks.register("test_tasks") {
             "all matchingSourceSet androidTestArmFreeappDebug",
             allTasks.matchingSourceSet("androidTestArmFreeappDebug"),
             "bufLockAndroidTestArmFreeappDebug",
-            "bufGenerateAndroidTestArmFreeappDebug",
+            "protobufGenerateAndroidTestArmFreeappDebug",
             "bufLintAndroidTestArmFreeappDebug",
         )
     }

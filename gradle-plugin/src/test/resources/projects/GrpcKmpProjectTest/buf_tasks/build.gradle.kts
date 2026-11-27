@@ -77,38 +77,38 @@ tasks.register("test_tasks") {
 
         assertTasks(
             "gen all", genTasks,
-            "bufGenerateCommonMain", "bufGenerateCommonTest",
-            "bufGenerateNativeMain", "bufGenerateNativeTest",
-            "bufGenerateAppleMain", "bufGenerateAppleTest",
-            "bufGenerateMacosMain", "bufGenerateMacosTest",
-            "bufGenerateMacosArm64Main", "bufGenerateMacosArm64Test",
-            "bufGenerateJvmMain", "bufGenerateJvmTest",
-            "bufGenerateWebMain".ifKotlinAtLeast("2.2.20"), "bufGenerateWebTest".ifKotlinAtLeast("2.2.20"),
-            "bufGenerateJsMain", "bufGenerateJsTest",
+            "protobufGenerateCommonMain", "protobufGenerateCommonTest",
+            "protobufGenerateNativeMain", "protobufGenerateNativeTest",
+            "protobufGenerateAppleMain", "protobufGenerateAppleTest",
+            "protobufGenerateMacosMain", "protobufGenerateMacosTest",
+            "protobufGenerateMacosArm64Main", "protobufGenerateMacosArm64Test",
+            "protobufGenerateJvmMain", "protobufGenerateJvmTest",
+            "protobufGenerateWebMain".ifKotlinAtLeast("2.2.20"), "protobufGenerateWebTest".ifKotlinAtLeast("2.2.20"),
+            "protobufGenerateJsMain", "protobufGenerateJsTest",
         )
 
         assertTasks(
             "testTasks", genTasks.testTasks(),
-            "bufGenerateCommonTest",
-            "bufGenerateNativeTest",
-            "bufGenerateAppleTest",
-            "bufGenerateMacosTest",
-            "bufGenerateMacosArm64Test",
-            "bufGenerateJvmTest",
-            "bufGenerateWebTest".ifKotlinAtLeast("2.2.20"),
-            "bufGenerateJsTest",
+            "protobufGenerateCommonTest",
+            "protobufGenerateNativeTest",
+            "protobufGenerateAppleTest",
+            "protobufGenerateMacosTest",
+            "protobufGenerateMacosArm64Test",
+            "protobufGenerateJvmTest",
+            "protobufGenerateWebTest".ifKotlinAtLeast("2.2.20"),
+            "protobufGenerateJsTest",
         )
 
         assertTasks(
             "nonTestTasks", genTasks.nonTestTasks(),
-            "bufGenerateCommonMain",
-            "bufGenerateNativeMain",
-            "bufGenerateAppleMain",
-            "bufGenerateMacosMain",
-            "bufGenerateMacosArm64Main",
-            "bufGenerateJvmMain",
-            "bufGenerateWebMain".ifKotlinAtLeast("2.2.20"),
-            "bufGenerateJsMain",
+            "protobufGenerateCommonMain",
+            "protobufGenerateNativeMain",
+            "protobufGenerateAppleMain",
+            "protobufGenerateMacosMain",
+            "protobufGenerateMacosArm64Main",
+            "protobufGenerateJvmMain",
+            "protobufGenerateWebMain".ifKotlinAtLeast("2.2.20"),
+            "protobufGenerateJsMain",
         )
 
         assertTasks("nonTestTasks testTasks", genTasks.nonTestTasks().testTasks())
@@ -121,14 +121,14 @@ tasks.register("test_tasks") {
         assertTasks(
             "all", allTasks,
             // generate
-            "bufGenerateCommonMain", "bufGenerateCommonTest",
-            "bufGenerateNativeMain", "bufGenerateNativeTest",
-            "bufGenerateAppleMain", "bufGenerateAppleTest",
-            "bufGenerateMacosMain", "bufGenerateMacosTest",
-            "bufGenerateMacosArm64Main", "bufGenerateMacosArm64Test",
-            "bufGenerateJvmMain", "bufGenerateJvmTest",
-            "bufGenerateWebMain".ifKotlinAtLeast("2.2.20"), "bufGenerateWebTest".ifKotlinAtLeast("2.2.20"),
-            "bufGenerateJsMain", "bufGenerateJsTest",
+            "protobufGenerateCommonMain", "protobufGenerateCommonTest",
+            "protobufGenerateNativeMain", "protobufGenerateNativeTest",
+            "protobufGenerateAppleMain", "protobufGenerateAppleTest",
+            "protobufGenerateMacosMain", "protobufGenerateMacosTest",
+            "protobufGenerateMacosArm64Main", "protobufGenerateMacosArm64Test",
+            "protobufGenerateJvmMain", "protobufGenerateJvmTest",
+            "protobufGenerateWebMain".ifKotlinAtLeast("2.2.20"), "protobufGenerateWebTest".ifKotlinAtLeast("2.2.20"),
+            "protobufGenerateJsMain", "protobufGenerateJsTest",
 
             // lint
             "bufLintCommonMain", "bufLintCommonTest",
@@ -153,15 +153,15 @@ tasks.register("test_tasks") {
 
         assertTasks(
             "all by type generate",
-            allTasks.matchingType<BufGenerateTask>(),
-            "bufGenerateCommonMain", "bufGenerateCommonTest",
-            "bufGenerateNativeMain", "bufGenerateNativeTest",
-            "bufGenerateAppleMain", "bufGenerateAppleTest",
-            "bufGenerateMacosMain", "bufGenerateMacosTest",
-            "bufGenerateMacosArm64Main", "bufGenerateMacosArm64Test",
-            "bufGenerateJvmMain", "bufGenerateJvmTest",
-            "bufGenerateWebMain".ifKotlinAtLeast("2.2.20"), "bufGenerateWebTest".ifKotlinAtLeast("2.2.20"),
-            "bufGenerateJsMain", "bufGenerateJsTest",
+            allTasks.matchingType<ProtobufGenerateTask>(),
+            "protobufGenerateCommonMain", "protobufGenerateCommonTest",
+            "protobufGenerateNativeMain", "protobufGenerateNativeTest",
+            "protobufGenerateAppleMain", "protobufGenerateAppleTest",
+            "protobufGenerateMacosMain", "protobufGenerateMacosTest",
+            "protobufGenerateMacosArm64Main", "protobufGenerateMacosArm64Test",
+            "protobufGenerateJvmMain", "protobufGenerateJvmTest",
+            "protobufGenerateWebMain".ifKotlinAtLeast("2.2.20"), "protobufGenerateWebTest".ifKotlinAtLeast("2.2.20"),
+            "protobufGenerateJsMain", "protobufGenerateJsTest",
         )
 
         assertTasks(

@@ -24,7 +24,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Minimal gRPC Configuration`() = runGrpcTest {
-        val result = runGradle(bufGenerateCommonMain)
+        val result = runGradle(protobufGenerateCommonMain)
 
         result.assertMainTaskExecuted(
             protoFiles = listOf(
@@ -40,9 +40,9 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Dependency Proto Codegen`() = runGrpcTest {
-        val result = runGradle(bufGenerateCommonMain)
+        val result = runGradle(protobufGenerateCommonMain)
 
-        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, protobufGenerateCommonMain)
         result.assertOutcome(TaskOutcome.SUCCESS, processCommonMainProtoFiles)
         result.assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonMain)
         result.assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonMain)
@@ -68,9 +68,9 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Dependency Proto Import`() = runGrpcTest {
-        val result = runGradle(bufGenerateCommonMain)
+        val result = runGradle(protobufGenerateCommonMain)
 
-        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, protobufGenerateCommonMain)
         result.assertOutcome(TaskOutcome.SUCCESS, processCommonMainProtoFiles)
         result.assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonMain)
         result.assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonMain)
@@ -94,9 +94,9 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Dependency Proto Test Codegen`() = runGrpcTest {
-        val result = runGradle(bufGenerateCommonTest)
+        val result = runGradle(protobufGenerateCommonTest)
 
-        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonTest)
+        result.assertOutcome(TaskOutcome.SUCCESS, protobufGenerateCommonTest)
         result.assertOutcome(TaskOutcome.SUCCESS, processCommonTestProtoFiles)
         result.assertOutcome(TaskOutcome.NO_SOURCE, processCommonTestProtoFilesImports)
         result.assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonTest)
@@ -127,9 +127,9 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Dependency Proto Test Import`() = runGrpcTest {
-        val result = runGradle(bufGenerateCommonTest)
+        val result = runGradle(protobufGenerateCommonTest)
 
-        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonTest)
+        result.assertOutcome(TaskOutcome.SUCCESS, protobufGenerateCommonTest)
         result.assertOutcome(TaskOutcome.SUCCESS, processCommonTestProtoFiles)
         result.assertOutcome(TaskOutcome.SUCCESS, processCommonTestProtoFilesImports)
         result.assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonTest)
@@ -216,7 +216,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
     fun `Protoc Enabled Via Gradle Property`() = runGrpcTest {
         projectDir.resolve("gradle.properties").appendText("\nkotlinx.rpc.protoc=true\n")
 
-        val result = runGradle(bufGenerateCommonMain)
+        val result = runGradle(protobufGenerateCommonMain)
 
         result.assertMainTaskExecuted(
             protoFiles = listOf(
@@ -232,7 +232,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Test-Only Sources`() = runGrpcTest {
-        val result = runGradle(bufGenerateCommonTest)
+        val result = runGradle(protobufGenerateCommonTest)
 
         result.assertTestTaskExecuted(
             protoFiles = listOf(
@@ -250,7 +250,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Main and Test Mixed Sources`() = runGrpcTest {
-        val mainRun = runGradle(bufGenerateCommonMain)
+        val mainRun = runGradle(protobufGenerateCommonMain)
 
         mainRun.assertMainTaskExecuted(
             protoFiles = listOf(
@@ -267,7 +267,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
 
         cleanProtoBuildDir()
 
-        val testRun = runGradle(bufGenerateCommonTest)
+        val testRun = runGradle(protobufGenerateCommonTest)
 
         testRun.assertTestTaskExecuted(
             protoFiles = listOf(
@@ -294,7 +294,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Java Source Sets`() = runGrpcTest {
-        val mainRun = runGradle(bufGenerateCommonMain)
+        val mainRun = runGradle(protobufGenerateCommonMain)
 
         mainRun.assertMainTaskExecuted(
             protoFiles = listOf(
@@ -309,7 +309,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
 
         cleanProtoBuildDir()
 
-        val testRun = runGradle(bufGenerateCommonTest)
+        val testRun = runGradle(protobufGenerateCommonTest)
 
         testRun.assertTestTaskExecuted(
             protoFiles = listOf(
@@ -549,7 +549,7 @@ inputs:
 
     @TestFactory
     fun `Custom Buf CLI Flags`() = runGrpcTest {
-        val result = runGradleToFail(bufGenerateCommonMain)
+        val result = runGradleToFail(protobufGenerateCommonMain)
         assert(result.output.contains("could not read file: open some.buf.yaml: no such file or directory")) {
             "Expected failure due to missing some.buf.yaml file"
         }
@@ -562,24 +562,24 @@ inputs:
 
     @TestFactory
     fun `Skip Generation When No Proto Files`() = runGrpcTest {
-        val result = runGradle(bufGenerateCommonMain)
+        val result = runGradle(protobufGenerateCommonMain)
 
-        assertEquals(TaskOutcome.SKIPPED, result.protoTaskOutcome(bufGenerateCommonMain))
+        assertEquals(TaskOutcome.SKIPPED, result.protoTaskOutcome(protobufGenerateCommonMain))
     }
 
     @TestFactory
     fun `Proto Tasks Are Cached Properly`() = runGrpcTest {
-        val firstRunMain = runGradle(bufGenerateCommonMain)
+        val firstRunMain = runGradle(protobufGenerateCommonMain)
 
-        assertEquals(TaskOutcome.SUCCESS, firstRunMain.protoTaskOutcome(bufGenerateCommonMain))
+        assertEquals(TaskOutcome.SUCCESS, firstRunMain.protoTaskOutcome(protobufGenerateCommonMain))
         assertEquals(TaskOutcome.SUCCESS, firstRunMain.protoTaskOutcome(bufLockCommonMain))
         assertEquals(TaskOutcome.SUCCESS, firstRunMain.protoTaskOutcome(generateBufYamlCommonMain))
         assertEquals(TaskOutcome.SUCCESS, firstRunMain.protoTaskOutcome(generateBufGenYamlCommonMain))
         assertEquals(TaskOutcome.SUCCESS, firstRunMain.protoTaskOutcome(processCommonMainProtoFiles))
 
-        val secondRunMain = runGradle(bufGenerateCommonMain)
+        val secondRunMain = runGradle(protobufGenerateCommonMain)
 
-        assertEquals(TaskOutcome.UP_TO_DATE, secondRunMain.protoTaskOutcome(bufGenerateCommonMain))
+        assertEquals(TaskOutcome.UP_TO_DATE, secondRunMain.protoTaskOutcome(protobufGenerateCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunMain.protoTaskOutcome(bufLockCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunMain.protoTaskOutcome(generateBufYamlCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunMain.protoTaskOutcome(generateBufGenYamlCommonMain))
@@ -587,9 +587,9 @@ inputs:
 
         cleanProtoBuildDir()
 
-        val thirdRunMain = runGradle(bufGenerateCommonMain)
+        val thirdRunMain = runGradle(protobufGenerateCommonMain)
 
-        assertEquals(TaskOutcome.FROM_CACHE, thirdRunMain.protoTaskOutcome(bufGenerateCommonMain))
+        assertEquals(TaskOutcome.FROM_CACHE, thirdRunMain.protoTaskOutcome(protobufGenerateCommonMain))
         assertEquals(TaskOutcome.SUCCESS, thirdRunMain.protoTaskOutcome(bufLockCommonMain))
         assertEquals(TaskOutcome.SUCCESS, thirdRunMain.protoTaskOutcome(generateBufYamlCommonMain))
         assertEquals(TaskOutcome.SUCCESS, thirdRunMain.protoTaskOutcome(generateBufGenYamlCommonMain))
@@ -599,9 +599,9 @@ inputs:
             .resolve("some.proto")
             .replace("content = 1", "content = 2")
 
-        val fourthRunMain = runGradle(bufGenerateCommonMain)
+        val fourthRunMain = runGradle(protobufGenerateCommonMain)
 
-        assertEquals(TaskOutcome.SUCCESS, fourthRunMain.protoTaskOutcome(bufGenerateCommonMain))
+        assertEquals(TaskOutcome.SUCCESS, fourthRunMain.protoTaskOutcome(protobufGenerateCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, fourthRunMain.protoTaskOutcome(bufLockCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, fourthRunMain.protoTaskOutcome(generateBufYamlCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, fourthRunMain.protoTaskOutcome(generateBufGenYamlCommonMain))
@@ -611,39 +611,39 @@ inputs:
             .resolve("buf/${mainSourceSet.name}/buf.lock")
             .appendText("# Force update lock task")
 
-        val fifthRunMain = runGradle(bufGenerateCommonMain)
+        val fifthRunMain = runGradle(protobufGenerateCommonMain)
 
-        assertEquals(TaskOutcome.SUCCESS, fifthRunMain.protoTaskOutcome(bufGenerateCommonMain))
+        assertEquals(TaskOutcome.SUCCESS, fifthRunMain.protoTaskOutcome(protobufGenerateCommonMain))
         assertEquals(TaskOutcome.SUCCESS, fifthRunMain.protoTaskOutcome(bufLockCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, fifthRunMain.protoTaskOutcome(generateBufYamlCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, fifthRunMain.protoTaskOutcome(generateBufGenYamlCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, fifthRunMain.protoTaskOutcome(processCommonMainProtoFiles))
 
-        val firstRunTest = runGradle(bufGenerateCommonTest)
+        val firstRunTest = runGradle(protobufGenerateCommonTest)
 
-        assertEquals(TaskOutcome.SUCCESS, firstRunTest.protoTaskOutcome(bufGenerateCommonTest))
+        assertEquals(TaskOutcome.SUCCESS, firstRunTest.protoTaskOutcome(protobufGenerateCommonTest))
         assertEquals(TaskOutcome.SUCCESS, firstRunTest.protoTaskOutcome(bufLockCommonTest))
         assertEquals(TaskOutcome.SUCCESS, firstRunTest.protoTaskOutcome(generateBufYamlCommonTest))
         assertEquals(TaskOutcome.SUCCESS, firstRunTest.protoTaskOutcome(generateBufGenYamlCommonTest))
         assertEquals(TaskOutcome.SUCCESS, firstRunTest.protoTaskOutcome(processCommonTestProtoFiles))
         assertEquals(TaskOutcome.SUCCESS, firstRunTest.protoTaskOutcome(processCommonTestProtoFilesImports))
 
-        assertEquals(TaskOutcome.UP_TO_DATE, firstRunTest.protoTaskOutcome(bufGenerateCommonMain))
+        assertEquals(TaskOutcome.UP_TO_DATE, firstRunTest.protoTaskOutcome(protobufGenerateCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, firstRunTest.protoTaskOutcome(bufLockCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, firstRunTest.protoTaskOutcome(generateBufYamlCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, firstRunTest.protoTaskOutcome(generateBufGenYamlCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, firstRunTest.protoTaskOutcome(processCommonMainProtoFiles))
 
-        val secondRunTest = runGradle(bufGenerateCommonTest)
+        val secondRunTest = runGradle(protobufGenerateCommonTest)
 
-        assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(bufGenerateCommonTest))
+        assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(protobufGenerateCommonTest))
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(bufLockCommonTest))
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(generateBufYamlCommonTest))
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(generateBufGenYamlCommonTest))
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(processCommonTestProtoFiles))
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(processCommonTestProtoFilesImports))
 
-        assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(bufGenerateCommonMain))
+        assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(protobufGenerateCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(bufLockCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(generateBufYamlCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(generateBufGenYamlCommonMain))
@@ -653,16 +653,16 @@ inputs:
             .resolve("other.proto")
             .replace("content = 1", "content = 2")
 
-        val thirdRunTest = runGradle(bufGenerateCommonTest)
+        val thirdRunTest = runGradle(protobufGenerateCommonTest)
 
-        assertEquals(TaskOutcome.SUCCESS, thirdRunTest.protoTaskOutcome(bufGenerateCommonTest))
+        assertEquals(TaskOutcome.SUCCESS, thirdRunTest.protoTaskOutcome(protobufGenerateCommonTest))
         assertEquals(TaskOutcome.UP_TO_DATE, thirdRunTest.protoTaskOutcome(bufLockCommonTest))
         assertEquals(TaskOutcome.UP_TO_DATE, thirdRunTest.protoTaskOutcome(generateBufYamlCommonTest))
         assertEquals(TaskOutcome.UP_TO_DATE, thirdRunTest.protoTaskOutcome(generateBufGenYamlCommonTest))
         assertEquals(TaskOutcome.SUCCESS, thirdRunTest.protoTaskOutcome(processCommonTestProtoFiles))
         assertEquals(TaskOutcome.UP_TO_DATE, thirdRunTest.protoTaskOutcome(processCommonTestProtoFilesImports))
 
-        assertEquals(TaskOutcome.UP_TO_DATE, thirdRunTest.protoTaskOutcome(bufGenerateCommonMain))
+        assertEquals(TaskOutcome.UP_TO_DATE, thirdRunTest.protoTaskOutcome(protobufGenerateCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, thirdRunTest.protoTaskOutcome(bufLockCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, thirdRunTest.protoTaskOutcome(generateBufYamlCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, thirdRunTest.protoTaskOutcome(generateBufGenYamlCommonMain))
@@ -672,16 +672,16 @@ inputs:
             .resolve("some.proto")
             .replace("content = 2", "content = 3")
 
-        val fourthRunTest = runGradle(bufGenerateCommonTest)
+        val fourthRunTest = runGradle(protobufGenerateCommonTest)
 
-        assertEquals(TaskOutcome.SUCCESS, fourthRunTest.protoTaskOutcome(bufGenerateCommonTest))
+        assertEquals(TaskOutcome.SUCCESS, fourthRunTest.protoTaskOutcome(protobufGenerateCommonTest))
         assertEquals(TaskOutcome.UP_TO_DATE, fourthRunTest.protoTaskOutcome(bufLockCommonTest))
         assertEquals(TaskOutcome.UP_TO_DATE, fourthRunTest.protoTaskOutcome(generateBufYamlCommonTest))
         assertEquals(TaskOutcome.UP_TO_DATE, fourthRunTest.protoTaskOutcome(generateBufGenYamlCommonTest))
         assertEquals(TaskOutcome.UP_TO_DATE, fourthRunTest.protoTaskOutcome(processCommonTestProtoFiles))
         assertEquals(TaskOutcome.SUCCESS, fourthRunTest.protoTaskOutcome(processCommonTestProtoFilesImports))
 
-        assertEquals(TaskOutcome.SUCCESS, fourthRunTest.protoTaskOutcome(bufGenerateCommonMain))
+        assertEquals(TaskOutcome.SUCCESS, fourthRunTest.protoTaskOutcome(protobufGenerateCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, fourthRunTest.protoTaskOutcome(bufLockCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, fourthRunTest.protoTaskOutcome(generateBufYamlCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, fourthRunTest.protoTaskOutcome(generateBufGenYamlCommonMain))
@@ -813,19 +813,19 @@ inputs:
 
     @TestFactory
     fun `Skip Buf Lock When No Deps`() = runGrpcTest {
-        val result = runGradle(bufGenerateCommonMain)
+        val result = runGradle(protobufGenerateCommonMain)
 
-        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, protobufGenerateCommonMain)
         result.assertOutcome(TaskOutcome.SKIPPED, bufLockCommonMain)
     }
 
     @TestFactory
     fun `Buf Dependencies`() = runGrpcTest {
-        val result = runGradle(bufGenerateCommonMain)
+        val result = runGradle(protobufGenerateCommonMain)
 
-        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, protobufGenerateCommonMain)
         result.assertOutcome(TaskOutcome.SUCCESS, bufLockCommonMain)
-        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, protobufGenerateCommonMain)
 
         assertBufYaml(
             mainSourceSet,
@@ -863,10 +863,10 @@ deps:
 
     @TestFactory
     fun `Buf Lock File Defined in Extension`() = runGrpcTest {
-        val resultMain = runGradle(bufGenerateCommonMain)
+        val resultMain = runGradle(protobufGenerateCommonMain)
 
         resultMain.assertOutcome(TaskOutcome.SUCCESS, bufLockCommonMain)
-        resultMain.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        resultMain.assertOutcome(TaskOutcome.SUCCESS, protobufGenerateCommonMain)
 
         val mainLockFile = protoBuildDirSourceSets
             .resolve(mainSourceSet.name)
@@ -875,9 +875,9 @@ deps:
 
         mainLockFile.appendText("# Edit!")
 
-        val resultTest = runGradle(bufGenerateCommonTest)
+        val resultTest = runGradle(protobufGenerateCommonTest)
         resultTest.assertOutcome(TaskOutcome.SUCCESS, bufLockCommonTest)
-        resultTest.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonTest)
+        resultTest.assertOutcome(TaskOutcome.SUCCESS, protobufGenerateCommonTest)
 
         val testLockFile = protoBuildDirSourceSets
             .resolve(mainSourceSet.name)

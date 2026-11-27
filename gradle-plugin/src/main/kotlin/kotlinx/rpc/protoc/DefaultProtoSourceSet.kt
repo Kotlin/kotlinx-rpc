@@ -5,7 +5,7 @@
 package kotlinx.rpc.protoc
 
 import kotlinx.rpc.buf.BufDepsExtension
-import kotlinx.rpc.buf.tasks.BufGenerateTask
+import kotlinx.rpc.buf.tasks.ProtobufGenerateTask
 import kotlinx.rpc.rpcExtension
 import kotlinx.rpc.util.extendsFromLazy
 import kotlinx.rpc.util.findOrCreate
@@ -141,7 +141,7 @@ internal open class DefaultProtoSourceSet(
 
     // Collection of AndroidSourceSet, KotlinSourceSet, SourceSet (java) associated with this proto source set
     val languageSourceSets: ListProperty<Any> = project.objects.listProperty<Any>()
-    val generateTask: Property<BufGenerateTask> = project.objects.property<BufGenerateTask>()
+    val generateTask: Property<ProtobufGenerateTask> = project.objects.property<ProtobufGenerateTask>()
 
     // source set that is associated with com.android.(application|library|test|dynamic-feature) plugin
     //
@@ -153,11 +153,8 @@ internal open class DefaultProtoSourceSet(
     internal val isLegacyAndroid: Property<Boolean> = project.objects.property<Boolean>()
         .convention(false)
 
-    // used to track tasks' dependencies for main/commonMain/commonTest tasks, e.g.:
-    // - bufGenerateTestDebug depends on bufGenerateDebug
-    // - bufGenerateTestDebug depends on bufGenerateCommonTest and bufGenerateDebug for KMP
-    //
-    // So we need to track this dependency using this property
+    // For example, protobufGenerateTestDebug depends on protobufGenerateDebug
+    // and, in KMP, also depends on protobufGenerateCommonTest.
     val androidDependencies: SetProperty<DefaultProtoSourceSet> = project.objects.setProperty()
 
     // only set for variant.name sourceSets

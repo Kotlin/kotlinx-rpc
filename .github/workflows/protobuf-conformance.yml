@@ -18,12 +18,13 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
       - name: Run Protobuf Conformance Test Generation
-        run: ./gradlew tests:protobuf-conformance:bufGenerateCommonMain --info --stacktrace
+        run: ./gradlew :tests:protobuf-conformance:protobufGenerateCommonMain --info --stacktrace
       - name: Check if protobuf-conformance test is up-to-date
         run: |
           set -euo pipefail
           if [[ -n "$(git status --porcelain | grep tests/protobuf-conformance/)" ]]; then
-            echo "Protobuf conformance test is not up to date. Please run './gradlew tests:protobuf-conformance:bufGenerateCommonMain' and commit changes"
+            echo "The generated protobuf conformance sources are out of date."
+            echo "Run './gradlew :tests:protobuf-conformance:protobufGenerateCommonMain' and commit the changes."
             git status --porcelain
             git diff --minimal | cat
             exit 1

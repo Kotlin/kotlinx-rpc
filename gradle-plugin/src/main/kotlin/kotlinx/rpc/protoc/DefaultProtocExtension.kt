@@ -10,14 +10,14 @@ import com.android.build.api.variant.Variant
 import kotlinx.rpc.buf.BufExtension
 import kotlinx.rpc.buf.configureBufExecutable
 import kotlinx.rpc.buf.tasks.BufExecTask
-import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.buf.tasks.GenerateBufGenYaml
 import kotlinx.rpc.buf.tasks.GenerateBufYaml
+import kotlinx.rpc.buf.tasks.ProtobufGenerateTask
 import kotlinx.rpc.buf.tasks.registerBufExecTask
-import kotlinx.rpc.buf.tasks.registerBufGenerateTask
 import kotlinx.rpc.buf.tasks.registerBufLockTask
 import kotlinx.rpc.buf.tasks.registerGenerateBufGenYamlTask
 import kotlinx.rpc.buf.tasks.registerGenerateBufYamlTask
+import kotlinx.rpc.buf.tasks.registerProtobufGenerateTask
 import kotlinx.rpc.protoc.ProtocPlugin.Companion.GRPC_KOTLIN_MULTIPLATFORM
 import kotlinx.rpc.protoc.ProtocPlugin.Companion.KOTLIN_MULTIPLATFORM
 import kotlinx.rpc.protoc.android.KmpLibraryAndroidLeafSourceSets
@@ -82,7 +82,7 @@ internal open class DefaultProtocExtension @Inject constructor(
         project.configureKotlinMultiplatformPluginJarConfiguration()
         project.configureGrpcKotlinMultiplatformPluginJarConfiguration()
 
-        // ignore for bufGenerate task caching
+        // Ignore these files when Gradle checks code generation task inputs.
         project.normalization.runtimeClasspath.ignore("**/protoc-gen-kotlin-multiplatform.log")
         project.normalization.runtimeClasspath.ignore("**/protoc-gen-grpc-kotlin-multiplatform.log")
         project.normalization.runtimeClasspath.ignore("**/.keep")
@@ -331,7 +331,7 @@ internal open class DefaultProtocExtension @Inject constructor(
 
         val sourceSetsProtoDirFileTree = project.fileTree(buildSourceSetsProtoDir)
 
-        val bufGenerateTask = project.registerBufGenerateTask(
+        val generateTask = project.registerProtobufGenerateTask(
             protocExtension = this,
             name = capitalName,
             workingDir = buildSourceSetsDir,
@@ -385,12 +385,12 @@ internal open class DefaultProtocExtension @Inject constructor(
             onlyIf { !sourceSetsProtoDirFileTree.filter { it.extension == "proto" }.isEmpty }
         }
 
-        protoSourceSet.generateTask.set(bufGenerateTask)
+        protoSourceSet.generateTask.set(generateTask)
 
         configureSourceDirectories(
             protoSourceSet = protoSourceSet,
             includedProtocPlugins = includedProtocPlugins,
-            bufGenerateTask = bufGenerateTask,
+            generateTask = generateTask,
         )
 
         configurePrebuildTasks(protoSourceSet)
@@ -414,12 +414,12 @@ internal open class DefaultProtocExtension @Inject constructor(
     private fun configureSourceDirectories(
         protoSourceSet: DefaultProtoSourceSet,
         includedProtocPlugins: Provider<Set<ProtocPlugin>>,
-        bufGenerateTask: TaskProvider<BufGenerateTask>,
+        generateTask: TaskProvider<ProtobufGenerateTask>,
     ) {
         val languageSets = protoSourceSet.languageSourceSets.get()
 
-        val javaOutputs = languageOutputs(includedProtocPlugins, bufGenerateTask) { it.isJava.get() }
-        val kotlinOutputs = languageOutputs(includedProtocPlugins, bufGenerateTask) { it.isKotlin.get() }
+        val javaOutputs = languageOutputs(includedProtocPlugins, generateTask) { it.isJava.get() }
+        val kotlinOutputs = languageOutputs(includedProtocPlugins, generateTask) { it.isKotlin.get() }
 
         languageSets.filterIsInstance<SourceSet>().forEach { sourceSet ->
             sourceSet.java.srcDir(javaOutputs)
@@ -460,7 +460,7 @@ internal open class DefaultProtocExtension @Inject constructor(
                     }
 
                     tasks.matching { it.name == compileTaskName }.configureEach {
-                        dependsOn(bufGenerateTask)
+                        dependsOn(generateTask)
                     }
                 }
             }
@@ -509,14 +509,14 @@ internal open class DefaultProtocExtension @Inject constructor(
 
     private fun languageOutputs(
         includedProtocPlugins: Provider<Set<ProtocPlugin>>,
-        bufGenerateTask: TaskProvider<BufGenerateTask>,
+        generateTask: TaskProvider<ProtobufGenerateTask>,
         pluginFilter: (ProtocPlugin) -> Boolean,
     ): Provider<List<File>> {
         val plugins = includedProtocPlugins.map { plugins ->
             plugins.filter(pluginFilter).map { it.name }.toSet()
         }
 
-        return bufGenerateTask.map { task ->
+        return generateTask.map { task ->
             val pluginsSet = plugins.get()
             task.outputSourceDirectories.get().filter { it.name in pluginsSet }
         }
