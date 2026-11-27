@@ -6,7 +6,7 @@ package kotlinx.rpc.grpc.server.internal
 
 import io.grpc.Grpc
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.runInterruptible
 import kotlinx.rpc.grpc.internal.applySetting
 import kotlinx.rpc.grpc.server.GrpcServerBaseConfiguration
 import kotlinx.rpc.grpc.server.GrpcDefaultServerCredentials
@@ -111,7 +111,7 @@ private fun io.grpc.Server.toKotlin(): PlatformServer {
         }
 
         override suspend fun awaitTermination(duration: Duration): PlatformServer {
-            withContext(Dispatchers.IO) {
+            runInterruptible(Dispatchers.IO) {
                 if (duration == Duration.INFINITE) {
                     this@toKotlin.awaitTermination()
                 } else {

@@ -132,7 +132,12 @@
             Call <code>start()</code> to begin listening for connections.
             Use <code>shutdown()</code> for an orderly shutdown (existing calls finish,
             new calls are rejected) or <code>shutdownNow()</code> to cancel everything immediately.
-            <code>awaitTermination()</code> blocks until all calls have completed.
+            Call <code>awaitTermination()</code> to wait for the server to terminate.
         </p>
+        <warning>
+            On the JVM, shutdown uses one <code>Dispatchers.IO</code> worker until the server terminates.
+            If <code>kotlinx.coroutines.io.parallelism</code> is <code>1</code>, graceful shutdown can deadlock
+            when an active RPC needs <code>Dispatchers.IO</code> to finish.
+        </warning>
     </chapter>
 </topic>

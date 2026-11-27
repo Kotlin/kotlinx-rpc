@@ -75,8 +75,7 @@ public class GrpcServerImpl internal constructor(
 
     private val shutdownStarted = CompletableDeferred<Unit>()
     private val terminationWatcher = CoroutineScope(Dispatchers.Default).async(start = CoroutineStart.LAZY) {
-        // await shutdownStarted to prevent that `awaitTermination` is called on the `internalServer`,
-        // which blocks a JVM IO thread.
+        // The watcher occupies one Dispatchers.IO worker only after shutdown actually starts.
         shutdownStarted.await()
         internalServer.awaitTermination()
         internalContext.complete()
