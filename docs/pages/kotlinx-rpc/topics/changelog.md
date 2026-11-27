@@ -60,7 +60,7 @@ The Linux targets `linuxX64` and `linuxArm64` are removed from the `kotlinx-rpc-
 
 #### Protobuf Gradle tasks {id=Protobuf_Gradle_tasks_Unreleased}
 
-In Gradle build scripts and CI commands, replace `bufGenerate<SourceSet>` with `protobufGenerate<SourceSet>`.
+Replace `bufGenerate<SourceSet>` with `protobufGenerate<SourceSet>` in Gradle build scripts.
 In imports and type references, replace `BufGenerateTask` with `ProtobufGenerateTask`.
 
 #### Protobuf runtime {id=Protobuf_runtime_Unreleased}
