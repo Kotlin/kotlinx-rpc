@@ -70,134 +70,134 @@ tasks.register("test_tasks") {
 
         assertTasks(
             "gen all", genTasks,
-            "bufGenerateCommonMain", "bufGenerateCommonTest",
-            "bufGenerateNativeMain", "bufGenerateNativeTest",
-            "bufGenerateAppleMain", "bufGenerateAppleTest",
-            "bufGenerateMacosMain", "bufGenerateMacosTest",
-            "bufGenerateMacosArm64Main", "bufGenerateMacosArm64Test",
-            "bufGenerateJvmMain", "bufGenerateJvmTest",
+            "protobufGenerateCommonMain", "protobufGenerateCommonTest",
+            "protobufGenerateNativeMain", "protobufGenerateNativeTest",
+            "protobufGenerateAppleMain", "protobufGenerateAppleTest",
+            "protobufGenerateMacosMain", "protobufGenerateMacosTest",
+            "protobufGenerateMacosArm64Main", "protobufGenerateMacosArm64Test",
+            "protobufGenerateJvmMain", "protobufGenerateJvmTest",
 
             // android
-            "bufGenerateAndroidDebug",
-            "bufGenerateAndroidRelease",
-            "bufGenerateAndroidInstrumentedTestDebug",
-            "bufGenerateAndroidUnitTestDebug",
-            "bufGenerateAndroidUnitTestRelease",
+            "protobufGenerateAndroidDebug",
+            "protobufGenerateAndroidRelease",
+            "protobufGenerateAndroidInstrumentedTestDebug",
+            "protobufGenerateAndroidUnitTestDebug",
+            "protobufGenerateAndroidUnitTestRelease",
         )
 
         assertTasks(
             "testTasks", genTasks.testTasks(),
-            "bufGenerateCommonTest",
-            "bufGenerateNativeTest",
-            "bufGenerateAppleTest",
-            "bufGenerateMacosTest",
-            "bufGenerateMacosArm64Test",
-            "bufGenerateJvmTest",
+            "protobufGenerateCommonTest",
+            "protobufGenerateNativeTest",
+            "protobufGenerateAppleTest",
+            "protobufGenerateMacosTest",
+            "protobufGenerateMacosArm64Test",
+            "protobufGenerateJvmTest",
 
             // android
-            "bufGenerateAndroidInstrumentedTestDebug",
-            "bufGenerateAndroidUnitTestDebug",
-            "bufGenerateAndroidUnitTestRelease",
+            "protobufGenerateAndroidInstrumentedTestDebug",
+            "protobufGenerateAndroidUnitTestDebug",
+            "protobufGenerateAndroidUnitTestRelease",
         )
 
         assertTasks(
             "nonTestTasks", genTasks.nonTestTasks(),
-            "bufGenerateCommonMain",
-            "bufGenerateNativeMain",
-            "bufGenerateAppleMain",
-            "bufGenerateMacosMain",
-            "bufGenerateMacosArm64Main",
-            "bufGenerateJvmMain",
+            "protobufGenerateCommonMain",
+            "protobufGenerateNativeMain",
+            "protobufGenerateAppleMain",
+            "protobufGenerateMacosMain",
+            "protobufGenerateMacosArm64Main",
+            "protobufGenerateJvmMain",
 
             // android
-            "bufGenerateAndroidDebug",
-            "bufGenerateAndroidRelease",
+            "protobufGenerateAndroidDebug",
+            "protobufGenerateAndroidRelease",
         )
 
         assertTasks(
             "unit test tasks", genTasks.androidUnitTestTasks(),
-            "bufGenerateAndroidUnitTestDebug",
-            "bufGenerateAndroidUnitTestRelease",
+            "protobufGenerateAndroidUnitTestDebug",
+            "protobufGenerateAndroidUnitTestRelease",
         )
 
         assertTasks(
             "instrumented test tasks", genTasks.androidInstrumentedTestTasks(),
-            "bufGenerateAndroidInstrumentedTestDebug",
+            "protobufGenerateAndroidInstrumentedTestDebug",
         )
 
         assertTasks("nonTestTasks testTasks", genTasks.nonTestTasks().testTasks())
 
         assertTasks(
             "matchingSourceSet main", genTasks.matchingSourceSet("main"),
-            "bufGenerateAndroidDebug",
-            "bufGenerateAndroidRelease",
+            "protobufGenerateAndroidDebug",
+            "protobufGenerateAndroidRelease",
         )
 
         assertTasks(
             "matchingSourceSet test", genTasks.matchingSourceSet("test"),
-            "bufGenerateAndroidUnitTestDebug",
-            "bufGenerateAndroidUnitTestRelease",
+            "protobufGenerateAndroidUnitTestDebug",
+            "protobufGenerateAndroidUnitTestRelease",
         )
 
         assertTasks(
             "matchingSourceSet androidUnitTest", genTasks.matchingSourceSet("androidUnitTest"),
-            "bufGenerateAndroidUnitTestDebug",
-            "bufGenerateAndroidUnitTestRelease",
+            "protobufGenerateAndroidUnitTestDebug",
+            "protobufGenerateAndroidUnitTestRelease",
         )
 
         assertTasks(
             "matchingSourceSet androidInstrumentedTest", genTasks.matchingSourceSet("androidInstrumentedTest"),
-            "bufGenerateAndroidInstrumentedTestDebug",
+            "protobufGenerateAndroidInstrumentedTestDebug",
         )
 
         assertTasks(
             "matchingSourceSet androidTest", genTasks.matchingSourceSet("androidTest"),
-            "bufGenerateAndroidInstrumentedTestDebug",
+            "protobufGenerateAndroidInstrumentedTestDebug",
         )
 
         assertTasks(
             "gen all android", genTasks.androidTasks(),
-            "bufGenerateAndroidDebug",
-            "bufGenerateAndroidRelease",
-            "bufGenerateAndroidInstrumentedTestDebug",
-            "bufGenerateAndroidUnitTestDebug",
-            "bufGenerateAndroidUnitTestRelease",
+            "protobufGenerateAndroidDebug",
+            "protobufGenerateAndroidRelease",
+            "protobufGenerateAndroidInstrumentedTestDebug",
+            "protobufGenerateAndroidUnitTestDebug",
+            "protobufGenerateAndroidUnitTestRelease",
         )
 
         assertTasks(
             "matchingSourceSet debug",
             genTasks.matchingSourceSet("debug"),
-            "bufGenerateAndroidDebug",
+            "protobufGenerateAndroidDebug",
         )
 
         assertTasks(
             "matchingSourceSet testDebug",
             genTasks.matchingSourceSet("testDebug"),
-            "bufGenerateAndroidUnitTestDebug",
+            "protobufGenerateAndroidUnitTestDebug",
         )
 
         assertTasks(
             "matchingSourceSet androidTestDebug",
             genTasks.matchingSourceSet("androidTestDebug"),
-            "bufGenerateAndroidInstrumentedTestDebug",
+            "protobufGenerateAndroidInstrumentedTestDebug",
         )
 
         assertTasks(
             "matchingSourceSet androidDebug",
             genTasks.matchingSourceSet("androidDebug"),
-            "bufGenerateAndroidDebug",
+            "protobufGenerateAndroidDebug",
         )
 
         assertTasks(
             "matchingSourceSet androidUnitTestDebug",
             genTasks.matchingSourceSet("androidUnitTestDebug"),
-            "bufGenerateAndroidUnitTestDebug",
+            "protobufGenerateAndroidUnitTestDebug",
         )
 
         assertTasks(
             "matchingSourceSet androidInstrumentedTestDebug",
             genTasks.matchingSourceSet("androidInstrumentedTestDebug"),
-            "bufGenerateAndroidInstrumentedTestDebug",
+            "protobufGenerateAndroidInstrumentedTestDebug",
         )
 
         assertTasks(
@@ -206,32 +206,32 @@ tasks.register("test_tasks") {
 
         assertTasks(
             "matchingAndroidBuildType debug", genTasks.matchingAndroidBuildType("debug"),
-            "bufGenerateAndroidDebug",
-            "bufGenerateAndroidInstrumentedTestDebug",
-            "bufGenerateAndroidUnitTestDebug",
+            "protobufGenerateAndroidDebug",
+            "protobufGenerateAndroidInstrumentedTestDebug",
+            "protobufGenerateAndroidUnitTestDebug",
         )
 
         assertTasks(
             "matchingAndroidBuildType release", genTasks.matchingAndroidBuildType("release"),
-            "bufGenerateAndroidRelease",
-            "bufGenerateAndroidUnitTestRelease",
+            "protobufGenerateAndroidRelease",
+            "protobufGenerateAndroidUnitTestRelease",
         )
 
         assertTasks(
             "matchingAndroidVariant debug", genTasks.matchingAndroidVariant("debug"),
-            "bufGenerateAndroidDebug",
-            "bufGenerateAndroidInstrumentedTestDebug",
-            "bufGenerateAndroidUnitTestDebug",
+            "protobufGenerateAndroidDebug",
+            "protobufGenerateAndroidInstrumentedTestDebug",
+            "protobufGenerateAndroidUnitTestDebug",
         )
 
         assertTasks(
             "matchingAndroidBuildType debug unit tests", genTasks.matchingAndroidBuildType("debug").androidUnitTestTasks(),
-            "bufGenerateAndroidUnitTestDebug",
+            "protobufGenerateAndroidUnitTestDebug",
         )
 
         assertTasks(
             "matchingAndroidBuildType debug android tests", genTasks.matchingAndroidBuildType("debug").androidInstrumentedTestTasks(),
-            "bufGenerateAndroidInstrumentedTestDebug",
+            "protobufGenerateAndroidInstrumentedTestDebug",
         )
 
         val allTasks = protoTasks.buf
@@ -239,19 +239,19 @@ tasks.register("test_tasks") {
         assertTasks(
             "all", allTasks,
             // generate
-            "bufGenerateCommonMain", "bufGenerateCommonTest",
-            "bufGenerateNativeMain", "bufGenerateNativeTest",
-            "bufGenerateAppleMain", "bufGenerateAppleTest",
-            "bufGenerateMacosMain", "bufGenerateMacosTest",
-            "bufGenerateMacosArm64Main", "bufGenerateMacosArm64Test",
-            "bufGenerateJvmMain", "bufGenerateJvmTest",
+            "protobufGenerateCommonMain", "protobufGenerateCommonTest",
+            "protobufGenerateNativeMain", "protobufGenerateNativeTest",
+            "protobufGenerateAppleMain", "protobufGenerateAppleTest",
+            "protobufGenerateMacosMain", "protobufGenerateMacosTest",
+            "protobufGenerateMacosArm64Main", "protobufGenerateMacosArm64Test",
+            "protobufGenerateJvmMain", "protobufGenerateJvmTest",
 
             // android generate
-            "bufGenerateAndroidDebug",
-            "bufGenerateAndroidRelease",
-            "bufGenerateAndroidInstrumentedTestDebug",
-            "bufGenerateAndroidUnitTestDebug",
-            "bufGenerateAndroidUnitTestRelease",
+            "protobufGenerateAndroidDebug",
+            "protobufGenerateAndroidRelease",
+            "protobufGenerateAndroidInstrumentedTestDebug",
+            "protobufGenerateAndroidUnitTestDebug",
+            "protobufGenerateAndroidUnitTestRelease",
 
             // lint
             "bufLintCommonMain", "bufLintCommonTest",
@@ -286,20 +286,20 @@ tasks.register("test_tasks") {
 
         assertTasks(
             "all by type generate",
-            allTasks.matchingType<BufGenerateTask>(),
-            "bufGenerateCommonMain", "bufGenerateCommonTest",
-            "bufGenerateNativeMain", "bufGenerateNativeTest",
-            "bufGenerateAppleMain", "bufGenerateAppleTest",
-            "bufGenerateMacosMain", "bufGenerateMacosTest",
-            "bufGenerateMacosArm64Main", "bufGenerateMacosArm64Test",
-            "bufGenerateJvmMain", "bufGenerateJvmTest",
+            allTasks.matchingType<ProtobufGenerateTask>(),
+            "protobufGenerateCommonMain", "protobufGenerateCommonTest",
+            "protobufGenerateNativeMain", "protobufGenerateNativeTest",
+            "protobufGenerateAppleMain", "protobufGenerateAppleTest",
+            "protobufGenerateMacosMain", "protobufGenerateMacosTest",
+            "protobufGenerateMacosArm64Main", "protobufGenerateMacosArm64Test",
+            "protobufGenerateJvmMain", "protobufGenerateJvmTest",
 
             // android generate
-            "bufGenerateAndroidDebug",
-            "bufGenerateAndroidRelease",
-            "bufGenerateAndroidInstrumentedTestDebug",
-            "bufGenerateAndroidUnitTestDebug",
-            "bufGenerateAndroidUnitTestRelease",
+            "protobufGenerateAndroidDebug",
+            "protobufGenerateAndroidRelease",
+            "protobufGenerateAndroidInstrumentedTestDebug",
+            "protobufGenerateAndroidUnitTestDebug",
+            "protobufGenerateAndroidUnitTestRelease",
         )
 
         assertTasks(

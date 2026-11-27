@@ -6,9 +6,9 @@ package kotlinx.rpc.protoc
 
 import kotlinx.library.watchdog.IntentionallyExhaustive
 import kotlinx.library.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
+import kotlinx.rpc.buf.tasks.ProtobufGenerateTask
 import kotlinx.rpc.protoc.ProtocPlugin.Companion.GRPC_KOTLIN_MULTIPLATFORM
 import kotlinx.rpc.protoc.ProtocPlugin.Companion.KOTLIN_MULTIPLATFORM
-import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.util.OS
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
@@ -223,15 +223,12 @@ public open class ProtocPlugin internal constructor(
             public val executor: ListProperty<String> = project.objects.listProperty()
 
             /**
-             * Specifies the files that will be used during execution by the plugin.
+             * Files that the plugin uses during execution.
              *
-             * Useful to properly handle caching in [BufGenerateTask].
+             * Gradle tracks these files as inputs to [ProtobufGenerateTask].
+             * If you call [javaJar], this property includes the plugin's JAR file. Default is empty.
              *
-             * Automatically includes the plugin's .jar file if [javaJar] was used.
-             *
-             * Optional.
-             *
-             * @see [BufGenerateTask.executableFiles]
+             * @see [ProtobufGenerateTask.executableFiles]
              */
             public val executableFiles: ListProperty<File> = project.objects.listProperty<File>()
                 .convention(emptyList())

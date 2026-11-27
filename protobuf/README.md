@@ -18,4 +18,4 @@ protobuf       -- Aggregator: lite, wkt, and grpc-marshaller
 ## Well-known types
 
 The files in `protobuf-wkt/src/commonMain/generated-code/` are generated. Never edit them by hand.
-After a change in `protoc-gen/`, run `:protobuf:protobuf-wkt:bufGenerateCommonMain`.
+After a change in `protoc-gen/`, run `:protobuf:protobuf-wkt:protobufGenerateCommonMain`.

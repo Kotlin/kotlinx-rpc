@@ -37,9 +37,8 @@ import javax.inject.Inject
 /**
  * Abstract base class for `buf` tasks.
  *
- * Caching is disabled at this level because generic `buf` invocations are not known to be
- * deterministic. Concrete subclasses with deterministic inputs/outputs (e.g. [BufGenerateTask])
- * opt in explicitly via `@CacheableTask`.
+ * Gradle disables caching by default for this class.
+ * Use `@CacheableTask` for a subclass with deterministic outputs, such as [ProtobufGenerateTask].
  */
 @IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 @DisableCachingByDefault(because = "Custom buf subclasses must opt in to caching explicitly via @CacheableTask")

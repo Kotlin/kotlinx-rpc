@@ -54,6 +54,11 @@ The gRPC server supports the JVM only. The `kotlinx-rpc-grpc-server` and
 The Linux targets `linuxX64` and `linuxArm64` are removed from the `kotlinx-rpc-grpc-core`,
 `kotlinx-rpc-grpc-client`, and `kotlinx-rpc-grpc-marshaller-kotlinx-serialization` modules.
 
+### Protobuf Gradle tasks
+
+Replace `bufGenerate<SourceSet>` with `protobufGenerate<SourceSet>` in Gradle build scripts.
+In imports and type references, replace `BufGenerateTask` with `ProtobufGenerateTask`.
+
 ### Protobuf runtime
 
 The protobuf runtime is pure Kotlin on all platforms:

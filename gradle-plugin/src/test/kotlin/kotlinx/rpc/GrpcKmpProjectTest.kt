@@ -13,6 +13,10 @@ import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.TestInstance
 import kotlin.collections.emptyList
 import kotlin.io.path.Path
+import kotlin.io.path.isRegularFile
+import kotlin.io.path.readText
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class GrpcKmpProjectTest : GrpcBaseTest() {
@@ -20,7 +24,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Minimal gRPC Configuration`() = runGrpcTest {
-        val result = runGradle(bufGenerateCommonMain)
+        val result = runGradle(protobufGenerateCommonMain)
 
         result.assertMainTaskExecuted(
             protoFiles = listOf(
@@ -36,9 +40,9 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Dependency Proto Import KMP DSL`() = runGrpcTest {
-        val result = runGradle(bufGenerateCommonMain)
+        val result = runGradle(protobufGenerateCommonMain)
 
-        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, protobufGenerateCommonMain)
         result.assertOutcome(TaskOutcome.SUCCESS, processCommonMainProtoFiles)
         result.assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonMain)
         result.assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonMain)
@@ -60,9 +64,9 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Dependency Proto Import`() = runGrpcTest {
-        val result = runGradle(bufGenerateCommonMain)
+        val result = runGradle(protobufGenerateCommonMain)
 
-        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, protobufGenerateCommonMain)
         result.assertOutcome(TaskOutcome.SUCCESS, processCommonMainProtoFiles)
         result.assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonMain)
         result.assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonMain)
@@ -84,9 +88,9 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Dependency Proto Codegen`() = runGrpcTest {
-        val result = runGradle(bufGenerateCommonMain)
+        val result = runGradle(protobufGenerateCommonMain)
 
-        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, protobufGenerateCommonMain)
         result.assertOutcome(TaskOutcome.SUCCESS, processCommonMainProtoFiles)
         result.assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonMain)
         result.assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonMain)
@@ -111,9 +115,9 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Dependency Proto Codegen KMP DSL`() = runGrpcTest {
-        val result = runGradle(bufGenerateCommonMain)
+        val result = runGradle(protobufGenerateCommonMain)
 
-        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, protobufGenerateCommonMain)
         result.assertOutcome(TaskOutcome.SUCCESS, processCommonMainProtoFiles)
         result.assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonMain)
         result.assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonMain)
@@ -162,7 +166,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Test-Only Sources`() = runGrpcTest {
-        val result = runGradle(bufGenerateCommonTest)
+        val result = runGradle(protobufGenerateCommonTest)
 
         result.assertTestTaskExecuted(
             protoFiles = listOf(
@@ -180,7 +184,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Main and Test Mixed Sources`() = runGrpcTest {
-        val mainRun = runGradle(bufGenerateCommonMain)
+        val mainRun = runGradle(protobufGenerateCommonMain)
 
         mainRun.assertMainTaskExecuted(
             protoFiles = listOf(
@@ -195,9 +199,9 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
         cleanProtoBuildDir()
 
-        val testRun = runGradle(bufGenerateCommonTest)
+        val aggregateRun = runGradle("protobufGenerate")
 
-        testRun.assertTestTaskExecuted(
+        aggregateRun.assertTestTaskExecuted(
             protoFiles = listOf(
                 Path("other.proto")
             ),
@@ -216,12 +220,59 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             ),
             mainGenerateOutcome = TaskOutcome.FROM_CACHE,
         )
+
+        aggregateRun.assertOutcome(TaskOutcome.SKIPPED, protobufGenerate(SSetsKmp.Default.jvmMain))
+        aggregateRun.assertOutcome(TaskOutcome.SKIPPED, protobufGenerate(SSetsKmp.Default.jvmTest))
+    }
+
+    @TestFactory
+    fun `Protobuf Generate Includes Source Set Added Later`() = runGrpcTest {
+        val result = runGradle("protobufGenerate")
+
+        result.assertOutcome(TaskOutcome.SUCCESS, "protobufGenerateAdditionalMain")
+        val generatedFile = protoBuildDir.resolve(
+            Path("generated", "additionalMain", "kotlin-multiplatform", "Additional.kt")
+        )
+        assertTrue(generatedFile.isRegularFile(), "Missing generated source: $generatedFile")
+    }
+
+    @TestFactory
+    fun `Protobuf Generate Skips Buf Lock for Empty Source Sets`() = runGrpcTest {
+        val result = runGradle("protobufGenerate")
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufLockCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, protobufGenerateCommonMain)
+        for (sourceSet in listOf(testSourceSet, SSetsKmp.Default.jvmMain, SSetsKmp.Default.jvmTest)) {
+            result.assertOutcome(TaskOutcome.SKIPPED, bufLock(sourceSet))
+            result.assertOutcome(TaskOutcome.SKIPPED, protobufGenerate(sourceSet))
+        }
+        assertWorkspaceProtoFilesCopied(mainSourceSet, Path("example.proto"))
+        assertSourceCodeGenerated(
+            mainSourceSet,
+            Path("Example.kt"),
+            Path("Example.ext.kt"),
+            Path(RPC_INTERNAL, "Example.kt"),
+        )
+    }
+
+    @TestFactory
+    fun `Buf Lock Copies Existing Lockfile for Import-Only Source Set`() = runGrpcTest {
+        val sourceSet = SSetsKmp.Default.jvmMain
+        val result = runGradle(bufLock(sourceSet))
+
+        result.assertOutcome(TaskOutcome.NO_SOURCE, processProtoFiles(sourceSet))
+        assertWorkspaceImportProtoFilesCopied(sourceSet, Path("example.proto"))
+        result.assertOutcome(TaskOutcome.SUCCESS, bufLock(sourceSet))
+
+        val persistentLockFile = projectDir.resolve(Path("buf", sourceSet.name, "buf.lock"))
+        val workspaceLockFile = protoBuildDirSourceSets.resolve(Path(sourceSet.name, "buf.lock"))
+        assertEquals(persistentLockFile.readText(), workspaceLockFile.readText())
     }
 
     @TestFactory
     fun `No JVM Targets`() = runGrpcTest {
-        runNonExistentTask(bufGenerateCommonMain)
-        runNonExistentTask(bufGenerateCommonTest)
+        runNonExistentTask(protobufGenerateCommonMain)
+        runNonExistentTask(protobufGenerateCommonTest)
         runNonExistentTask(processCommonMainProtoFiles)
         runNonExistentTask(processCommonTestProtoFiles)
         runNonExistentTask(processCommonTestProtoFilesImports)
@@ -235,7 +286,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `With Other Targets`() = runGrpcTest {
-        val result = runGradle(bufGenerateCommonMain)
+        val result = runGradle(protobufGenerateCommonMain)
 
         result.assertMainTaskExecuted(
             protoFiles = listOf(
@@ -2536,7 +2587,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Proto Dependencies Propagate Through Hierarchy`() = runGrpcTest {
-        val resultCommonMain = runGradle(bufGenerateCommonMain)
+        val resultCommonMain = runGradle(protobufGenerateCommonMain)
         resultCommonMain.assertMainTaskExecuted(
             protoFiles = listOf(
                 Path("some.proto"),
@@ -2552,7 +2603,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             )
         )
 
-        val resultNativeMain = runGradle(bufGenerate(SSetsKmp.Default.nativeMain))
+        val resultNativeMain = runGradle(protobufGenerate(SSetsKmp.Default.nativeMain))
         resultNativeMain.assertTaskExecuted(
             sourceSet = SSetsKmp.Default.nativeMain,
             protoFiles = listOf(
@@ -2570,7 +2621,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             notExecuted = emptyList()
         )
 
-        val resultAppleMain = runGradle(bufGenerate(SSetsKmp.Default.appleMain))
+        val resultAppleMain = runGradle(protobufGenerate(SSetsKmp.Default.appleMain))
         resultAppleMain.assertTaskExecuted(
             sourceSet = SSetsKmp.Default.appleMain,
             protoFiles = listOf(
@@ -2592,7 +2643,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Proto Deduplication With Include Imports`() = runGrpcTest {
-        val result = runGradle(bufGenerate(SSetsKmp.Default.jvmMain))
+        val result = runGradle(protobufGenerate(SSetsKmp.Default.jvmMain))
 
         result.assertMainTaskExecuted(
             protoFiles = listOf(
@@ -2629,7 +2680,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Proto Deduplication With Include Imports And BsrDep`() = runGrpcTest {
-        val resultCommonMain = runGradle(bufGenerateCommonMain)
+        val resultCommonMain = runGradle(protobufGenerateCommonMain)
         resultCommonMain.assertMainTaskExecuted(
             protoFiles = listOf(
                 Path("some.proto"),
@@ -2644,7 +2695,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             )
         )
 
-        val resultJvmMain = runGradle(bufGenerate(SSetsKmp.Default.jvmMain))
+        val resultJvmMain = runGradle(protobufGenerate(SSetsKmp.Default.jvmMain))
         resultJvmMain.assertTaskExecuted(
             sourceSet = SSetsKmp.Default.jvmMain,
             protoFiles = listOf(
@@ -2664,7 +2715,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Proto Deduplication With Nested Proto Directories`() = runGrpcTest {
-        val result = runGradle(bufGenerate(SSetsKmp.Default.jvmMain))
+        val result = runGradle(protobufGenerate(SSetsKmp.Default.jvmMain))
 
         result.assertMainTaskExecuted(
             protoFiles = listOf(
@@ -2701,7 +2752,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
     @TestFactory
     fun `Proto Deduplication With Nested Proto Directories And Strategy All`() = runGrpcTest {
-        val result = runGradle(bufGenerate(SSetsKmp.Default.jvmMain))
+        val result = runGradle(protobufGenerate(SSetsKmp.Default.jvmMain))
 
         result.assertMainTaskExecuted(
             protoFiles = listOf(

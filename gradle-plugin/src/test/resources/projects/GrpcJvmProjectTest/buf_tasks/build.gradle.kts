@@ -56,17 +56,17 @@ tasks.register("test_tasks") {
     doLast {
         val genTasks = protoTasks.buf.generate
 
-        assertTasks("gen all", genTasks, "bufGenerateMain", "bufGenerateTest")
-        assertTasks("testTasks", genTasks.testTasks(), "bufGenerateTest")
-        assertTasks("nonTestTasks", genTasks.nonTestTasks(), "bufGenerateMain")
+        assertTasks("gen all", genTasks, "protobufGenerateMain", "protobufGenerateTest")
+        assertTasks("testTasks", genTasks.testTasks(), "protobufGenerateTest")
+        assertTasks("nonTestTasks", genTasks.nonTestTasks(), "protobufGenerateMain")
         assertTasks("nonTestTasks testTasks", genTasks.nonTestTasks().testTasks())
-        assertTasks("matchingSourceSet main", genTasks.matchingSourceSet("main"), "bufGenerateMain")
-        assertTasks("matchingSourceSet test", genTasks.matchingSourceSet("test"), "bufGenerateTest")
+        assertTasks("matchingSourceSet main", genTasks.matchingSourceSet("main"), "protobufGenerateMain")
+        assertTasks("matchingSourceSet test", genTasks.matchingSourceSet("test"), "protobufGenerateTest")
 
         val allTasks = protoTasks.buf
 
-        assertTasks("all", allTasks, "bufGenerateMain", "bufGenerateTest", "bufLintMain", "bufLintTest", "bufLockMain", "bufLockTest")
-        assertTasks("all by type generate", allTasks.matchingType<BufGenerateTask>(), "bufGenerateMain", "bufGenerateTest")
+        assertTasks("all", allTasks, "protobufGenerateMain", "protobufGenerateTest", "bufLintMain", "bufLintTest", "bufLockMain", "bufLockTest")
+        assertTasks("all by type generate", allTasks.matchingType<ProtobufGenerateTask>(), "protobufGenerateMain", "protobufGenerateTest")
         assertTasks("all by type lint", allTasks.matchingType<BufLintTask>(), "bufLintMain", "bufLintTest")
     }
 }

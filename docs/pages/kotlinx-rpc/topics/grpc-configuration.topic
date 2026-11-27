@@ -325,8 +325,12 @@
             <li><code>process&lt;SourceSet&gt;ProtoFiles</code> — copies the source set's own <path>.proto</path> files.</li>
             <li><code>process&lt;SourceSet&gt;ProtoFilesImports</code> — copies imported <path>.proto</path> files.</li>
             <li><code>bufLock&lt;SourceSet&gt;</code> — runs <code>buf deps update</code> or copies the defined <path>buf.lock</path>.</li>
-            <li><code>bufGenerate&lt;SourceSet&gt;</code> — runs <code>buf generate</code> for the prepared workspace.</li>
+            <li>
+                <code>protobufGenerate&lt;SourceSet&gt;</code> generates code from the source set's <path>.proto</path> files.
+                For <code>commonMain</code>, run <code>protobufGenerateCommonMain</code>.
+            </li>
         </list>
+        <p>Run <code>protobufGenerate</code> to generate code for all proto source sets in the project.</p>
         <p>
             The generated workspace lives in <path>build/protoBuild/sourceSets/&lt;sourceSet&gt;</path>.
             Generated Kotlin sources are written into

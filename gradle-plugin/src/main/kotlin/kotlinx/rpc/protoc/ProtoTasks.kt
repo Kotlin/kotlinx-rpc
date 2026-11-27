@@ -8,7 +8,7 @@ import kotlinx.library.watchdog.ExemptionReason
 import kotlinx.library.watchdog.IntentionallyExhaustive
 import kotlinx.library.watchdog.IntentionallyMutableCollection
 import kotlinx.rpc.buf.tasks.BufExecTask
-import kotlinx.rpc.buf.tasks.BufGenerateTask
+import kotlinx.rpc.buf.tasks.ProtobufGenerateTask
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
@@ -51,7 +51,7 @@ public val Project.protoTasks: ProtoTasks<ProtoTask> get() = ProtoTasksImpl(this
 public val ProtoTasks<ProtoTask>.buf: ProtoTasks<BufExecTask> get() = matchingType(BufExecTask::class)
 
 /**
- * Returns a collection of all `buf generate` tasks registered in the project.
+ * Returns the project's Protobuf code generation tasks for individual source sets.
  *
  * Example:
  * ```kotlin
@@ -64,7 +64,8 @@ public val ProtoTasks<ProtoTask>.buf: ProtoTasks<BufExecTask> get() = matchingTy
  * ```
  */
 @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
-public val ProtoTasks<BufExecTask>.generate: ProtoTasks<BufGenerateTask> get() = matchingType(BufGenerateTask::class)
+public val ProtoTasks<BufExecTask>.generate: ProtoTasks<ProtobufGenerateTask>
+    get() = matchingType(ProtobufGenerateTask::class)
 
 /**
  * Represents a collection of [ProtoTask] tasks of a given type.
@@ -87,7 +88,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
      * Filters tasks by type.
      *
      * ```kotlin
-     * protoTasks.matchingType(BufGenerateTask::class)
+     * protoTasks.matchingType(ProtobufGenerateTask::class)
      * ```
      */
     @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
@@ -245,7 +246,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
  * Filters tasks by type.
  *
  * ```kotlin
- * protoTasks.matchingType<BufGenerateTask>()
+ * protoTasks.matchingType<ProtobufGenerateTask>()
  * ```
  */
 @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")

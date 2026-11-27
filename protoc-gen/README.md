@@ -14,5 +14,5 @@ A change in `protoc-gen/` changes generated code that is checked in. Never edit 
 
 | Generated files | Task |
 |---|---|
-| `protobuf/protobuf-wkt/src/commonMain/generated-code/` | `:protobuf:protobuf-wkt:bufGenerateCommonMain` |
-| `tests/protobuf-conformance/src/commonMain/generated-code/` | `:tests:protobuf-conformance:bufGenerateCommonMain` |
+| `protobuf/protobuf-wkt/src/commonMain/generated-code/` | `:protobuf:protobuf-wkt:protobufGenerateCommonMain` |
+| `tests/protobuf-conformance/src/commonMain/generated-code/` | `:tests:protobuf-conformance:protobufGenerateCommonMain` |

@@ -32,13 +32,13 @@ import java.io.File
 import javax.inject.Inject
 
 /**
- * Buf `generate` command.
+ * Generates code from a source set's `.proto` files with Buf.
  *
  * @see <a href="https://buf.build/docs/reference/cli/buf/generate/">buf generate</a>
  */
 @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.API_DESIGN)
 @CacheableTask
-public abstract class BufGenerateTask @Inject internal constructor(
+public abstract class ProtobufGenerateTask @Inject internal constructor(
     properties: ProtoTask.Properties,
 ) : BufExecTask(properties) {
     @get:InputFile
@@ -175,21 +175,21 @@ public abstract class BufGenerateTask @Inject internal constructor(
     }
 
     internal companion object {
-        const val NAME_PREFIX: String = "bufGenerate"
+        const val BASE_TASK_NAME: String = "protobufGenerate"
     }
 }
 
-internal fun Project.registerBufGenerateTask(
+internal fun Project.registerProtobufGenerateTask(
     name: String,
     protocExtension: DefaultProtocExtension,
     workingDir: File,
     outputDirectory: File,
     includedPlugins: Provider<Set<ProtocPlugin>>,
     properties: ProtoTask.Properties,
-    configure: BufGenerateTask.() -> Unit = {},
-): TaskProvider<BufGenerateTask> {
-    return registerBufExecTask<BufGenerateTask>(
-        "${BufGenerateTask.NAME_PREFIX}$name", provider { workingDir }, properties
+    configure: ProtobufGenerateTask.() -> Unit = {},
+): TaskProvider<ProtobufGenerateTask> {
+    return registerBufExecTask<ProtobufGenerateTask>(
+        "${ProtobufGenerateTask.BASE_TASK_NAME}$name", provider { workingDir }, properties
     ) {
         group = PROTO_GROUP
         description = "Generates code from .proto files using 'buf generate'"

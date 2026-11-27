@@ -31,7 +31,7 @@ abstract class GrpcBaseTest : BaseTest() {
     abstract val type: Type
 
     protected fun GrpcTestEnv.runNonExistentTasksForSourceSet(set: SSets) {
-        runNonExistentTask(bufGenerate(set))
+        runNonExistentTask(protobufGenerate(set))
         runNonExistentTask(processProtoFiles(set))
         runNonExistentTask(processProtoFilesImports(set))
         runNonExistentTask(extractProto(set))
@@ -58,7 +58,7 @@ abstract class GrpcBaseTest : BaseTest() {
             protoFilesImports: TaskOutcome? = null,
             bufLock: TaskOutcome? = null,
         ) {
-            assertOutcome(generate, bufGenerate(sourceSet))
+            assertOutcome(generate, protobufGenerate(sourceSet))
             assertOutcome(bufYaml, generateBufYaml(sourceSet))
             assertOutcome(bufGenYaml, generateBufGenYaml(sourceSet))
             assertOutcome(protoFiles, processProtoFiles(sourceSet))
@@ -255,12 +255,12 @@ abstract class GrpcBaseTest : BaseTest() {
             protoFiles: List<Path>,
             generatedFiles: List<Path>,
         ) {
-            assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+            assertOutcome(TaskOutcome.SUCCESS, protobufGenerateCommonMain)
             assertOutcome(TaskOutcome.SUCCESS, processCommonMainProtoFiles)
             assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonMain)
             assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonMain)
 
-            assertProtoTaskNotExecuted(bufGenerateCommonTest)
+            assertProtoTaskNotExecuted(protobufGenerateCommonTest)
             assertProtoTaskNotExecuted(processCommonTestProtoFiles)
             assertProtoTaskNotExecuted(processCommonTestProtoFilesImports)
             assertProtoTaskNotExecuted(generateBufYamlCommonTest)
@@ -284,7 +284,7 @@ abstract class GrpcBaseTest : BaseTest() {
             generateOutcome: TaskOutcome = TaskOutcome.SUCCESS,
             mainGenerateOutcome: TaskOutcome? = null,
         ) {
-            assertOutcome(generateOutcome, bufGenerateCommonTest)
+            assertOutcome(generateOutcome, protobufGenerateCommonTest)
             val processProtoOutcome = if (protoFiles.isEmpty()) {
                 TaskOutcome.NO_SOURCE
             } else {
@@ -306,7 +306,7 @@ abstract class GrpcBaseTest : BaseTest() {
                 mainGenerateOutcome ?: TaskOutcome.SUCCESS
             }
 
-            assertOutcome(effectiveMainGenerateOutcome, bufGenerateCommonMain)
+            assertOutcome(effectiveMainGenerateOutcome, protobufGenerateCommonMain)
             val mainProcessOutcome = if (importProtoFiles.isEmpty()) {
                 TaskOutcome.NO_SOURCE
             } else {
@@ -341,7 +341,7 @@ abstract class GrpcBaseTest : BaseTest() {
             } else {
                 TaskOutcome.SUCCESS
             }
-            assertOutcome(generateOutcome, bufGenerate(sourceSet))
+            assertOutcome(generateOutcome, protobufGenerate(sourceSet))
 
             val processProtoOutcome = if (protoFiles.isEmpty()) {
                 TaskOutcome.NO_SOURCE
@@ -365,7 +365,7 @@ abstract class GrpcBaseTest : BaseTest() {
             assertWorkspaceImportProtoFilesCopied(sourceSet, *importProtoFiles.toTypedArray())
 
             notExecuted.forEach {
-                assertProtoTaskNotExecuted(bufGenerate(it))
+                assertProtoTaskNotExecuted(protobufGenerate(it))
                 assertProtoTaskNotExecuted(processProtoFiles(it))
                 assertProtoTaskNotExecuted(processProtoFilesImports(it))
                 assertProtoTaskNotExecuted(generateBufYaml(it))
@@ -416,8 +416,8 @@ abstract class GrpcBaseTest : BaseTest() {
 
             val result = runGradle(compileTask, "--dry-run", "--no-configuration-cache")
 
-            assert(result.output.contains(":${bufGenerate(sourceSet)} SKIPPED")) {
-                "${bufGenerate(sourceSet)} task should be present in dry-run mode for $compileTask execution"
+            assert(result.output.contains(":${protobufGenerate(sourceSet)} SKIPPED")) {
+                "${protobufGenerate(sourceSet)} task should be present in dry-run mode for $compileTask execution"
             }
         }
 
@@ -426,8 +426,8 @@ abstract class GrpcBaseTest : BaseTest() {
 
             val result = runGradle(preBuildTask, "--dry-run", "--no-configuration-cache")
 
-            assert(result.output.contains(":${bufGenerate(sourceSet)} SKIPPED")) {
-                "${bufGenerate(sourceSet)} task should be present in dry-run mode for $preBuildTask execution"
+            assert(result.output.contains(":${protobufGenerate(sourceSet)} SKIPPED")) {
+                "${protobufGenerate(sourceSet)} task should be present in dry-run mode for $preBuildTask execution"
             }
         }
 
@@ -436,7 +436,7 @@ abstract class GrpcBaseTest : BaseTest() {
                 return SkipBuild
             }
 
-            return runGradle(bufGenerate(sourceSet))
+            return runGradle(protobufGenerate(sourceSet))
         }
 
         private fun BuildResult.assertBufDepsSourceSet(
@@ -619,7 +619,7 @@ inputs:
             )
         }
 
-        fun bufGenerate(sourceSet: SSets) = "bufGenerate${sourceSet.capital}"
+        fun protobufGenerate(sourceSet: SSets) = "protobufGenerate${sourceSet.capital}"
         fun processProtoFiles(sourceSet: SSets) = "process${sourceSet.capital}ProtoFiles"
         fun processProtoFilesImports(sourceSet: SSets) = "process${sourceSet.capital}ProtoFilesImports"
         fun extractProto(sourceSet: SSets) = "extractProto${sourceSet.capital}"
@@ -640,8 +640,8 @@ inputs:
             Type.Android -> SSetsAndroid.Default.test
         }
 
-        val bufGenerateCommonMain = bufGenerate(mainSourceSet)
-        val bufGenerateCommonTest = bufGenerate(testSourceSet)
+        val protobufGenerateCommonMain = protobufGenerate(mainSourceSet)
+        val protobufGenerateCommonTest = protobufGenerate(testSourceSet)
         val processCommonMainProtoFiles = processProtoFiles(mainSourceSet)
         val processCommonTestProtoFiles = processProtoFiles(testSourceSet)
         val processCommonTestProtoFilesImports = processProtoFilesImports(testSourceSet)

@@ -18,12 +18,13 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
       - name: Run Protobuf WKT Generation
-        run: ./gradlew :protobuf:protobuf-wkt:bufGenerateCommonMain --info --stacktrace
+        run: ./gradlew :protobuf:protobuf-wkt:protobufGenerateCommonMain --info --stacktrace
       - name: Check if Well-Known Types are up-to-date
         run: |
           set -euo pipefail
           if [[ -n "$(git status --porcelain | grep protobuf/protobuf-wkt/)" ]]; then
-            echo "Well-Known Types are not up-to-date. Please run './gradlew :protobuf:protobuf-wkt:bufGenerateCommonMain' and commit changes"
+            echo "The generated protobuf well-known types are out of date."
+            echo "Run './gradlew :protobuf:protobuf-wkt:protobufGenerateCommonMain' and commit the changes."
             git status --porcelain
             git diff --minimal | cat
             exit 1

@@ -21,8 +21,8 @@ A row with "commit the changes" has a generator, not a test: run it, check `git 
 | `gradle.properties` of the root or a module | `updateProperties`, commit the changes |
 | `compiler-plugin/`, sources or build scripts | The `verify-compiler-plugin-compatibility` skill, and `:gradle-plugin:allVersionedFunctionalTests` |
 | Compiler plugin setup in `gradle-plugin/` | `:gradle-plugin:allVersionedFunctionalTests` |
-| `protoc-gen/` | All of: `:tests:protobuf-conformance:bufGenerateCommonMain`, `:protobuf:protobuf-wkt:bufGenerateCommonMain`, `./scripts/update_implicit_types.sh` (commit the changes of each), `:tests:protobuf-unittest:test`, `:tests:protobuf-conformance:jvmTest` |
-| `protobuf/protobuf-wkt/` | `:protobuf:protobuf-wkt:bufGenerateCommonMain`, commit the changes |
+| `protoc-gen/` | All of: `:tests:protobuf-conformance:protobufGenerateCommonMain`, `:protobuf:protobuf-wkt:protobufGenerateCommonMain`, `./scripts/update_implicit_types.sh` (commit the changes of each), `:tests:protobuf-unittest:test`, `:tests:protobuf-conformance:jvmTest` |
+| `protobuf/protobuf-wkt/` | `:protobuf:protobuf-wkt:protobufGenerateCommonMain`, commit the changes |
 | `krpc/` | `:tests:krpc-compatibility-tests:jvmTest`, `:tests:krpc-protocol-compatibility-tests:jvmTest` |
 | `known_failures.txt` or `native_known_failures.txt` in `tests/protobuf-conformance/` | `:tests:protobuf-conformance:jvmTest` |
 | npm dependencies | `kotlinUpgradeYarnLock`, `kotlinWasmUpgradeYarnLock` |

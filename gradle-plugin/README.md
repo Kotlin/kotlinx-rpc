@@ -31,7 +31,7 @@ When the build script calls `rpc { protoc() }`:
 1. `DefaultProtocExtension` finds the source sets (Kotlin, Android, or Android KMP) and creates a `ProtoSourceSet`
    for each Kotlin source set.
 2. It registers these tasks for each source set: `processXxxProtoFiles`, `processXxxProtoFilesImports`,
-   `generateBufYamlXxx`, `generateBufGenYamlXxx`, `bufGenerateXxx`.
+   `generateBufYamlXxx`, `generateBufGenYamlXxx`, `protobufGenerateXxx`.
 
 | Output | Directory |
 |---|---|
@@ -43,7 +43,7 @@ The plugin runs the `buf` CLI, not `protoc`. The code is in `buf/`:
 | Class | Purpose |
 |---|---|
 | `BufExtension` | Flags of `buf generate`: include-imports, include-wkt, error-format, comments |
-| `BufGenerateTask` | Runs `buf generate` |
+| `ProtobufGenerateTask` | Runs `buf generate` |
 | `GenerateBufYaml`, `GenerateBufGenYaml` | Write `buf.yaml` and `buf.gen.yaml` from the DSL |
 
 ## Compiler plugin artifact
