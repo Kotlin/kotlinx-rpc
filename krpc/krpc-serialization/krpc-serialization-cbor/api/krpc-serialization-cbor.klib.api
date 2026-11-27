@@ -5,5 +5,5 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <org.jetbrains.kotlinx:krpc-serialization-cbor>
+// Library unique name: <org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-cbor>
 final fun (kotlinx.rpc.krpc.serialization/KrpcSerialFormatConfiguration).kotlinx.rpc.krpc.serialization.cbor/cbor(kotlinx.serialization.cbor/Cbor = ..., kotlin/Function1<kotlinx.serialization.cbor/CborBuilder, kotlin/Unit> = ...) // kotlinx.rpc.krpc.serialization.cbor/cbor|cbor@kotlinx.rpc.krpc.serialization.KrpcSerialFormatConfiguration(kotlinx.serialization.cbor.Cbor;kotlin.Function1<kotlinx.serialization.cbor.CborBuilder,kotlin.Unit>){}[0]

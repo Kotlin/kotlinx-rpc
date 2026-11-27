@@ -5,7 +5,7 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <org.jetbrains.kotlinx:core>
+// Library unique name: <org.jetbrains.kotlinx:kotlinx-rpc-core>
 open annotation class kotlinx.rpc.annotations/CheckedTypeAnnotation : kotlin/Annotation { // kotlinx.rpc.annotations/CheckedTypeAnnotation|null[0]
     constructor <init>(kotlin.reflect/KClass<*> = ...) // kotlinx.rpc.annotations/CheckedTypeAnnotation.<init>|<init>(kotlin.reflect.KClass<*>){}[0]
 

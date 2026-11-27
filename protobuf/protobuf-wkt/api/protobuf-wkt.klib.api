@@ -5,7 +5,7 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <org.jetbrains.kotlinx:protobuf-wkt>
+// Library unique name: <org.jetbrains.kotlinx:kotlinx-rpc-protobuf-wkt>
 final enum class com.google.protobuf.kotlin/ValueKindCase : kotlin/Enum<com.google.protobuf.kotlin/ValueKindCase> { // com.google.protobuf.kotlin/ValueKindCase|null[0]
     enum entry BOOL_VALUE // com.google.protobuf.kotlin/ValueKindCase.BOOL_VALUE|null[0]
     enum entry LIST_VALUE // com.google.protobuf.kotlin/ValueKindCase.LIST_VALUE|null[0]

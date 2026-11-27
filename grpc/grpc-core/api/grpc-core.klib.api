@@ -5,7 +5,7 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <org.jetbrains.kotlinx:grpc-core>
+// Library unique name: <org.jetbrains.kotlinx:kotlinx-rpc-grpc-core>
 open annotation class kotlinx.rpc.grpc.annotations/Grpc : kotlin/Annotation { // kotlinx.rpc.grpc.annotations/Grpc|null[0]
     constructor <init>(kotlin/String = ..., kotlin/String = ...) // kotlinx.rpc.grpc.annotations/Grpc.<init>|<init>(kotlin.String;kotlin.String){}[0]
 

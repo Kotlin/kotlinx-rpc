@@ -5,7 +5,7 @@
 // - Show manifest properties: true
 // - Show declarations: true
 
-// Library unique name: <org.jetbrains.kotlinx:krpc-ktor-client>
+// Library unique name: <org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-client>
 abstract class kotlinx.rpc.krpc.ktor.client/KtorRpcClient : kotlinx.rpc.krpc.client/KrpcClient { // kotlinx.rpc.krpc.ktor.client/KtorRpcClient|null[0]
     constructor <init>() // kotlinx.rpc.krpc.ktor.client/KtorRpcClient.<init>|<init>(){}[0]
 
