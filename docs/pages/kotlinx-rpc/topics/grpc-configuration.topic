@@ -330,6 +330,7 @@
                 For <code>commonMain</code>, run <code>protobufGenerateCommonMain</code>.
             </li>
         </list>
+        <p>Run <code>protobufGenerate</code> to generate code for all proto source sets in the project.</p>
         <p>
             The generated workspace lives in <path>build/protoBuild/sourceSets/&lt;sourceSet&gt;</path>.
             Generated Kotlin sources are written into

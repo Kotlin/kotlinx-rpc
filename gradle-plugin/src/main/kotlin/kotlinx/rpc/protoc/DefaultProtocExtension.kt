@@ -82,6 +82,13 @@ internal open class DefaultProtocExtension @Inject constructor(
         project.configureKotlinMultiplatformPluginJarConfiguration()
         project.configureGrpcKotlinMultiplatformPluginJarConfiguration()
 
+        val generateTasks = project.tasks.withType(ProtobufGenerateTask::class.java)
+        project.tasks.register(ProtobufGenerateTask.BASE_TASK_NAME) {
+            group = PROTO_GROUP
+            description = "Generates code from .proto files in all source sets"
+            dependsOn(generateTasks)
+        }
+
         // Ignore these files when Gradle checks code generation task inputs.
         project.normalization.runtimeClasspath.ignore("**/protoc-gen-kotlin-multiplatform.log")
         project.normalization.runtimeClasspath.ignore("**/protoc-gen-grpc-kotlin-multiplatform.log")

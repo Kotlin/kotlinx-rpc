@@ -175,7 +175,7 @@ public abstract class ProtobufGenerateTask @Inject internal constructor(
     }
 
     internal companion object {
-        const val NAME_PREFIX: String = "protobufGenerate"
+        const val BASE_TASK_NAME: String = "protobufGenerate"
     }
 }
 
@@ -189,7 +189,7 @@ internal fun Project.registerProtobufGenerateTask(
     configure: ProtobufGenerateTask.() -> Unit = {},
 ): TaskProvider<ProtobufGenerateTask> {
     return registerBufExecTask<ProtobufGenerateTask>(
-        "${ProtobufGenerateTask.NAME_PREFIX}$name", provider { workingDir }, properties
+        "${ProtobufGenerateTask.BASE_TASK_NAME}$name", provider { workingDir }, properties
     ) {
         group = PROTO_GROUP
         description = "Generates code from .proto files using 'buf generate'"

@@ -13,6 +13,8 @@ import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.TestInstance
 import kotlin.collections.emptyList
 import kotlin.io.path.Path
+import kotlin.io.path.isRegularFile
+import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class GrpcKmpProjectTest : GrpcBaseTest() {
@@ -195,9 +197,9 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
         cleanProtoBuildDir()
 
-        val testRun = runGradle(protobufGenerateCommonTest)
+        val aggregateRun = runGradle("protobufGenerate")
 
-        testRun.assertTestTaskExecuted(
+        aggregateRun.assertTestTaskExecuted(
             protoFiles = listOf(
                 Path("other.proto")
             ),
@@ -216,6 +218,20 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             ),
             mainGenerateOutcome = TaskOutcome.FROM_CACHE,
         )
+
+        aggregateRun.assertOutcome(TaskOutcome.SKIPPED, protobufGenerate(SSetsKmp.Default.jvmMain))
+        aggregateRun.assertOutcome(TaskOutcome.SKIPPED, protobufGenerate(SSetsKmp.Default.jvmTest))
+    }
+
+    @TestFactory
+    fun `Protobuf Generate Includes Source Set Added Later`() = runGrpcTest {
+        val result = runGradle("protobufGenerate")
+
+        result.assertOutcome(TaskOutcome.SUCCESS, "protobufGenerateAdditionalMain")
+        val generatedFile = protoBuildDir.resolve(
+            Path("generated", "additionalMain", "kotlin-multiplatform", "Additional.kt")
+        )
+        assertTrue(generatedFile.isRegularFile(), "Missing generated source: $generatedFile")
     }
 
     @TestFactory
