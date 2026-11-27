@@ -75,28 +75,21 @@ registerDumpPlatformTableTask()
 registerChangelogTask()
 registerBuildCrashbtShimTask()
 
-fun Project.forEachIncludedProject(action: (String, Path, Path) -> Unit) {
-    val globalRootDir = extra["globalRootDir"] as String
-    val root = Path.of(globalRootDir)
-    val rootProperties = root.resolve("gradle.properties").readText()
-    root.listDirectoryEntries()
-        .filter { it.isDirectory() && it.name != "gradle-conventions-settings" && it.name != "gradle-conventions" }
-        .forEach {
-            val subProjectProperties = it.resolve("gradle.properties")
-            val subProjectSettings = it.resolve("settings.gradle.kts")
-            if (subProjectSettings.exists()) {
-                action(rootProperties, it, subProjectProperties)
+tasks.register("updateProperties") {
+    val globalRootDir = project.extra["globalRootDir"] as String
+
+    doLast {
+        val root = Path.of(globalRootDir)
+        val rootProperties = root.resolve("gradle.properties").readBytes()
+        root.listDirectoryEntries()
+            .filter { it.isDirectory() && it.name != "gradle-conventions-settings" && it.name != "gradle-conventions" }
+            .filter { it.resolve("settings.gradle.kts").exists() }
+            .forEach { includedBuild ->
+                val properties = includedBuild.resolve("gradle.properties")
+                if (!properties.exists() || !properties.readBytes().contentEquals(rootProperties)) {
+                    properties.writeBytes(rootProperties)
+                }
             }
-        }
-}
-
-val updateProperties = tasks.register("updateProperties") {
-    forEachIncludedProject { rootProperties, _, subProjectProperties ->
-        if (!subProjectProperties.exists()) {
-            subProjectProperties.createFile()
-        }
-
-        subProjectProperties.toFile().writeText(rootProperties)
     }
 }
 
