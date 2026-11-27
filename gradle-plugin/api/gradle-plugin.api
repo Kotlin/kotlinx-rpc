@@ -123,21 +123,6 @@ public final class kotlinx/rpc/buf/tasks/BufExecTaskKt {
 	public static synthetic fun registerBufExecTask$default (Lorg/gradle/api/Project;Lkotlin/reflect/KClass;Ljava/lang/String;Lorg/gradle/api/provider/Provider;Lkotlinx/rpc/protoc/ProtoTask$Properties;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lorg/gradle/api/tasks/TaskProvider;
 }
 
-public abstract class kotlinx/rpc/buf/tasks/BufGenerateTask : kotlinx/rpc/buf/tasks/BufExecTask {
-	public abstract fun getAdditionalArgs ()Lorg/gradle/api/provider/ListProperty;
-	public abstract fun getBufFile ()Lorg/gradle/api/provider/Property;
-	public abstract fun getBufGenFile ()Lorg/gradle/api/provider/Property;
-	public abstract fun getBufLockFile ()Lorg/gradle/api/provider/Property;
-	public abstract fun getErrorFormat ()Lorg/gradle/api/provider/Property;
-	public abstract fun getExecutableFiles ()Lorg/gradle/api/provider/ListProperty;
-	public abstract fun getIncludeImports ()Lorg/gradle/api/provider/Property;
-	public abstract fun getIncludeWkt ()Lorg/gradle/api/provider/Property;
-	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
-	public final fun getOutputSourceDirectories ()Lorg/gradle/api/provider/Provider;
-	public abstract fun getPluginNames ()Lorg/gradle/api/provider/ListProperty;
-	public abstract fun getProtocInputFilesListDirectory ()Lorg/gradle/api/file/DirectoryProperty;
-}
-
 public abstract class kotlinx/rpc/buf/tasks/BufLockTask : kotlinx/rpc/buf/tasks/BufExecTask {
 	public abstract fun getBsrDeps ()Lorg/gradle/api/provider/ListProperty;
 	public abstract fun getBufLockFile ()Lorg/gradle/api/file/RegularFileProperty;
@@ -151,6 +136,21 @@ public abstract class kotlinx/rpc/buf/tasks/GenerateBufGenYaml : kotlinx/rpc/pro
 
 public abstract class kotlinx/rpc/buf/tasks/GenerateBufYaml : kotlinx/rpc/protoc/DefaultProtoTask {
 	public abstract fun getBufFile ()Lorg/gradle/api/file/RegularFileProperty;
+}
+
+public abstract class kotlinx/rpc/buf/tasks/ProtobufGenerateTask : kotlinx/rpc/buf/tasks/BufExecTask {
+	public abstract fun getAdditionalArgs ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getBufFile ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBufGenFile ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBufLockFile ()Lorg/gradle/api/provider/Property;
+	public abstract fun getErrorFormat ()Lorg/gradle/api/provider/Property;
+	public abstract fun getExecutableFiles ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getIncludeImports ()Lorg/gradle/api/provider/Property;
+	public abstract fun getIncludeWkt ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public final fun getOutputSourceDirectories ()Lorg/gradle/api/provider/Provider;
+	public abstract fun getPluginNames ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getProtocInputFilesListDirectory ()Lorg/gradle/api/file/DirectoryProperty;
 }
 
 public final class kotlinx/rpc/protoc/ConstsKt {
