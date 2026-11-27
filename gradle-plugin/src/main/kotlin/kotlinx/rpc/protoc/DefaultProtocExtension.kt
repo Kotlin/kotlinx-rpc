@@ -338,7 +338,7 @@ internal open class DefaultProtocExtension @Inject constructor(
             dependsOn(generateBufYamlTask)
             dependsOn(processProtoTask)
             dependsOn(processImportProtoTask)
-            onlyIf { !preparedProtoFiles.isEmpty }
+            onlyIf { persistentLockFile.asFile.orNull?.isFile == true || !preparedProtoFiles.isEmpty }
         }
 
         val generateTask = project.registerProtobufGenerateTask(

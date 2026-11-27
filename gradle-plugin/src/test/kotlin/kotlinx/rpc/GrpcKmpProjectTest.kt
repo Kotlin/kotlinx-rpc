@@ -14,6 +14,8 @@ import org.junit.jupiter.api.TestInstance
 import kotlin.collections.emptyList
 import kotlin.io.path.Path
 import kotlin.io.path.isRegularFile
+import kotlin.io.path.readText
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -251,6 +253,20 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             Path("Example.ext.kt"),
             Path(RPC_INTERNAL, "Example.kt"),
         )
+    }
+
+    @TestFactory
+    fun `Buf Lock Copies Existing Lockfile for Import-Only Source Set`() = runGrpcTest {
+        val sourceSet = SSetsKmp.Default.jvmMain
+        val result = runGradle(bufLock(sourceSet))
+
+        result.assertOutcome(TaskOutcome.NO_SOURCE, processProtoFiles(sourceSet))
+        assertWorkspaceImportProtoFilesCopied(sourceSet, Path("example.proto"))
+        result.assertOutcome(TaskOutcome.SUCCESS, bufLock(sourceSet))
+
+        val persistentLockFile = projectDir.resolve(Path("buf", sourceSet.name, "buf.lock"))
+        val workspaceLockFile = protoBuildDirSourceSets.resolve(Path(sourceSet.name, "buf.lock"))
+        assertEquals(persistentLockFile.readText(), workspaceLockFile.readText())
     }
 
     @TestFactory
