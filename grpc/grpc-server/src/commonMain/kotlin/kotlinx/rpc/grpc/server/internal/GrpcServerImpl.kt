@@ -5,11 +5,16 @@
 package kotlinx.rpc.grpc.server.internal
 
 import kotlinx.atomicfu.atomic
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.descriptor.RpcCallable
 import kotlinx.rpc.descriptor.flowInvokator
@@ -67,6 +72,15 @@ public class GrpcServerImpl internal constructor(
 
     private var isBuilt = false
     private lateinit var internalServer: PlatformServer
+
+    private val shutdownStarted = CompletableDeferred<Unit>()
+    private val terminationWatcher = CoroutineScope(Dispatchers.Default).async(start = CoroutineStart.LAZY) {
+        // The watcher occupies one Dispatchers.IO worker only after shutdown actually starts.
+        shutdownStarted.await()
+        internalServer.awaitTermination()
+        internalContext.complete()
+        internalContext.join()
+    }
 
     internal val platformServer: PlatformServer
         get() = internalServer
@@ -199,20 +213,25 @@ public class GrpcServerImpl internal constructor(
     }
 
     override fun shutdown(): GrpcServerImpl {
-        internalContext.cancel("Shutting down server")
         internalServer.shutdown()
+        trackTermination()
         return this
     }
 
     override fun shutdownNow(): GrpcServerImpl {
         internalContext.cancel("Shutting down server now")
         internalServer.shutdownNow()
+        trackTermination()
         return this
     }
 
+    private fun trackTermination() {
+        shutdownStarted.complete(Unit)
+        terminationWatcher.start()
+    }
+
     override suspend fun awaitTermination(duration: Duration): GrpcServerImpl {
-        internalContext.join()
-        internalServer.awaitTermination(duration)
+        withTimeoutOrNull(duration) { terminationWatcher.await() }
         return this
     }
 }

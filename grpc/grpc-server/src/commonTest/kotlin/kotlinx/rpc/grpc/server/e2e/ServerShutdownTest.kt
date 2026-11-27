@@ -19,16 +19,15 @@ import kotlinx.rpc.grpc.server.testing.assertGrpcStatus
 import kotlinx.rpc.grpc.server.testing.grpcServerTest
 import kotlinx.rpc.grpc.server.testing.zeros
 import kotlinx.rpc.grpc.statusCode
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.milliseconds
 
 class ServerShutdownTest {
     @Test
-    @Ignore // https://youtrack.jetbrains.com/issue/KXRPC-719
     fun shutdownLetsAnExistingCallCompleteWithOk() = grpcServerTest {
         val responseGate = registerNewGate("unary response")
         start {
@@ -45,6 +44,7 @@ class ServerShutdownTest {
             markServerStoppedByTest()
             server.shutdown()
             assertTrue(server.isShutdown)
+            withTimeout(AWAIT_TIMEOUT) { server.awaitTermination(100.milliseconds) }
             assertFalse(server.isTerminated)
             responseGate.open()
 

@@ -72,6 +72,10 @@ public interface GrpcServer : RpcServer {
      * Calling this method before [start] will shut down and terminate the server like
      * normal, but prevents starting the server in the future.
      *
+     * **Note:** On the JVM, shutdown uses one `Dispatchers.IO` worker until the server terminates.
+     * If `kotlinx.coroutines.io.parallelism` is `1`, graceful shutdown can deadlock when an active RPC needs
+     * `Dispatchers.IO` to finish.
+     *
      * @return `this`
      */
     public fun shutdown(): GrpcServer
