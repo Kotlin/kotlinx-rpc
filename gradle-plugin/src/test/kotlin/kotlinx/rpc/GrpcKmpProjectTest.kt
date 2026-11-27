@@ -235,6 +235,25 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
     }
 
     @TestFactory
+    fun `Protobuf Generate Skips Buf Lock for Empty Source Sets`() = runGrpcTest {
+        val result = runGradle("protobufGenerate")
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufLockCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, protobufGenerateCommonMain)
+        for (sourceSet in listOf(testSourceSet, SSetsKmp.Default.jvmMain, SSetsKmp.Default.jvmTest)) {
+            result.assertOutcome(TaskOutcome.SKIPPED, bufLock(sourceSet))
+            result.assertOutcome(TaskOutcome.SKIPPED, protobufGenerate(sourceSet))
+        }
+        assertWorkspaceProtoFilesCopied(mainSourceSet, Path("example.proto"))
+        assertSourceCodeGenerated(
+            mainSourceSet,
+            Path("Example.kt"),
+            Path("Example.ext.kt"),
+            Path(RPC_INTERNAL, "Example.kt"),
+        )
+    }
+
+    @TestFactory
     fun `No JVM Targets`() = runGrpcTest {
         runNonExistentTask(protobufGenerateCommonMain)
         runNonExistentTask(protobufGenerateCommonTest)

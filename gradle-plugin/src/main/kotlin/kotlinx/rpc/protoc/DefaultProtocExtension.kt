@@ -324,6 +324,10 @@ internal open class DefaultProtocExtension @Inject constructor(
             buf.deps.lockFile.orElse("buf/${protoSourceSet.name}/buf.lock")
         )
 
+        val preparedProtoFiles = project.fileTree(buildSourceSetsProtoDir) {
+            include("**/*.proto")
+        }
+
         val bufLockTask = project.registerBufLockTask(
             name = capitalName,
             workingDir = buildSourceSetsDir,
@@ -334,9 +338,8 @@ internal open class DefaultProtocExtension @Inject constructor(
             dependsOn(generateBufYamlTask)
             dependsOn(processProtoTask)
             dependsOn(processImportProtoTask)
+            onlyIf { !preparedProtoFiles.isEmpty }
         }
-
-        val sourceSetsProtoDirFileTree = project.fileTree(buildSourceSetsProtoDir)
 
         val generateTask = project.registerProtobufGenerateTask(
             protocExtension = this,
@@ -389,7 +392,7 @@ internal open class DefaultProtocExtension @Inject constructor(
 
             dependsOn(dependencies)
 
-            onlyIf { !sourceSetsProtoDirFileTree.filter { it.extension == "proto" }.isEmpty }
+            onlyIf { !preparedProtoFiles.isEmpty }
         }
 
         protoSourceSet.generateTask.set(generateTask)
@@ -411,7 +414,7 @@ internal open class DefaultProtocExtension @Inject constructor(
             processImportProtoTask = processImportProtoTask,
             extractProtoTask = extractProtoTask,
             extractProtoImportTask = extractProtoImportTask,
-            sourceSetsProtoDirFileTree = sourceSetsProtoDirFileTree,
+            preparedProtoFiles = preparedProtoFiles,
             properties = properties,
         )
 
@@ -538,7 +541,7 @@ internal open class DefaultProtocExtension @Inject constructor(
         processImportProtoTask: TaskProvider<ProcessProtoFiles>,
         extractProtoTask: TaskProvider<ExtractDependencyProtoImports>,
         extractProtoImportTask: TaskProvider<ExtractDependencyProtoImports>,
-        sourceSetsProtoDirFileTree: ConfigurableFileTree,
+        preparedProtoFiles: ConfigurableFileTree,
         properties: ProtoTask.Properties,
         configure: BufExecTask.() -> Unit = {}
     ) {
@@ -574,7 +577,7 @@ internal open class DefaultProtocExtension @Inject constructor(
 
                 configure()
 
-                onlyIf { !sourceSetsProtoDirFileTree.filter { it.extension == "proto" }.isEmpty }
+                onlyIf { !preparedProtoFiles.isEmpty }
             }
         }
     }
