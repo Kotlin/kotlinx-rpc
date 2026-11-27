@@ -65,10 +65,8 @@ sourceSets.main {
 
         includeDefaultProtobufPlugin = false
         includeDefaultGrpcPlugin = false
-        // The Java generators reject the kotlinx-rpc options (for example `explicitApiModeEnabled`), so clear them.
-        // Remove these option overwrites once KXRPC-690 is fixed.
-        plugin({ options.set(emptyMap()) }) { getByName("java") }
-        plugin({ options.set(emptyMap()) }) { getByName("grpc-java") }
+        plugin { getByName("java") }
+        plugin { getByName("grpc-java") }
     }
 }
 

@@ -5,6 +5,7 @@
 package kotlinx.rpc
 
 import kotlinx.rpc.base.GrpcBaseTest
+import kotlinx.rpc.protoc.PROTOC_INPUT_FILES_DIR
 import kotlinx.rpc.protoc.PlatformOption
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.TestFactory
@@ -14,8 +15,10 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import kotlin.io.path.Path
 import kotlin.io.path.appendText
+import kotlin.io.path.createDirectories
 import kotlin.io.path.exists
 import kotlin.io.path.readText
+import kotlin.io.path.writeText
 import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -350,14 +353,8 @@ clean: true
 plugins:
   - local: some
     out: myPlugin
-    opt:
-      - explicitApiModeEnabled=false
-      - platform=${PlatformOption.JVM}
   - local: some2
     out: myPlugin2
-    opt:
-      - explicitApiModeEnabled=false
-      - platform=${PlatformOption.JVM}
   - local: [protoc-gen-kotlin-multiplatform]
     out: kotlin-multiplatform
     opt:
@@ -471,8 +468,6 @@ plugins:
     opt:
       - hello=world
       - foo=bar
-      - explicitApiModeEnabled=false
-      - platform=${PlatformOption.JVM}
     strategy: all
     include_imports: true
     include_wkt: false
@@ -484,13 +479,17 @@ plugins:
     out: myRemotePlugin
     opt:
       - hello=world
-      - explicitApiModeEnabled=false
-      - platform=${PlatformOption.JVM}
       - only=in main
 inputs:
   - directory: proto
             """.trimIndent()
         )
+
+        val mainProtocInputFiles = protoBuildDirSourceSets
+            .resolve(mainSourceSet.name)
+            .resolve(PROTOC_INPUT_FILES_DIR)
+            .createDirectories()
+        mainProtocInputFiles.resolve("inputs.txt").writeText("imported.proto\n")
 
         runGradle(generateBufGenYamlCommonTest)
 
@@ -512,6 +511,7 @@ plugins:
       - camelCaseNames=true
       - explicitApiModeEnabled=false
       - platform=jvm
+      - ignoreFiles=imported.proto
   - local: [protoc-gen-grpc-kotlin-multiplatform]
     out: grpc-kotlin-multiplatform
     opt:
@@ -524,12 +524,11 @@ plugins:
       - camelCaseNames=true
       - explicitApiModeEnabled=false
       - platform=jvm
+      - ignoreFiles=imported.proto
   - remote: my.remote.plugin
     out: myRemotePlugin
     opt:
       - hello=world
-      - explicitApiModeEnabled=false
-      - platform=jvm
       - only=in test
 inputs:
   - directory: proto
@@ -798,8 +797,6 @@ plugins:
     out: myPlugin
     opt:
       - hello=world
-      - explicitApiModeEnabled=false
-      - platform=${PlatformOption.JVM}
 inputs:
   - directory: proto
             """.trimIndent()

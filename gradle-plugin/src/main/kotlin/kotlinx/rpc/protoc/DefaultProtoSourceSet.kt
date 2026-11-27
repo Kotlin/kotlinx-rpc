@@ -117,8 +117,10 @@ internal open class DefaultProtoSourceSet(
     internal val platformOption = project.objects.property<String>().convention("")
 
     private fun initPlugin(copy: ProtocPlugin, configure: Action<ProtocPlugin>?) {
-        copy.options.put("explicitApiModeEnabled", explicitApiModeEnabled)
-        copy.options.put("platform", platformOption)
+        if (copy.isBundled) {
+            copy.options.put("explicitApiModeEnabled", explicitApiModeEnabled)
+            copy.options.put("platform", platformOption)
+        }
 
         configure?.execute(copy)
     }

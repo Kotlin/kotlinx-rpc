@@ -23,6 +23,9 @@ import org.gradle.kotlin.dsl.mapProperty
 import org.gradle.kotlin.dsl.property
 import java.io.File
 
+internal val ProtocPlugin.isBundled: Boolean
+    get() = name == KOTLIN_MULTIPLATFORM || name == GRPC_KOTLIN_MULTIPLATFORM
+
 /**
  * Access to the `kotlin-multiplatform` protoc plugin.
  */
